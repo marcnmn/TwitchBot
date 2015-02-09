@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TwitchBot</string>
+
+    <string name="title_section1">Games</string>
+    <string name="title_section2">Top Channels</string>
+    <string name="title_section3">Search</string>
+    <string name="title_section4">Favorites</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="game_channels_url">https://api.twitch.tv/kraken/streams?game=</string>
+
+    <string-array name="drawer_urls">
+        <item>https://api.twitch.tv/kraken/games/top?</item>
+        <item>https://api.twitch.tv/kraken/streams?</item>
+    </string-array>
+
+    <string-array name="livestream_qualities">
+        <item>source</item>
+        <item>high</item>
+        <item>medium</item>
+        <item>low</item>
+        <item>mobile</item>
+        <item>audio only</item>
+    </string-array>
+
+    <string-array
+        name="blacklisted_games">
+        <item>FIFA 15</item>
+        <item>Counter-Strike: Global Offensive</item>
+        <item>ArmA III</item>
+        <item>Minecraft</item>
+        <item>Destiny</item>
+        <item>Dying Light</item>
+        <item>Battlefield Hardline</item>
+        <item>Call of Duty: Advanced Warfare</item>
+        <item>Infestation: Survivor Stories</item>
+        <item>Lightning Returns: Final Fantasy XIII</item>
+        <item>Madden NFL 15</item>
+        <item>ArcheAge</item>
+        <item>Star Citizen</item>
+        <item>Final Fantasy VIII</item>
+        <item>Final Fantasy XIV Online: A Realm Reborn</item>
+        <item>Battlefield 4</item>
+        <item>Final Tibia</item>
+        <item>Super Smash Bros. for Wii U</item>
+        <item>Modern Warfare 2</item>
+        <item>Company of Heroes 2</item>
+        <item>Payday 2</item>
+        <item>Blade and Soul</item>
+        <item>Team Fortress 2</item>
+    </string-array>
+
+</resources>

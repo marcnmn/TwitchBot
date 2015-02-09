@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="200dp">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/game_thumbnail"
+        android:src="@drawable/game_offline"
+        android:scaleType="centerCrop"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:background="#ff343434" />
+
+    <TextView
+        android:id="@+id/game_desc"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="false"
+        android:layout_margin="0dp"
+        android:layout_marginBottom="0dp"
+        android:singleLine="true"
+        android:shadowColor="#000"
+        android:shadowRadius="7.0"
+        android:text="This is some random text"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="#ffededed"
+        android:background="#79000000" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/game_viewers"
+        android:paddingRight="5dp"
+        android:layout_marginTop="2dp"
+        android:textSize="16sp"
+        android:shadowColor="#000"
+        android:shadowRadius="7.0"
+        android:textColor="#ffededed"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:layout_width="12sp"
+        android:layout_height="12sp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="7dp"
+        android:id="@+id/viewers_icon"
+        android:src="@drawable/active_viewers_twitch"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/game_viewers" />
+
+</RelativeLayout>

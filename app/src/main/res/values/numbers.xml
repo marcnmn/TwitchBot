@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="game_grid_start_items">15</integer>
+    <integer name="game_grid_update_items">6</integer>
+    <integer name="channel_list_start_items">10</integer>
+    <integer name="channel_list_update_items">5</integer>
+</resources>

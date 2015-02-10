@@ -1,9 +1,13 @@
 package twitchvod.tvvod.data.async_tasks;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -12,6 +16,7 @@ import java.net.URL;
 
 import twitchvod.tvvod.adapter.ChannelListAdapter;
 import twitchvod.tvvod.adapter.GamesAdapter;
+import twitchvod.tvvod.adapter.PastBroadcastsListAdapter;
 
 
 public class TwitchBitmapData extends AsyncTask<String, Integer, Void> {
@@ -19,6 +24,8 @@ public class TwitchBitmapData extends AsyncTask<String, Integer, Void> {
     private int mOffset;
     private ChannelListAdapter mChannelAdapter;
     private GamesAdapter mGameAdapter;
+    private PastBroadcastsListAdapter mBroadcastAdapter;
+    private Context mContext;
 
     public TwitchBitmapData(ChannelListAdapter c, int offset) {
         mOffset = offset;
@@ -28,8 +35,13 @@ public class TwitchBitmapData extends AsyncTask<String, Integer, Void> {
     public TwitchBitmapData(GamesAdapter gamesAdapter, int offset) {
         mGameAdapter = gamesAdapter;
         mOffset = offset;
-
     }
+
+    public TwitchBitmapData(PastBroadcastsListAdapter a, int offset) {
+        mBroadcastAdapter = a;
+        mOffset = offset;
+    }
+
 
     @Override
     protected Void doInBackground(String... urls) {
@@ -55,6 +67,8 @@ public class TwitchBitmapData extends AsyncTask<String, Integer, Void> {
             mChannelAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
         if (mGameAdapter != null)
             mGameAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
+        if (mBroadcastAdapter != null)
+            mBroadcastAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
     }
 
     private Bitmap downloadBitmap(String myurl, int index) throws IOException {

@@ -15,11 +15,19 @@ import java.net.URL;
 import twitchvod.tvvod.ui_fragments.ChannelDetailFragment;
 
 public class TwitchToken extends AsyncTask<String, Void, Void> {
-    private String mToken, mSig, mChannel;
+    private String mToken, mSig, mBroadcastId;
     ChannelDetailFragment mCF2;
+    private int mTokenType;
 
     public TwitchToken(ChannelDetailFragment cf) {
         mCF2 = cf;
+        mTokenType = 0;
+    }
+
+    public TwitchToken(ChannelDetailFragment cf, String id) {
+        mCF2 = cf;
+        mBroadcastId = id;
+        mTokenType = 1;
     }
 
     @Override
@@ -33,7 +41,12 @@ public class TwitchToken extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
-        mCF2.fetchStreams(mChannel, mToken, mSig);
+        if (mTokenType == 0) {
+            mCF2.fetchStreamM3U8Playlists(mToken, mSig);
+        }
+        if (mTokenType == 1) {
+            mCF2.fetchBroadcastM3U8PlaylistsNew(mToken, mSig, mBroadcastId);
+        }
     }
 
     private String fetchLiveToken(String myurl) throws IOException, JSONException {
@@ -62,9 +75,6 @@ public class TwitchToken extends AsyncTask<String, Void, Void> {
 
             mToken = jObject.getString("token");
             mSig = jObject.getString("sig");
-            int a = mToken.indexOf("channel", 15);
-            int b = mToken.indexOf(",", 20);
-            mChannel = mToken.substring(a+10, b-1);
             return result;
         } finally {
             if (is != null) {

@@ -23,8 +23,7 @@ public class GamesRasterFragment extends Fragment
     private Game mSelectedItem;
 
     OnGameSelectedListener  mCallback;
-    private int mLoadedItems;
-    private int INT_LIST_UPDATE_VALUE;
+    private int mLoadedItems, INT_GRID_UPDATE_VALUE, INT_GRID_UPDATE_THRESHOLD;
 
     public GamesRasterFragment newInstance(int sectionNumber, String url) {
         GamesRasterFragment fragment = new GamesRasterFragment();
@@ -47,7 +46,8 @@ public class GamesRasterFragment extends Fragment
         String mBaseUrl = getArguments().getString("url");
 
         mLoadedItems = getResources().getInteger(R.integer.game_grid_start_items);
-        INT_LIST_UPDATE_VALUE = getResources().getInteger(R.integer.game_grid_update_items);
+        INT_GRID_UPDATE_VALUE = getResources().getInteger(R.integer.game_grid_update_items);
+        INT_GRID_UPDATE_THRESHOLD = getResources().getInteger(R.integer.game_grid_update_threshold);
 
         final GamesAdapter mGAdapter2 = new GamesAdapter(getActivity(), mBaseUrl);
         gridview.setAdapter(mGAdapter2);
@@ -69,9 +69,9 @@ public class GamesRasterFragment extends Fragment
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 int lastVisibleItem = firstVisibleItem + visibleItemCount;
-                if (lastVisibleItem >= mLoadedItems) {
-                    mGAdapter2.loadTopData(INT_LIST_UPDATE_VALUE, mLoadedItems);
-                    mLoadedItems += INT_LIST_UPDATE_VALUE;
+                if (lastVisibleItem >= mLoadedItems - INT_GRID_UPDATE_THRESHOLD) {
+                    mGAdapter2.loadTopData(INT_GRID_UPDATE_VALUE, mLoadedItems);
+                    mLoadedItems += INT_GRID_UPDATE_VALUE;
                 }
             }
         });

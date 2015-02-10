@@ -2,6 +2,7 @@
   <dictionary name="marc">
     <words>
       <w>gridview</w>
+      <w>playlists</w>
     </words>
   </dictionary>
 </component>

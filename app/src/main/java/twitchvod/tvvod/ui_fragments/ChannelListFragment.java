@@ -22,7 +22,7 @@ import twitchvod.tvvod.data.primitives.Channel;
  */
 public class ChannelListFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private int mLoadedItems, INT_LIST_UPDATE_VALUE;
+    private int mLoadedItems, INT_LIST_UPDATE_VALUE, INT_LIST_UPDATE_THRESHOLD;
     private ChannelListAdapter mAdapter;
     onChannelSelectedListener mCallback;
 
@@ -51,6 +51,7 @@ public class ChannelListFragment extends Fragment {
 
         mLoadedItems = getResources().getInteger(R.integer.channel_list_start_items);
         INT_LIST_UPDATE_VALUE = getResources().getInteger(R.integer.channel_list_update_items);
+        INT_LIST_UPDATE_THRESHOLD = getResources().getInteger(R.integer.channel_list_update_threshold);
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -71,7 +72,7 @@ public class ChannelListFragment extends Fragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 int lastVisibleItem = firstVisibleItem + visibleItemCount;
-                if (lastVisibleItem >= mLoadedItems) {
+                if (lastVisibleItem >= mLoadedItems - INT_LIST_UPDATE_THRESHOLD) {
                     mAdapter.loadTopData(INT_LIST_UPDATE_VALUE, mLoadedItems);
                     mLoadedItems += INT_LIST_UPDATE_VALUE;
                 }

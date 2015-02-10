@@ -6,72 +6,82 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity$ChannelFragment"
     android:orientation="vertical">
-    
-    <RelativeLayout
+
+    <VideoView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="200dp"
+        android:id="@+id/videoFeed"
+        android:layout_marginBottom="2dp"
+        android:layout_alignParentTop="true"/>
 
-        <VideoView
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizontalScrollView" >
+
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="300dp"
-            android:id="@+id/videoFeed"
-            android:layout_marginBottom="2dp"
-            android:layout_alignParentTop="true"/>
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/videoFeed"
-            android:text="BeyondTheSummit"
-            android:id="@+id/channelTitel"
-            android:layout_marginBottom="5dp"
-            android:layout_marginRight="5dp"
-            android:textStyle="bold"
-            android:textSize="24dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BeyondTheSummit"
+                android:id="@+id/channelTitel"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:textStyle="bold"
+                android:textSize="24dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/channelTitel"
-            android:layout_alignBaseline="@+id/channelTitel"
-            android:text="playing Dota 2"
-            android:id="@+id/channelGame"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/channelTitel"
+                android:layout_alignBaseline="@+id/channelTitel"
+                android:text="playing Dota 2"
+                android:id="@+id/channelGame"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="123456 Viewers"
-            android:id="@+id/channelViewers"
-            android:layout_marginBottom="10dp"
-            android:layout_below="@+id/channelTitel"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="123456 Viewers"
+                android:id="@+id/channelViewers"
+                android:layout_marginBottom="10dp"
+                android:layout_below="@+id/channelTitel"/>
 
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:id="@+id/quality_spinner"
-            android:layout_below="@+id/channelTitel"
-            android:layout_alignBaseline="@+id/channelViewers"
-            android:layout_toEndOf="@+id/channelGame" />
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:id="@+id/quality_spinner"
+                android:layout_below="@+id/channelTitel"
+                android:layout_alignBaseline="@+id/channelViewers"
+                android:layout_toEndOf="@+id/channelGame" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Stream quality"
-            android:id="@+id/text_stream_quali"
-            android:layout_marginRight="5dp"
-            android:layout_below="@+id/channelTitel"
-            android:layout_toLeftOf="@+id/quality_spinner"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stream quality"
+                android:id="@+id/text_stream_quali"
+                android:layout_marginRight="5dp"
+                android:layout_below="@+id/channelTitel"
+                android:layout_toLeftOf="@+id/quality_spinner"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/channelViewers"
-            android:text="The Dota 2 Asia Championships are the third largest Dota 2 event by prizepool EVER! Over the next two weeks, eighteen of the world's best teams will battle in Shanghai for over $2,200,000 in prizemoney. Beyond the Summit and Dotacinema will be bringing you comprehensive coverage of every second of the action from the BTS studios in Los Angeles."
-            android:id="@+id/channelStatus"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/channelViewers"
+                android:text="The Dota 2 Asia Championships are the third largest Dota 2 event by prizepool EVER! Over the next two weeks, eighteen of the world's best teams will battle in Shanghai for over $2,200,000 in prizemoney. Beyond the Summit and Dotacinema will be bringing you comprehensive coverage of every second of the action from the BTS studios in Los Angeles."
+                android:id="@+id/channelStatus"/>
+        </RelativeLayout>
+    </HorizontalScrollView>
 
-    </RelativeLayout>
-
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_past_broadcasts"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
 

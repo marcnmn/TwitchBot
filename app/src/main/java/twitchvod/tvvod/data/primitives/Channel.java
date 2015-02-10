@@ -2,6 +2,8 @@ package twitchvod.tvvod.data.primitives;
 
 import android.graphics.Bitmap;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -36,11 +38,24 @@ public class Channel {
     public HashMap<String, String> toHashMap() {
         HashMap<String, String> h = new HashMap<>();
         h.put("title", mTitle);
-        h.put("viewers", "" + mViewers);
+        h.put("viewers", String.valueOf(mViewers));
         h.put("url", mUrl);
+        h.put("id", String.valueOf(mId));
         h.put("game", mGame);
         h.put("status", mStatus);
+        h.put("logoLink", mLogoLink);
+        h.put("previewLink", mPreviewLink);
         return h;
+    }
+
+    public String titleToURL() {
+        String url = "";
+        try {
+            url = URLEncoder.encode(mTitle, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return url.toLowerCase();
     }
 
     @Override

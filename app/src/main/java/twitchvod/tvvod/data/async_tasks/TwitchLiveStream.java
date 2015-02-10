@@ -9,7 +9,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -25,20 +28,16 @@ public class TwitchLiveStream extends AsyncTask<String, Void, Void> {
 
     @Override
     protected Void doInBackground(String... urls) {
-        try {
-            fetchLivePlaylist(urls[0]);
-        } catch (IOException | JSONException ignored) {
-        }
+        fetchLivePlaylist(urls[0]);
         return null;
     }
 
     @Override
     protected void onPostExecute(Void result) {
         mChannelDetailFragment.updateStreamData(hmap);
-        Log.v("twitch stream url", hmap.get("low"));
     }
 
-    private String fetchLivePlaylist(String myurl) throws IOException, JSONException {
+    private String fetchLivePlaylist(String myurl) {
         InputStream is = null;
         try {
             URL url = new URL(myurl);
@@ -46,7 +45,11 @@ public class TwitchLiveStream extends AsyncTask<String, Void, Void> {
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
 
-            conn.connect();
+            try {
+                conn.connect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             is = conn.getInputStream();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
@@ -62,11 +65,24 @@ public class TwitchLiveStream extends AsyncTask<String, Void, Void> {
                 }
             }
             return null;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             if (is != null) {
-                is.close();
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        return null;
     }
 
     private String getQuality(String s) {

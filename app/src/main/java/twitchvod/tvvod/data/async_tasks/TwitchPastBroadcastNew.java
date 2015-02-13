@@ -34,7 +34,7 @@ public class TwitchPastBroadcastNew extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
-        mChannelDetailFragment.playStream(hmap.get("source"));
+        mChannelDetailFragment.playBroadcast(hmap);
     }
 
     private String fetchLivePlaylist(String myurl) throws IOException, JSONException {

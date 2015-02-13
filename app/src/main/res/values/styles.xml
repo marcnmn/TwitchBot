@@ -1,8 +1,8 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="android:activatedBackgroundIndicator">@drawable/list_activated_background</item>
         <!-- Customize your theme here. -->
     </style>
 

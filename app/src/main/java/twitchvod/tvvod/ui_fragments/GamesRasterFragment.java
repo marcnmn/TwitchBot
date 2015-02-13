@@ -8,6 +8,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -21,6 +24,7 @@ public class GamesRasterFragment extends Fragment
 {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private Game mSelectedItem;
+    private Animation fadeIn;
 
     OnGameSelectedListener  mCallback;
     private int mLoadedItems, INT_GRID_UPDATE_VALUE, INT_GRID_UPDATE_THRESHOLD;
@@ -31,6 +35,7 @@ public class GamesRasterFragment extends Fragment
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         args.putString("url", url);
         fragment.setArguments(args);
+
         return fragment;
     }
 

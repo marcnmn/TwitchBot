@@ -9,22 +9,27 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import twitchvod.tvvod.MainActivity;
 import twitchvod.tvvod.R;
 import twitchvod.tvvod.adapter.ChannelListAdapter;
+import twitchvod.tvvod.adapter.StreamListAdapter;
+import twitchvod.tvvod.data.async_tasks.TwitchChannelData;
 import twitchvod.tvvod.data.primitives.Channel;
+import twitchvod.tvvod.data.primitives.Stream;
 
 
 /**
  * Created by marc on 27.01.2015. Gridview of available games
  */
-public class ChannelListFragment extends Fragment {
+public class ChannelListFragment extends Fragment implements ChannelListAdapter.onFirstResultsListener{
     private static final String ARG_SECTION_NUMBER = "section_number";
     private int mLoadedItems, INT_LIST_UPDATE_VALUE, INT_LIST_UPDATE_THRESHOLD;
     private ChannelListAdapter mAdapter;
-    onChannelSelectedListener mCallback;
+    private onChannelSelectedListener mCallback;
+    private ProgressBar mProgressBar;
 
     public ChannelListFragment newInstance(int sectionNumber, String url) {
         ChannelListFragment fragment = new ChannelListFragment();
@@ -40,13 +45,19 @@ public class ChannelListFragment extends Fragment {
     }
 
     @Override
+    public void onFirstResults() {
+        mProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_top_channels, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_channel_list, container, false);
         ListView listView = (ListView) rootView.findViewById(R.id.channelTopList);
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.channels_list_progress);
 
-        mAdapter = new ChannelListAdapter(getActivity(), getArguments().getString("url"));
+        mAdapter = new ChannelListAdapter(this, getArguments().getString("url"));
         listView.setAdapter(mAdapter);
 
         mLoadedItems = getResources().getInteger(R.integer.channel_list_start_items);
@@ -90,12 +101,11 @@ public class ChannelListFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
         try {
             mCallback = (onChannelSelectedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
+                    + " must implement OnChannelSelectedListener");
         }
     }
 }

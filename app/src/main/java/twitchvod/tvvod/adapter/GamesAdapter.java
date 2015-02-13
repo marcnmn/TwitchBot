@@ -6,8 +6,12 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,6 +25,11 @@ public class GamesAdapter extends BaseAdapter {
     private String mBaseUrl;
     private Context mContext;
     private ArrayList<Game> mGames;
+    private Animation fadeIn;
+    private int mHeight = 0;
+    private int mWidth = 0;
+    private RelativeLayout.LayoutParams mRelativeLayout;
+    private boolean mHeightOk;
 
     public GamesAdapter(Context c, String url) {
         mContext = c;
@@ -59,19 +68,22 @@ public class GamesAdapter extends BaseAdapter {
         holder.title.setText(mGames.get(position).mTitle);
         holder.viewers.setText(Integer.toString(mGames.get(position).mViewers));
 
-        if (!mGames.get(position).mBlackListed) {
-            holder.viewers.setTextColor(Color.WHITE);
-            holder.viewers.setShadowLayer(8, 2, 2, Color.BLACK);
-        }
-        else {
-            holder.viewers.setTextColor(Color.BLACK);
-            holder.viewers.setShadowLayer(8, 2, 2, Color.WHITE);
+        if (mGames.get(position).mBitmapThumb == null) {
+            holder.thumbImage.setImageResource(R.drawable.game_offline);
+        } else {
+            holder.thumbImage.setImageBitmap(mGames.get(position).mBitmapThumb);
         }
 
-        if (mGames.get(position).mBitmapThumb == null)
-            holder.thumbImage.setImageResource(R.drawable.game_offline);
-        else
-            holder.thumbImage.setImageBitmap(mGames.get(position).mBitmapThumb);
+        if (convertView.getMeasuredWidth() > 0 && mHeight == 0) {
+            double scale = 1.0 * mGames.get(position).mBitmapThumb.getHeight() / mGames.get(position).mBitmapThumb.getWidth();
+            mWidth = convertView.getMeasuredWidth();
+            mHeight = (int) Math.round(mWidth * scale);
+            mRelativeLayout = new RelativeLayout.LayoutParams(mWidth,mHeight);
+        }
+
+        if (mRelativeLayout != null) {
+            convertView.setLayoutParams(mRelativeLayout);
+        }
 
         return convertView;
     }

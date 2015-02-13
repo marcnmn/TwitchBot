@@ -14,9 +14,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import twitchvod.tvvod.adapter.ChannelListAdapter;
 import twitchvod.tvvod.adapter.PastBroadcastsListAdapter;
-import twitchvod.tvvod.data.primitives.Channel;
+import twitchvod.tvvod.data.TwitchJSONParser;
 import twitchvod.tvvod.data.primitives.PastBroadcast;
 
 public class TwitchPastBroadcastsData extends AsyncTask<String, PastBroadcast, ArrayList<PastBroadcast>> {
@@ -73,6 +72,7 @@ public class TwitchPastBroadcastsData extends AsyncTask<String, PastBroadcast, A
             }
             result = sb.toString();
             parseChannelJSON(result);
+            TwitchJSONParser.gameJSONtoArrayList(result);
             return result;
         } finally {
             if (is != null) {

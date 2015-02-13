@@ -7,6 +7,7 @@
     <string name="title_section2">Top Channels</string>
     <string name="title_section3">Search</string>
     <string name="title_section4">Favorites</string>
+    <string name="title_section5">Auth</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -22,6 +23,8 @@
     <string-array name="drawer_urls">
         <item>https://api.twitch.tv/kraken/games/top?</item>
         <item>https://api.twitch.tv/kraken/streams?</item>
+        <item>https://api.twitch.tv/kraken/search/channels?q=rotterdam&amp;</item>
+        <item>https://api.twitch.tv/kraken/users/pjakson/follows/channels?</item>
     </string-array>
 
     <string-array name="livestream_qualities">

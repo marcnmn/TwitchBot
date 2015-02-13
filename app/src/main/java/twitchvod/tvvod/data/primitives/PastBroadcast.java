@@ -2,7 +2,11 @@ package twitchvod.tvvod.data.primitives;
 
 import android.graphics.Bitmap;
 
+import org.json.JSONArray;
+
 import java.util.HashMap;
+
+import twitchvod.tvvod.data.TwitchJSONParser;
 
 public class PastBroadcast {
     public String title;
@@ -68,5 +72,9 @@ public class PastBroadcast {
         h.put("name", name);
         h.put("display_name", display_name);
         return h;
+    }
+
+    public String timeAgo() {
+        return TwitchJSONParser.recordedAtToDate(recorded_at);
     }
 }

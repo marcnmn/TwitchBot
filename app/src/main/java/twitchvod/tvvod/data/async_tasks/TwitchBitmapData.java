@@ -5,9 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -15,21 +12,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import twitchvod.tvvod.adapter.ChannelListAdapter;
+import twitchvod.tvvod.adapter.StreamListAdapter;
 import twitchvod.tvvod.adapter.GamesAdapter;
 import twitchvod.tvvod.adapter.PastBroadcastsListAdapter;
+import twitchvod.tvvod.ui_fragments.ChannelDetailFragment;
 
 
 public class TwitchBitmapData extends AsyncTask<String, Integer, Void> {
     private Bitmap mBitmaps[];
     private int mOffset;
-    private ChannelListAdapter mChannelAdapter;
+    private StreamListAdapter mStreamAdapter;
     private GamesAdapter mGameAdapter;
+    private ChannelListAdapter mChannelAdapter;
     private PastBroadcastsListAdapter mBroadcastAdapter;
+    private ChannelDetailFragment mChannelDetailFragment;
     private Context mContext;
 
-    public TwitchBitmapData(ChannelListAdapter c, int offset) {
+    public TwitchBitmapData(StreamListAdapter c, int offset) {
         mOffset = offset;
-        mChannelAdapter = c;
+        mStreamAdapter = c;
     }
 
     public TwitchBitmapData(GamesAdapter gamesAdapter, int offset) {
@@ -40,6 +41,15 @@ public class TwitchBitmapData extends AsyncTask<String, Integer, Void> {
     public TwitchBitmapData(PastBroadcastsListAdapter a, int offset) {
         mBroadcastAdapter = a;
         mOffset = offset;
+    }
+
+    public TwitchBitmapData(ChannelListAdapter c, int offset) {
+        mChannelAdapter = c;
+        mOffset = offset;
+    }
+
+    public TwitchBitmapData(ChannelDetailFragment f) {
+        mChannelDetailFragment = f;
     }
 
 
@@ -63,12 +73,16 @@ public class TwitchBitmapData extends AsyncTask<String, Integer, Void> {
     @Override
     protected void onProgressUpdate(Integer... progress) {
         int i = progress[0];
-        if (mChannelAdapter != null)
+        if (mStreamAdapter != null)
+            mStreamAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
+        else if (mChannelAdapter != null)
             mChannelAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
-        if (mGameAdapter != null)
+        else if (mGameAdapter != null)
             mGameAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
-        if (mBroadcastAdapter != null)
+        else if (mBroadcastAdapter != null)
             mBroadcastAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
+        else if (mChannelDetailFragment != null)
+            mChannelDetailFragment.updateThumbnail(mBitmaps[i]);
     }
 
     private Bitmap downloadBitmap(String myurl, int index) throws IOException {

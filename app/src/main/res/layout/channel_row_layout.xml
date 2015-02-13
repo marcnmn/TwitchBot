@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:adjustViewBounds="true"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/channel_offline_360x360"/>
+
+    <TextView
+        android:id="@+id/firstLine"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_toRightOf="@id/icon"
+        android:gravity="top|center_vertical"
+        android:text="Example application"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:paddingTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="35dip"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/secondLineViewers"
+        android:gravity="right|bottom"
+        android:paddingTop="5dp"
+        android:paddingRight="5dp"/>
+
+    <ImageView
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/secondLineViewers"
+        android:id="@+id/viewers_icon"
+        android:src="@drawable/active_viewers_twitch" />
+
+    <TextView
+        android:id="@+id/secondLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="false"
+        android:layout_toRightOf="@id/icon"
+        android:layout_toLeftOf="@id/viewers_icon"
+        android:ellipsize="marquee"
+        android:singleLine="false"
+        android:text="Description"
+        android:gravity="left|bottom"
+        android:textSize="16sp"
+        android:paddingTop="5dp"/>
+
+</RelativeLayout>

@@ -12,10 +12,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import twitchvod.tvvod.R;
+import twitchvod.tvvod.data.TwitchJSONParser;
 import twitchvod.tvvod.data.async_tasks.TwitchBitmapData;
-import twitchvod.tvvod.data.async_tasks.TwitchChannelData;
 import twitchvod.tvvod.data.async_tasks.TwitchPastBroadcastsData;
-import twitchvod.tvvod.data.primitives.Channel;
 import twitchvod.tvvod.data.primitives.PastBroadcast;
 
 public class PastBroadcastsListAdapter extends BaseAdapter {
@@ -46,7 +45,7 @@ public class PastBroadcastsListAdapter extends BaseAdapter {
 
         ViewHolder holder;
         if(convertView == null || convertView.getTag() == null) {
-            convertView = mInflater.inflate(R.layout.channels_row_layout, parent, false);
+            convertView = mInflater.inflate(R.layout.broadcast_row_layout, parent, false);
             holder = new ViewHolder();
             holder.firstLine = (TextView) convertView.findViewById(R.id.firstLine);
             holder.secondLine = (TextView) convertView.findViewById(R.id.secondLine);
@@ -62,7 +61,7 @@ public class PastBroadcastsListAdapter extends BaseAdapter {
         }
 
         holder.firstLine.setText(mBroadcasts.get(position).title);
-        holder.secondLine.setText(mBroadcasts.get(position).game);
+        holder.secondLine.setText(mBroadcasts.get(position).timeAgo());
         holder.secondLineViewers.setText(String.valueOf(mBroadcasts.get(position).views));
 
         return convertView;

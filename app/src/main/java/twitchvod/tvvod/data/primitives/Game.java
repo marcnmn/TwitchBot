@@ -10,7 +10,7 @@ public class Game {
     public String mTitle, mThumbnail;
     public int mViewers, mChannelCount, mId;
     public Bitmap mBitmapThumb;
-    public ArrayList<Channel> mChannels;
+    public ArrayList<Stream> mStreams;
     public boolean mBlackListed = false;
 
     public Game(String title) {
@@ -21,13 +21,13 @@ public class Game {
         mId = 0;
     }
 
-    public Game(String title, String thumb, int viewers, int channelc, int id, ArrayList<Channel> channels) {
+    public Game(String title, String thumb, int viewers, int channelc, int id, ArrayList<Stream> streams) {
         mTitle = title;
         mThumbnail = thumb;
         mViewers = viewers;
         mChannelCount = channelc;
         mId = id;
-        mChannels = channels;
+        mStreams = streams;
     }
 
     public String toURL() {
@@ -57,9 +57,9 @@ public class Game {
         String s = "";
         if (this.mTitle != null) {
             s = "Titel: " + mTitle + ", Zuschauer: " + mViewers + ", Anzahl: " + mChannelCount + " Kanäle: \n";
-            if (this.mChannels != null) {
-                for (int i = 0; i < mChannels.size(); i++) {
-                    s += mChannels.get(i).toString() + "\n";
+            if (this.mStreams != null) {
+                for (int i = 0; i < mStreams.size(); i++) {
+                    s += mStreams.get(i).toString() + "\n";
                 }
             }
         }

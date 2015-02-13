@@ -95,7 +95,7 @@ public class TwitchGameData extends AsyncTask<String, Game, ArrayList<Game>> {
             game = jArray.getJSONObject(i).getJSONObject("game");
             title = game.getString("name");
             id = game.getInt("_id");
-            thumb = game.getJSONObject("box").getString("medium");
+            thumb = game.getJSONObject("box").getString("large");
             Game temp = new Game(title,thumb,viewers,channelc,id,null);
             mGames.add(temp);
             publishProgress(temp);

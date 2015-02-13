@@ -15,43 +15,44 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import twitchvod.tvvod.adapter.ChannelListAdapter;
+import twitchvod.tvvod.data.TwitchJSONParser;
 import twitchvod.tvvod.data.primitives.Channel;
+import twitchvod.tvvod.data.primitives.Stream;
 
-public class TwitchChannelData extends AsyncTask<String, Channel, ArrayList<Channel>> {
-    private ArrayList<Channel> mChannels;
-    private ChannelListAdapter mAdapter;
+public class TwitchChannelData extends AsyncTask<String, Void, String> {
+    private ChannelListAdapter mChannelListAdapter;
     private int offset;
 
     public TwitchChannelData(ChannelListAdapter c) {
         offset = c.getChannels().size();
-        mChannels = new ArrayList<>();
-        mAdapter = c;
-
+        mChannelListAdapter = c;
     }
 
     @Override
-    protected ArrayList<Channel> doInBackground(String... urls) {
+    protected String doInBackground(String... urls) {
+        String result = "";
         try {
-            downloadChannelData(urls[0]);
+            result = downloadChannelData(urls[0]);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return mChannels;
+        return result;
     }
 
     @Override
-    protected void onPostExecute(ArrayList<Channel> result) {
-        mAdapter.loadThumbnails(offset, offset + mChannels.size());
+    protected void onPostExecute(String result) {
+        mChannelListAdapter.updateChannelList(result);
+        //mChannelListAdapter.loadThumbnails(offset, offset + result.size());
     }
 
     @Override
-    protected void onProgressUpdate(Channel... progress) {
-        mAdapter.update(progress[0]);
+    protected void onProgressUpdate(Void... progress) {
     }
 
     private String downloadChannelData(String myurl) throws IOException, JSONException {
         InputStream is = null;
-        String result;
+        String s;
+        ArrayList<Channel> result;
         try {
             URL url = new URL(myurl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -70,46 +71,12 @@ public class TwitchChannelData extends AsyncTask<String, Channel, ArrayList<Chan
             {
                 sb.append(line).append("\n");
             }
-            result = sb.toString();
-            parseChannelJSON(result);
-            return result;
+            s = sb.toString();
+            return s;
         } finally {
             if (is != null) {
                 is.close();
             }
-        }
-    }
-
-    private void parseChannelJSON(String r) throws JSONException {
-        String title, logo, preview, curl, stat, game;
-        int viewers, id;
-
-        JSONObject jObject;
-
-        jObject = new JSONObject(r);
-        JSONArray jArray = jObject.getJSONArray("streams");
-        JSONObject channel;
-
-        for (int i=0; i<jArray.length(); i++) {
-            id = jArray.getJSONObject(i).getInt("_id");
-            game = jArray.getJSONObject(i).getString("game");
-            viewers = jArray.getJSONObject(i).getInt("viewers");
-            curl = jArray.getJSONObject(i).getJSONObject("_links").getString("self");
-
-            preview = jArray.getJSONObject(i).getJSONObject("preview").getString("medium");
-
-            channel = jArray.getJSONObject(i).getJSONObject("channel");
-            title = channel.getString("display_name");
-            try {
-                stat = channel.getString("status");
-            } catch (JSONException e) {
-                stat = "";
-            }
-            logo = channel.getString("logo");
-
-            Channel temp = new Channel(title, curl, stat, game, viewers, logo, preview, id);
-            mChannels.add(temp);
-            publishProgress(temp);
         }
     }
 }

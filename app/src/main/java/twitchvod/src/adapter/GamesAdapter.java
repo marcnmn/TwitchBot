@@ -95,7 +95,9 @@ public class GamesAdapter extends BaseAdapter {
 
     public void updateThumbnail(Bitmap bmp, int item, int offset) {
         mGames.get(item + offset).mBitmapThumb = bmp;
-        notifyDataSetChanged();
+        update_counter++;
+        if (update_counter%3 == 0) notifyDataSetChanged();
+
     }
 
     public int getCount() {

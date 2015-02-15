@@ -41,12 +41,12 @@ public class TwitchGameData extends AsyncTask<String, Game, ArrayList<Game>> {
 
     @Override
     protected void onPostExecute(ArrayList<Game> result) {
-        mAdapter.loadThumbnails(offset, offset + mGames.size());
+        mAdapter.update2(mGames);
     }
 
     @Override
     protected void onProgressUpdate(Game... progress) {
-        mAdapter.update(progress[0]);
+        //mAdapter.update(progress[0]);
     }
 
     private String downloadGameData(String myurl) throws IOException, JSONException {

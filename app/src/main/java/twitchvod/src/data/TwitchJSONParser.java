@@ -1,6 +1,7 @@
 package twitchvod.src.data;
 
 import android.util.Log;
+import android.util.MalformedJsonException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,36 +97,41 @@ public final class TwitchJSONParser {
         return channels;
     }
 
-    public static ArrayList<Stream> streamJSONtoArrayList(String r) throws JSONException {
+    public static ArrayList<Stream> streamJSONtoArrayList(String r) {
         String title, logo, preview, curl, stat, game;
         int viewers, id;
         ArrayList<Stream> streams = new ArrayList<>();
 
         JSONObject jObject;
-        jObject = new JSONObject(r);
-        JSONArray jArray = jObject.getJSONArray("streams");
-        JSONObject channel;
+        try {
+            jObject = new JSONObject(r);
+            JSONArray jArray = jObject.getJSONArray("streams");
+            JSONObject channel;
 
-        for (int i=0; i<jArray.length(); i++) {
-            id = jArray.getJSONObject(i).getInt("_id");
-            game = jArray.getJSONObject(i).getString("game");
-            viewers = jArray.getJSONObject(i).getInt("viewers");
-            curl = jArray.getJSONObject(i).getJSONObject("_links").getString("self");
+            for (int i=0; i<jArray.length(); i++) {
+                id = jArray.getJSONObject(i).getInt("_id");
+                game = jArray.getJSONObject(i).getString("game");
+                viewers = jArray.getJSONObject(i).getInt("viewers");
+                curl = jArray.getJSONObject(i).getJSONObject("_links").getString("self");
 
-            preview = jArray.getJSONObject(i).getJSONObject("preview").getString("large");
+                preview = jArray.getJSONObject(i).getJSONObject("preview").getString("large");
 
-            channel = jArray.getJSONObject(i).getJSONObject("channel");
-            title = channel.getString("display_name");
-            try {
-                stat = channel.getString("status");
-            } catch (JSONException e) {
-                stat = "";
+                channel = jArray.getJSONObject(i).getJSONObject("channel");
+                title = channel.getString("display_name");
+                try {
+                    stat = channel.getString("status");
+                } catch (JSONException e) {
+                    stat = "";
+                }
+                logo = channel.getString("logo");
+
+                Stream temp = new Stream(title, curl, stat, game, viewers, logo, preview, id);
+                streams.add(temp);
             }
-            logo = channel.getString("logo");
-
-            Stream temp = new Stream(title, curl, stat, game, viewers, logo, preview, id);
-            streams.add(temp);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
         return streams;
     }
 
@@ -163,7 +169,7 @@ public final class TwitchJSONParser {
         return broadcasts;
     }
 
-    public  static String recordedAtToDate(String s) {
+    public static String recordedAtToDate(String s) {
         int year = Integer.valueOf(s.substring(0, 4));
         int month = Integer.valueOf(s.substring(5, 7));
         int day = Integer.valueOf(s.substring(8, 10));

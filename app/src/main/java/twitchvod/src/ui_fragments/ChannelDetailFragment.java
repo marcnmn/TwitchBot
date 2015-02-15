@@ -28,6 +28,7 @@ import java.util.HashMap;
 import twitchvod.src.R;
 import twitchvod.src.adapter.PastBroadcastsListAdapter;
 import twitchvod.src.data.async_tasks.TwitchBitmapData;
+import twitchvod.src.data.async_tasks.TwitchBitmapThread;
 import twitchvod.src.data.async_tasks.TwitchLiveStream;
 import twitchvod.src.data.async_tasks.TwitchPastBroadcastNew;
 import twitchvod.src.data.async_tasks.TwitchToken;
@@ -224,10 +225,13 @@ public class ChannelDetailFragment extends Fragment {
 
     public void fetchThumbnail() {
         TwitchBitmapData t = new TwitchBitmapData(this);
+        TwitchBitmapThread tt = new TwitchBitmapThread(this);
         if (mData.get("previewLink") != null) {
-            t.execute(mData.get("previewLink"));
+            tt.downloadImageInBackground(mData.get("previewLink"), Thread.NORM_PRIORITY);
+            tt.stopThread();
         } else if (mData.get("video_banner") != null) {
-            t.execute(mData.get("video_banner"));
+            tt.downloadImageInBackground(mData.get("previewLink"), Thread.NORM_PRIORITY);
+            tt.stopThread();
         }
     }
 

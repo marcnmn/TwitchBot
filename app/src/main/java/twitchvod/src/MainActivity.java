@@ -71,7 +71,7 @@ public class MainActivity extends ActionBarActivity
                 StreamListFragment mStreamListFragment = new StreamListFragment();
                 transaction = getFragmentManager().beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.replace(R.id.container, mStreamListFragment.newInstance(mUrls[position]));
+                transaction.replace(R.id.container, mStreamListFragment.newInstance(mUrls[position], null));
                 transaction.addToBackStack(null);
                 transaction.commit();
                 break;

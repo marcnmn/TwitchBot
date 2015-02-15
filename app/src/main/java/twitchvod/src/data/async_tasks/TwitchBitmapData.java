@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,12 +74,13 @@ public class TwitchBitmapData extends AsyncTask<String, Integer, Void> {
     @Override
     protected void onProgressUpdate(Integer... progress) {
         int i = progress[0];
-        if (mStreamAdapter != null)
-            mStreamAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
-        else if (mChannelAdapter != null)
+        //if (mStreamAdapter != null)
+        //    mStreamAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
+        if (mChannelAdapter != null)
             mChannelAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
         else if (mGameAdapter != null)
-            mGameAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
+            Log.v("asdf", "adsf");
+            //mGameAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
         else if (mBroadcastAdapter != null)
             mBroadcastAdapter.updateThumbnail(mBitmaps[i], i, mOffset);
         else if (mChannelDetailFragment != null)

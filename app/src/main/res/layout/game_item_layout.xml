@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/background_material_dark">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/game_thumbnail"
         android:src="@drawable/game_offline"
-        android:scaleType="centerCrop"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:background="#ff343434" />
 
     <TextView
@@ -17,7 +18,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="false"
         android:layout_margin="0dp"
         android:layout_marginBottom="0dp"
         android:singleLine="true"
@@ -43,6 +43,7 @@
         android:textColor="#ffededed"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:textStyle="bold" />
 
     <ImageView
@@ -53,6 +54,7 @@
         android:id="@+id/viewers_icon"
         android:src="@drawable/active_viewers_twitch"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/game_viewers" />
+        android:layout_toStartOf="@+id/game_viewers"
+        android:layout_toLeftOf="@+id/game_viewers" />
 
 </RelativeLayout>

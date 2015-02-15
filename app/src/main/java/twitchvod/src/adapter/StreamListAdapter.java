@@ -1,16 +1,26 @@
 package twitchvod.src.adapter;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.AnimatorRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
+import twitchvod.src.MainActivity;
 import twitchvod.src.R;
+import twitchvod.src.data.TwitchNetworkTasks;
 import twitchvod.src.data.primitives.Stream;
 import twitchvod.src.data.async_tasks.TwitchBitmapData;
 import twitchvod.src.data.async_tasks.TwitchStreamData;
@@ -19,40 +29,33 @@ import twitchvod.src.ui_fragments.StreamListFragment;
 public class StreamListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private ArrayList<Stream> mStreams;
-    private String mBaseUrl;
-    private onFirstResultsListener  mCallback;
-    private int mHeight;
-    private int update_counter;
+    private MainActivity mActivity;
+    Animation mAlpha;
 
     public StreamListAdapter(StreamListFragment c, String url) {
-        mStreams = new ArrayList<>();
-        mBaseUrl = url;
+        if (mStreams == null) mStreams = new ArrayList<>();
+        mActivity = (MainActivity) c.getActivity();
         mInflater = LayoutInflater.from(c.getActivity());
-        mCallback = (onFirstResultsListener) c;
+        mAlpha = new AlphaAnimation(0,1);
+        mAlpha.setDuration(500);
     }
 
-    public interface onFirstResultsListener {
-        public void onFirstResults();
-    }
-
-    public void loadTopData(int limit, int offset) {
-        String request = mBaseUrl;
-        request += "limit=" + limit + "&offset=" + offset;
-        TwitchStreamData t = new TwitchStreamData(this);
-        t.execute(request);
-    }
-
-    public void update(Stream c) {
+    public void update(ArrayList<Stream> l) {
         if (getCount() == 0) {
-            mCallback.onFirstResults();
         }
-        mStreams.add(c);
+        mStreams.addAll(l);
+        notifyDataSetChanged();
+    }
+
+    public void setStream(int index, Stream s) {
+        if (getCount() == 0)
+            return;
+        mStreams.set(index, s);
         notifyDataSetChanged();
     }
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
-
         ViewHolder holder;
         if(convertView == null || convertView.getTag() == null) {
             convertView = mInflater.inflate(R.layout.streams_row_layout, parent, false);
@@ -66,29 +69,17 @@ public class StreamListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (mStreams.get(position).mPreview != null)
+        if (mStreams.get(position).mPreview == null) {
+            loadImage(position, holder.imageView);
+        } else {
             holder.imageView.setImageBitmap(mStreams.get(position).mPreview);
-        else if (mStreams.get(position).mLogo != null)
-           holder.imageView.setImageBitmap(mStreams.get(position).mLogo);
+        }
 
         holder.firstLine.setText(mStreams.get(position).mTitle);
         holder.secondLine.setText(mStreams.get(position).mGame);
         holder.secondLineViewers.setText(String.valueOf(mStreams.get(position).mViewers));
 
         return convertView;
-    }
-
-    public void loadThumbnails(int start, int stop) {
-        String urls[] = new String[(stop-start) * 2];
-
-        int i2;
-        for (int i = 0; i < stop-start; i++) {
-            i2 = i*2;
-            urls[i2] = mStreams.get(start + i).mPreviewLink;
-            urls[i2+1] = "";
-        }
-        TwitchBitmapData tb = new TwitchBitmapData(this, start);
-        tb.execute(urls);
     }
 
     public int getCount() {
@@ -103,28 +94,6 @@ public class StreamListAdapter extends BaseAdapter {
         return mStreams.get(position).mId;
     }
 
-    public ArrayList<Stream> getChannels() {
-        return mStreams;
-    }
-
-    public void updateThumbnail(Bitmap bmp, int item, int offset) {
-
-        int i;
-        if (item%2 == 0) {
-            i = item / 2 + offset;
-            mStreams.get(i).mPreview = bmp;
-        }
-        else {
-            i = (item-1) / 2 + offset;
-            mStreams.get(i).mLogo = bmp;
-        }
-        update_counter++;
-        if (update_counter%3 == 0) {
-            notifyDataSetChanged();
-        }
-
-    }
-
     public class ViewHolder {
         public ImageView imageView;
         public TextView secondLine;
@@ -132,4 +101,19 @@ public class StreamListAdapter extends BaseAdapter {
         public TextView secondLineViewers;
     }
 
+    private void loadImage(final int pos, final ImageView imageView) {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                    final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(mStreams.get(pos).mPreviewLink);
+                    mActivity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            imageView.setImageBitmap(bitmap);
+                            mStreams.get(pos).mPreview = bitmap;
+                        }
+                    });
+                }
+        });
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
+    }
 }

@@ -23,10 +23,8 @@ public class TwitchStreamData extends AsyncTask<String, Stream, ArrayList<Stream
     private int offset;
 
     public TwitchStreamData(StreamListAdapter c) {
-        offset = c.getChannels().size();
         mStreams = new ArrayList<>();
         mAdapter = c;
-
     }
 
     @Override
@@ -40,13 +38,8 @@ public class TwitchStreamData extends AsyncTask<String, Stream, ArrayList<Stream
     }
 
     @Override
-    protected void onPostExecute(ArrayList<Stream> result) {
-        mAdapter.loadThumbnails(offset, offset + mStreams.size());
-    }
-
-    @Override
     protected void onProgressUpdate(Stream... progress) {
-        mAdapter.update(progress[0]);
+        //mAdapter.update(progress[0]);
     }
 
     private String downloadChannelData(String myurl) throws IOException, JSONException {

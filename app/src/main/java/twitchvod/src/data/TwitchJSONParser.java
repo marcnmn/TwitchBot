@@ -21,34 +21,44 @@ import twitchvod.src.data.primitives.Stream;
  * Created by marc on 11.02.2015.
  */
 public final class TwitchJSONParser {
+    private static String BITMAP_QUALITY = "large";
+
     private TwitchJSONParser() {
     }
 
-    public static ArrayList<Game> gameJSONtoArrayList(String r) throws JSONException {
-        String title, thumb;
-        int viewers, channelc, id;
+    public static ArrayList<Game> gameJSONtoArrayList(String r) {
+        String title, thumb, id;
+        int viewers, channelc;
         JSONObject game;
 
         ArrayList<Game> games = new ArrayList<>();
 
-        JSONObject jObject = new JSONObject(r);
-        JSONArray jArray = jObject.getJSONArray("top");
+        try {
+            JSONObject jObject = new JSONObject(r);
+            JSONArray jArray = jObject.getJSONArray("top");
 
-        for (int i=0; i<jArray.length(); i++) {
-            viewers = jArray.getJSONObject(i).getInt("viewers");
-            channelc = jArray.getJSONObject(i).getInt("channels");
+            for (int i=0; i<jArray.length(); i++) {
+                viewers = jArray.getJSONObject(i).getInt("viewers");
+                channelc = jArray.getJSONObject(i).getInt("channels");
 
-            game = jArray.getJSONObject(i).getJSONObject("game");
-            title = game.getString("name");
-            id = game.getInt("_id");
-            thumb = game.getJSONObject("box").getString("medium");
-            Game temp = new Game(title,thumb,viewers,channelc,id,null);
-            games.add(temp);
+                game = jArray.getJSONObject(i).getJSONObject("game");
+                title = game.getString("name");
+                id = game.getString("_id");
+                thumb = game.getJSONObject("box").getString(BITMAP_QUALITY);
+                Game temp = new Game(title,thumb,viewers,channelc,id,null);
+                games.add(temp);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.v("gameJSONtoArrayList", "Nothing to parse. String is empty");
         }
         return games;
     }
 
-    public static ArrayList<Channel> channelJSONtoArrayList(String r) {
+    public static ArrayList<Channel> channelsJSONtoArrayList(String r) {
         ArrayList<Channel> channels = new ArrayList<>();
         HashMap<String, String> htemp = new HashMap<>();
         String request_type;
@@ -69,7 +79,7 @@ public final class TwitchJSONParser {
         JSONObject j;
         for (int i=0; i<jArray.length(); i++) {
             j = jArray.getJSONObject(i);
-            if (request_type == "follows") j = j.getJSONObject("channel");
+            if (request_type.equals("follows")) j = j.getJSONObject("channel");
             try {
                 htemp.put("updated_at", j.getString("updated_at"));
             } catch (JSONException e) {
@@ -91,10 +101,96 @@ public final class TwitchJSONParser {
         }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.v("TwitchBot channelJSONtoArrayList", "no JSON Data");
+            Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.v("gameJSONtoArrayList", "Nothing to parse. String is empty");
         }
 
         return channels;
+    }
+
+    public static Channel channelJSONtoChannel(String r) {
+        Channel channel = null;
+        HashMap<String, String> hTemp = new HashMap<>();
+
+        JSONObject jObject = null;
+        try {
+            jObject = new JSONObject(r);
+            hTemp.put("status", jObject.getString("status"));
+            hTemp.put("display_name", jObject.getString("display_name"));
+            hTemp.put("game", jObject.getString("game"));
+            hTemp.put("_id", jObject.getString("_id"));
+            hTemp.put("name", jObject.getString("name"));
+            try {
+                hTemp.put("updated_at", jObject.getString("updated_at"));
+            } catch (JSONException e) {
+                hTemp.put("updated_at", "");
+            }
+            hTemp.put("logo", jObject.getString("logo"));
+            hTemp.put("video_banner", jObject.getString("video_banner"));
+            hTemp.put("views", jObject.getString("views"));
+            hTemp.put("url", jObject.getString("url"));
+            hTemp.put("followers", jObject.getString("followers"));
+
+            channel = new Channel(hTemp);
+            return  channel;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.v("channelsJSONtoArrayList", "Nothing to parse. String is empty");
+        }
+        return channel;
+    }
+
+    public static Stream streamJSONtoStream(String s) {
+        String preview, curl, game;
+        HashMap<String, String> hTemp = new HashMap<>();
+        int viewers, id;
+        Stream stream = null;
+
+        JSONObject jStream;
+        JSONObject jChannel;
+        try {
+            jStream = new JSONObject(s).getJSONObject("stream");
+            id = jStream.getInt("_id");
+            game = jStream.getString("game");
+            viewers = jStream.getInt("viewers");
+            curl = jStream.getJSONObject("_links").getString("self");
+            preview = jStream.getJSONObject("preview").getString(BITMAP_QUALITY);
+
+            jChannel = jStream.getJSONObject("channel");
+            hTemp.put("status", jChannel.getString("status"));
+            hTemp.put("display_name", jChannel.getString("display_name"));
+            hTemp.put("game", jChannel.getString("game"));
+            hTemp.put("_id", jChannel.getString("_id"));
+            hTemp.put("name", jChannel.getString("name"));
+            try {
+                hTemp.put("updated_at", jChannel.getString("updated_at"));
+            } catch (JSONException e) {
+                hTemp.put("updated_at", "");
+            }
+            hTemp.put("logo", jChannel.getString("logo"));
+            hTemp.put("video_banner", jChannel.getString("video_banner"));
+            hTemp.put("views", jChannel.getString("views"));
+            hTemp.put("url", jChannel.getString("url"));
+            hTemp.put("followers", jChannel.getString("followers"));
+
+            Channel chTemp = new Channel(hTemp);
+            stream = new Stream(curl, game, viewers, preview, id, chTemp);
+            return stream;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.v("gameJSONtoArrayList", "Nothing to parse. String is empty");
+        }
+
+        return stream;
     }
 
     public static ArrayList<Stream> streamJSONtoArrayList(String r) {
@@ -114,7 +210,7 @@ public final class TwitchJSONParser {
                 viewers = jArray.getJSONObject(i).getInt("viewers");
                 curl = jArray.getJSONObject(i).getJSONObject("_links").getString("self");
 
-                preview = jArray.getJSONObject(i).getJSONObject("preview").getString("large");
+                preview = jArray.getJSONObject(i).getJSONObject("preview").getString(BITMAP_QUALITY);
 
                 channel = jArray.getJSONObject(i).getJSONObject("channel");
                 title = channel.getString("display_name");
@@ -130,6 +226,9 @@ public final class TwitchJSONParser {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.v("gameJSONtoArrayList", "Nothing to parse. String is empty");
         }
 
         return streams;
@@ -197,4 +296,5 @@ public final class TwitchJSONParser {
         if (monthDiff < 4) return "recorded " + monthDiff + " months ago";
         return "recorded on " + day + "." + month + "." + year;
     }
+
 }

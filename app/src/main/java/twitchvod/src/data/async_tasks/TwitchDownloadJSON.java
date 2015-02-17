@@ -35,7 +35,7 @@ public class TwitchDownloadJSON extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         if (mChannelListAdapter != null) {
-            mChannelListAdapter.updateChannelList(result);
+            //mChannelListAdapter.updateChannelList(result);
         }
     }
 

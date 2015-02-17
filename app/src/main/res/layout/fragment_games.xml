@@ -17,8 +17,6 @@
         android:layout_height="fill_parent"
         android:id="@+id/gridView"
         android:numColumns="3"
-        android:stretchMode="columnWidth"
-        android:layout_toEndOf="@+id/section_label"
-        android:layout_toRightOf="@+id/section_label" />
+        android:stretchMode="columnWidth"/>
 
 </RelativeLayout>

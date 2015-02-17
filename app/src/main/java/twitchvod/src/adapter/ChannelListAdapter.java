@@ -1,5 +1,6 @@
 package twitchvod.src.adapter;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,55 +13,28 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import twitchvod.src.R;
-import twitchvod.src.data.TwitchJSONParser;
+import twitchvod.src.data.TwitchNetworkTasks;
 import twitchvod.src.data.async_tasks.TwitchBitmapData;
-import twitchvod.src.data.async_tasks.TwitchChannelData;
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.ui_fragments.ChannelListFragment;
 
 public class ChannelListAdapter extends BaseAdapter {
+    private Activity mActivity;
+    private ChannelListFragment mFragment;
     private LayoutInflater mInflater;
     private ArrayList<Channel> mChannels;
-    private String mBaseUrl;
-    private onFirstResultsListener  mCallback;
     private RelativeLayout.LayoutParams mRelativeLayout;
-    private int mHeight = 0;
     private int mWidth = 0;
-    private int update_counter;
 
-    public ChannelListAdapter(ChannelListFragment c, String url) {
+    public ChannelListAdapter(ChannelListFragment c) {
+        mActivity = c.getActivity();
+        mFragment = c;
         mChannels = new ArrayList<>();
-        mBaseUrl = url;
         mInflater = LayoutInflater.from(c.getActivity());
-        mCallback = (onFirstResultsListener) c;
     }
 
-    public void updateChannelList(String r) {
-        int start = mChannels.size();
-        ArrayList<Channel> ne = TwitchJSONParser.channelJSONtoArrayList(r);
-        mChannels.addAll(ne);
-        notifyDataSetChanged();
-        mCallback.onFirstResults();
-        int stop = mChannels.size();
-        loadThumbnails(start, stop);
-    }
-
-    public interface onFirstResultsListener {
-        public void onFirstResults();
-    }
-
-    public void loadTopData(int limit, int offset) {
-        String request = mBaseUrl;
-        request += "limit=" + limit + "&offset=" + offset;
-        TwitchChannelData t = new TwitchChannelData(this);
-        t.execute(request);
-    }
-
-    public void update(Channel c) {
-        if (getCount() == 0) {
-            mCallback.onFirstResults();
-        }
-        mChannels.add(c);
+    public void update(ArrayList <Channel> c) {
+        mChannels.addAll(c);
         notifyDataSetChanged();
     }
 
@@ -69,29 +43,34 @@ public class ChannelListAdapter extends BaseAdapter {
 
         ViewHolder holder;
         if(convertView == null || convertView.getTag() == null) {
-            convertView = mInflater.inflate(R.layout.channel_row_layout, parent, false);
+            convertView = mInflater.inflate(R.layout.channel_item_layout, parent, false);
             holder = new ViewHolder();
             holder.firstLine = (TextView) convertView.findViewById(R.id.firstLine);
             holder.secondLine = (TextView) convertView.findViewById(R.id.secondLine);
             holder.secondLineViewers = (TextView) convertView.findViewById(R.id.secondLineViewers);
             holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
-
-            if (parent.getMeasuredWidth() > 0 && mWidth == 0) {
-                mWidth = Math.round(parent.getMeasuredWidth() * 0.4f);
-                mRelativeLayout = new RelativeLayout.LayoutParams(mWidth, mWidth);
-            }
         }
         else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (mChannels.get(position).mLogoBitmap != null)
+        if (convertView.getMeasuredWidth() != mWidth && convertView.getMeasuredWidth() != 0) {
+            mWidth = Math.round(convertView.getMeasuredWidth() * 0.4f);
+            mRelativeLayout = new RelativeLayout.LayoutParams(mWidth, mWidth);
+        }
+
+        if (mChannels.get(position).mLogoBitmap == null) {
+            loadImage(position, holder.imageView);
+        } else {
             holder.imageView.setImageBitmap(mChannels.get(position).mLogoBitmap);
+        }
+
+        if (mRelativeLayout != null)
+            holder.imageView.setLayoutParams(mRelativeLayout);
 
         holder.firstLine.setText(mChannels.get(position).getDisplayName());
         holder.secondLine.setText(mChannels.get(position).getGame());
         holder.secondLineViewers.setText(String.valueOf(mChannels.get(position).getViews()));
-        holder.imageView.setLayoutParams(mRelativeLayout);
 
         return convertView;
     }
@@ -121,12 +100,14 @@ public class ChannelListAdapter extends BaseAdapter {
         return mChannels;
     }
 
+    public void resetDimensions() {
+        mRelativeLayout = null;
+        mWidth = 0;
+    }
+
     public void updateThumbnail(Bitmap bmp, int item, int offset) {
         mChannels.get(item+offset).mLogoBitmap = bmp;
-        update_counter++;
-        if (update_counter%3 == 0) {
-            notifyDataSetChanged();
-        }
+        notifyDataSetChanged();
     }
 
     public class ViewHolder {
@@ -134,6 +115,23 @@ public class ChannelListAdapter extends BaseAdapter {
         public TextView secondLine;
         public TextView firstLine;
         public TextView secondLineViewers;
+    }
+
+    private void loadImage(final int pos, final ImageView imageView) {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(mChannels.get(pos).getLogoLink());
+                mActivity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        imageView.setImageBitmap(bitmap);
+                        mChannels.get(pos).mLogoBitmap = bitmap;
+                        mChannels.get(pos).mLogoBitmap = bitmap;
+                    }
+                });
+            }
+        });
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
     }
 
 }

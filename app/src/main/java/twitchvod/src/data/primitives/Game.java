@@ -7,8 +7,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class Game {
-    public String mTitle, mThumbnail;
-    public int mViewers, mChannelCount, mId;
+    public String mTitle, mThumbnail, mId;
+    public int mViewers, mChannelCount;
     public Bitmap mBitmapThumb;
     public ArrayList<Stream> mStreams;
     public boolean mBlackListed = false;
@@ -18,10 +18,10 @@ public class Game {
         mThumbnail = "";
         mViewers = 0;
         mChannelCount = 0;
-        mId = 0;
+        mId = "";
     }
 
-    public Game(String title, String thumb, int viewers, int channelc, int id, ArrayList<Stream> streams) {
+    public Game(String title, String thumb, int viewers, int channelc, String id, ArrayList<Stream> streams) {
         mTitle = title;
         mThumbnail = thumb;
         mViewers = viewers;

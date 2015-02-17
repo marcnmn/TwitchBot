@@ -1,20 +1,10 @@
 package twitchvod.src.data.async_tasks;
 
-import android.app.Activity;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import twitchvod.src.data.TwitchJSONParser;
+import twitchvod.src.data.primitives.Channel;
+import twitchvod.src.data.primitives.Game;
 import twitchvod.src.data.primitives.Stream;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
@@ -28,9 +18,11 @@ public class TwitchJSONParserThread {
     private ChannelDetailFragment mChannelDetailFragment;
     private Thread mThread;
     private boolean mAbort = false;
+    private int mDetailRequestType;
 
-    public TwitchJSONParserThread(ChannelDetailFragment c) {
+    public TwitchJSONParserThread(ChannelDetailFragment c, int request_type) {
         mChannelDetailFragment = c;
+        mDetailRequestType = request_type;
     }
 
     public TwitchJSONParserThread(ChannelListFragment c) {
@@ -58,11 +50,41 @@ public class TwitchJSONParserThread {
     }
 
     private void parseAndPush(String j) {
-        //if (mChannelDetailFragment != null) mChannelDetailFragment.js(b);
-        //if (mChannelListFragment != null) mChannelListFragment.getActivity();
-        //if (mGamesRasterFragment != null) mGamesRasterFragment.getActivity();
+        if (mChannelListFragment != null) parseAndPushChannel(j);
+        if (mGamesRasterFragment != null) parseAndPushGame(j);
         if (mStreamListFragment != null) parseAndPushStream(j);
-        }
+        if (mChannelDetailFragment != null && mDetailRequestType == 0) parseAndPushOneChannel(j);
+    }
+
+    private void parseAndPushOneChannel(String j) {
+        final Channel channel = TwitchJSONParser.channelJSONtoChannel(j);
+        mChannelDetailFragment.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //mChannelDetailFragment.channelDataParsed(channel);
+            }
+        });
+    }
+
+    private void parseAndPushChannel(String j) {
+        final ArrayList<Channel> channels = TwitchJSONParser.channelsJSONtoArrayList(j);
+        mChannelListFragment.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mChannelListFragment.dataParsed(channels);
+            }
+        });
+    }
+
+    private void parseAndPushGame(String j) {
+        final ArrayList<Game> games = TwitchJSONParser.gameJSONtoArrayList(j);
+        mGamesRasterFragment.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mGamesRasterFragment.dataParsed(games);
+            }
+        });
+    }
 
     private void parseAndPushStream(String j) {
         final ArrayList<Stream> streams = TwitchJSONParser.streamJSONtoArrayList(j);

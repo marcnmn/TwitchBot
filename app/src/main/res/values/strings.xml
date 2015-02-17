@@ -3,6 +3,8 @@
 
     <string name="app_name">TwitchBot</string>
 
+    <string name="search_action">Search</string>
+
     <string name="title_section1">Games</string>
     <string name="title_section2">Top Channels</string>
     <string name="title_section3">Search</string>
@@ -14,7 +16,12 @@
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
 
-    <string name="game_channels_url">https://api.twitch.tv/kraken/streams?game=</string>
+    <string name="channel_banner_desc">Channel Banner</string>
+    <string name="viewer_logo">Viewer Logo</string>
+
+    <string name="game_streams_url">https://api.twitch.tv/kraken/streams?game=</string>
+    <string name="channel_url">https://api.twitch.tv/kraken/channels/</string>
+    <string name="channel_stream_url">https://api.twitch.tv/kraken/streams/</string>
     <string name="channel_past_broadcasts_url">https://api.twitch.tv/kraken/channels/</string>
 
     <string name="stream_token_url">http://api.twitch.tv/api/channels/</string>

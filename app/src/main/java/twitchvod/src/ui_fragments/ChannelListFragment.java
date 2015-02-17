@@ -9,25 +9,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import twitchvod.src.R;
 import twitchvod.src.adapter.ChannelListAdapter;
+import twitchvod.src.data.async_tasks.TwitchJSONDataThread;
+import twitchvod.src.data.async_tasks.TwitchJSONParserThread;
 import twitchvod.src.data.primitives.Channel;
 
 
 /**
  * Created by marc on 27.01.2015. Gridview of available games
  */
-public class ChannelListFragment extends Fragment implements ChannelListAdapter.onFirstResultsListener{
+public class ChannelListFragment extends Fragment {
     private int mLoadedItems, INT_LIST_UPDATE_VALUE, INT_LIST_UPDATE_THRESHOLD;
-    private ChannelListAdapter mAdapter;
+    private ChannelListAdapter mChannelListAdapter;
     private onChannelSelectedListener mCallback;
     private ProgressBar mProgressBar;
     private String mUrl;
     private String mTitle;
+
+    private ArrayList<Channel> mChannels;
 
     public ChannelListFragment newInstance(String url) {
         ChannelListFragment fragment = new ChannelListFragment();
@@ -52,16 +59,11 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
     }
 
     @Override
-    public void onFirstResults() {
-        mProgressBar.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_channel_list, container, false);
-        ListView listView = (ListView) rootView.findViewById(R.id.channelTopList);
+        GridView listView = (GridView) rootView.findViewById(R.id.channelTopList);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.channels_list_progress);
 
         if (savedInstanceState != null) {
@@ -74,8 +76,10 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
 
         ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(mTitle);
 
-        mAdapter = new ChannelListAdapter(this, mUrl);
-        listView.setAdapter(mAdapter);
+        mLoadedItems = getResources().getInteger(R.integer.channel_list_start_items);
+
+        mChannelListAdapter = new ChannelListAdapter(this);
+        listView.setAdapter(mChannelListAdapter);
 
         mLoadedItems = getResources().getInteger(R.integer.channel_list_start_items);
         INT_LIST_UPDATE_VALUE = getResources().getInteger(R.integer.channel_list_update_items);
@@ -85,12 +89,10 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
-                //fetchToken(mAdapter.getItem(position));
-                mCallback.onChannelSelected(mAdapter.getItem(position));
+                //fetchToken(mChannelListAdapter.getItem(position));
+                mCallback.onChannelSelected(mChannelListAdapter.getItem(position));
             }
         });
-
-        mAdapter.loadTopData(mLoadedItems, 0);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -101,7 +103,7 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 int lastVisibleItem = firstVisibleItem + visibleItemCount;
                 if (lastVisibleItem >= mLoadedItems - INT_LIST_UPDATE_THRESHOLD) {
-                    mAdapter.loadTopData(INT_LIST_UPDATE_VALUE, mLoadedItems);
+                    downloadChannelData(INT_LIST_UPDATE_VALUE, mLoadedItems);
                     mLoadedItems += INT_LIST_UPDATE_VALUE;
                 }
             }
@@ -110,11 +112,55 @@ public class ChannelListFragment extends Fragment implements ChannelListAdapter.
         return rootView;
     }
 
+    public void downloadChannelData(int limit, int offset) {
+        String request = mUrl;
+        request += "limit=" + limit + "&offset=" + offset;
+        TwitchJSONDataThread t = new TwitchJSONDataThread(this);
+        t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+    }
+
+    public void dataReceived(String s) {
+        TwitchJSONParserThread t = new TwitchJSONParserThread(this);
+        t.parseJSONInBackground(s, Thread.NORM_PRIORITY);
+    }
+
+    public void dataParsed(ArrayList<Channel> l) {
+        if (mChannels == null) {
+            mChannels = l;
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+        else
+            mChannels.addAll(l);
+
+        mChannelListAdapter.update(l);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mChannels != null) {
+            mLoadedItems = mChannels.size();
+            mChannelListAdapter.resetDimensions();
+            mChannelListAdapter.update(mChannels);
+            mProgressBar.setVisibility(View.INVISIBLE);
+        } else {
+            mLoadedItems = getResources().getInteger(R.integer.game_grid_start_items);
+            mChannelListAdapter.resetDimensions();
+            downloadChannelData(mLoadedItems, 0);
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("url", mUrl);
         outState.putString("bar_title", mTitle);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override

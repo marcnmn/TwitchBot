@@ -1,78 +1,50 @@
 package twitchvod.src.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.media.Image;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import twitchvod.src.MainActivity;
 import twitchvod.src.R;
 import twitchvod.src.data.TwitchNetworkTasks;
 import twitchvod.src.data.primitives.Game;
-import twitchvod.src.data.async_tasks.TwitchBitmapData;
-import twitchvod.src.data.async_tasks.TwitchGameData;
 import twitchvod.src.ui_fragments.GamesRasterFragment;
 
 public class GamesAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
-    private String mBaseUrl;
-    private Activity mContext;
     private ArrayList<Game> mGames;
     private double aspectRatio;
     private RelativeLayout.LayoutParams mRelativeLayout;
     private Activity mActivity;
 
-    public GamesAdapter(Context c, String url) {
-        mContext = (Activity) c;
-        mGames = new ArrayList<>();
-        mBaseUrl = url;
-    }
 
-    public GamesAdapter(GamesRasterFragment c, String url) {
+    public GamesAdapter(GamesRasterFragment c) {
         if (mGames == null) mGames = new ArrayList<>();
         mActivity = c.getActivity();
         mInflater = LayoutInflater.from(c.getActivity());
         mGames = new ArrayList<>();
-        mBaseUrl = url;
     }
 
-    public void loadTopData(int limit, int offset) {
-        String request = mBaseUrl;
-        request += "limit=" + limit + "&offset=" + offset;
-        TwitchGameData t = new TwitchGameData(this);
-        t.execute(request);
-    }
-
-    public void update(Game g) {
-        mGames.add(g);
-        notifyDataSetChanged();
-    }
-
-    public void update2(ArrayList<Game> g) {
+    public void update(ArrayList<Game> g) {
         mGames.addAll(g);
         notifyDataSetChanged();
     }
 
+    public void cleanData() {
+        mGames.clear();
+    }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        LayoutInflater inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         if(convertView == null || convertView.getTag() == null) {
-            convertView = inflater.inflate(R.layout.game_item_layout, parent, false);
+            convertView = mInflater.inflate(R.layout.game_item_layout, parent, false);
             holder = new ViewHolder();
             holder.title = (TextView) convertView.findViewById(R.id.game_desc);
             holder.viewers = (TextView) convertView.findViewById(R.id.game_viewers);
@@ -92,41 +64,22 @@ public class GamesAdapter extends BaseAdapter {
             mRelativeLayout = new RelativeLayout.LayoutParams(conWidth,conHeight);
         }
 
-        if (mRelativeLayout == null) {
-            return convertView;
-        }
-        if (mRelativeLayout != null) {
-            holder.thumbImage.setLayoutParams(mRelativeLayout);
-        }
+        Game tempGame = mGames.get(position);
 
-        if (mGames.get(position).mBitmapThumb == null) {
+        if (tempGame.mBitmapThumb != null) {
+            holder.thumbImage.setImageBitmap(tempGame.mBitmapThumb);
+        } else {
             holder.thumbImage.setImageResource(R.drawable.game_offline);
             loadImage(position, holder.thumbImage);
-        } else {
-            holder.thumbImage.setImageBitmap(mGames.get(position).mBitmapThumb);
         }
 
+        if (mRelativeLayout != null)
+            holder.thumbImage.setLayoutParams(mRelativeLayout);
 
-        String s = mGames.get(position).mTitle;
-        holder.title.setText(mGames.get(position).mTitle);
-        holder.viewers.setText(Integer.toString(mGames.get(position).mViewers));
+        holder.title.setText(tempGame.mTitle);
+        holder.viewers.setText(Integer.toString(tempGame.mViewers));
 
         return convertView;
-    }
-
-    public void loadThumbnails(int start, int stop) {
-        String urls[] = new String[ stop - start ];
-        for (int i = 0; i < stop-start; i++) {
-            urls[i] = mGames.get(start + i).mThumbnail;
-        }
-        TwitchBitmapData tb = new TwitchBitmapData(this, start);
-        tb.execute(urls);
-    }
-
-    public void updateThumbnail(Bitmap bmp, int item, int offset) {
-        mGames.get(item + offset).mBitmapThumb = bmp;
-        notifyDataSetChanged();
-
     }
 
     public int getCount() {
@@ -138,7 +91,7 @@ public class GamesAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
-        return mGames.get(position).mId;
+        return Long.valueOf(mGames.get(position).mId);
     }
 
     public class ViewHolder {
@@ -148,15 +101,17 @@ public class GamesAdapter extends BaseAdapter {
     }
 
     private void loadImage(int pos, ImageView imageView) {
-        final int fpos = pos;
+        final int fPos = pos;
         final ImageView fImg = imageView;
         Thread thread = new Thread(new Runnable() {
             public void run() {
-                final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(mGames.get(fpos).mThumbnail);
-                mContext.runOnUiThread(new Runnable() {
+                final Bitmap bitmap;
+                bitmap = TwitchNetworkTasks.downloadBitmap(mGames.get(fPos).mThumbnail);
+//                storeImage(bitmap, mGames.get(fPos).mId);
+                mActivity.runOnUiThread(new Runnable() {
                     public void run() {
-                        fImg.setImageBitmap(bitmap);
-                        mGames.get(fpos).mBitmapThumb = bitmap;
+                    fImg.setImageBitmap(bitmap);
+                    mGames.get(fPos).mBitmapThumb = bitmap;
                     }
                 });
             }

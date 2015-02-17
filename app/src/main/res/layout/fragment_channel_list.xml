@@ -12,10 +12,11 @@
         android:id="@+id/channels_list_progress"
         android:layout_centerInParent="true"/>
 
-    <ListView
+    <GridView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/channelTopList"
-        android:layout_toEndOf="@+id/section_label" />
+        android:numColumns="1"
+        android:stretchMode="columnWidth"/>
 
 </RelativeLayout>

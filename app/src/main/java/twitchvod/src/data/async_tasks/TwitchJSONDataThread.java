@@ -33,10 +33,11 @@ public class TwitchJSONDataThread {
     private ChannelListFragment mChannelListFragment;
     private ChannelDetailFragment mChannelDetailFragment;
     private Thread mThread;
-    private boolean mAbort = false;
+    private int mDetailRequestType;
 
-    public TwitchJSONDataThread(ChannelDetailFragment c) {
+    public TwitchJSONDataThread(ChannelDetailFragment c, int request_type) {
         mChannelDetailFragment = c;
+        mDetailRequestType = request_type;
     }
 
     public TwitchJSONDataThread(ChannelListFragment c) {
@@ -56,7 +57,7 @@ public class TwitchJSONDataThread {
         mThread = new Thread(new Runnable() {
             public void run() {
                 final String is = downloadJSONData(fUrl);
-                if (mAbort) return;
+                if (getThreadActivity() == null) return;
                 getThreadActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -78,10 +79,13 @@ public class TwitchJSONDataThread {
     }
 
     private void pushResult(String s) {
-        //if (mChannelDetailFragment != null) mChannelDetailFragment.js(b);
-        //if (mChannelListFragment != null) mChannelListFragment.getActivity();
-        //if (mGamesRasterFragment != null) mGamesRasterFragment.getActivity();
+        if (mChannelListFragment != null) mChannelListFragment.dataReceived(s);
+        if (mGamesRasterFragment != null) mGamesRasterFragment.dataReceived(s);
         if (mStreamListFragment != null) mStreamListFragment.dataReceived(s);
+
+        if (mChannelDetailFragment != null && mDetailRequestType == 0) mChannelDetailFragment.channelDataReceived(s);
+        if (mChannelDetailFragment != null && mDetailRequestType == 1) mChannelDetailFragment.streamDataReceived(s);
+        if (mChannelDetailFragment != null && mDetailRequestType == 2) mChannelDetailFragment.tokenDataReceived(s);
     }
 
     private String downloadJSONData(String myurl) {
@@ -124,9 +128,5 @@ public class TwitchJSONDataThread {
             }
         }
         return null;
-    }
-
-    public void stopThread() {
-        mAbort = true;
     }
 }

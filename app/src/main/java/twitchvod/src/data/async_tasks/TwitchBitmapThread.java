@@ -104,7 +104,6 @@ public class TwitchBitmapThread {
         if (mChannelDetailFragment != null) mChannelDetailFragment.updateThumbnail(b);
         if (mChannelListFragment != null) mChannelListFragment.getActivity();
         if (mGamesRasterFragment != null) mGamesRasterFragment.getActivity();
-        if (mStreamListFragment != null) mStreamListFragment.updateThumbnail(b, i);
     }
 
     private Bitmap downloadBitmap(String myurl) {

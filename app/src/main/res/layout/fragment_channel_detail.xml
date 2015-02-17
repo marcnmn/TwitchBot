@@ -1,15 +1,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:layout_height="wrap_content" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity$ChannelDetailFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#ffececec"
+    android:elevation="8dp">
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/stream_layout_top">
+
+            <ProgressBar
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/channel_detail_progress"
+                android:max="4"
+                android:layout_marginTop="67dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true" />
 
             <ImageView
                 android:layout_width="fill_parent"
@@ -28,33 +41,20 @@
                 android:src="@drawable/grey_overlay"
                 android:visibility="visible"/>
 
-            <ProgressBar
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar"
-                android:max="4"
-                android:layout_marginTop="67dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BeyondTheSummit"
                 android:id="@+id/channelTitel"
-                android:layout_marginBottom="5dp"
-                android:layout_marginRight="5dp"
+                android:paddingLeft="5dp"
                 android:textStyle="bold"
                 android:textColor="#ffededed"
-                android:layout_alignBottom="@id/videoFeed"
-                android:textSize="24dp" />
+                android:textSize="24sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/channelTitel"
-                android:layout_alignBaseline="@+id/channelTitel"
-                android:text="playing Dota 2"
+                android:paddingLeft="5dp"
+                android:layout_below="@+id/channelTitel"
                 android:textColor="#ffededed"
                 android:id="@+id/channelGame"/>
 
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Medium Text"
+                android:text=""
                 android:id="@+id/channelViewers"
                 android:paddingRight="5dp"
                 android:layout_marginTop="2dp"
@@ -72,60 +72,37 @@
                 android:textColor="#ffededed"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:textStyle="bold" />
 
             <ImageView
                 android:layout_width="12sp"
                 android:layout_height="12sp"
                 android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
                 android:layout_marginTop="7dp"
                 android:id="@+id/viewers_icon"
                 android:src="@drawable/active_viewers_twitch"
                 android:layout_alignParentTop="true"
-                android:layout_toStartOf="@+id/channelViewers" />
+                android:layout_toStartOf="@+id/channelViewers"
+                android:layout_toLeftOf="@+id/channelViewers"
+                android:visibility="invisible" />
 
         </RelativeLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffececec"
-        android:layout_marginTop="7dp"
-        android:paddingBottom="7dp"
-        android:elevation="4dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Stream quality :"
-            android:id="@+id/text_stream_quali"
-            android:textStyle="bold"
-            android:textSize="18sp"/>
-
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:id="@+id/quality_spinner"
-            android:textSize="18sp"/>
-
-
-    </LinearLayout>
-
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:paddingTop="10dp"
-        android:layout_below="@+id/channelViewers"
-        android:text="The Dota 2 Asia Championships are the third largest Dota 2 event by prizepool EVER! Over the next two weeks, eighteen of the world's best teams will battle in Shanghai for over $2,200,000 in prizemoney. Beyond the Summit and Dotacinema will be bringing you comprehensive coverage of every second of the action from the BTS studios in Los Angeles."
         android:id="@+id/channelStatus"/>
 
-    <ListView
+    <GridView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/list_past_broadcasts"
-        android:layout_gravity="center_horizontal" />
+        android:numColumns="1"
+        android:verticalSpacing="0dp"
+        android:stretchMode="columnWidth"/>
 
 </LinearLayout>
 

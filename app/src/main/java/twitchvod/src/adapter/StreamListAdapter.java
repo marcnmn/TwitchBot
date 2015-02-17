@@ -1,29 +1,23 @@
 package twitchvod.src.adapter;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.annotation.AnimatorRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 import twitchvod.src.MainActivity;
 import twitchvod.src.R;
 import twitchvod.src.data.TwitchNetworkTasks;
 import twitchvod.src.data.primitives.Stream;
-import twitchvod.src.data.async_tasks.TwitchBitmapData;
-import twitchvod.src.data.async_tasks.TwitchStreamData;
 import twitchvod.src.ui_fragments.StreamListFragment;
 
 public class StreamListAdapter extends BaseAdapter {
@@ -31,8 +25,10 @@ public class StreamListAdapter extends BaseAdapter {
     private ArrayList<Stream> mStreams;
     private MainActivity mActivity;
     Animation mAlpha;
+    private int mWidth = 0;
+    private RelativeLayout.LayoutParams mRelativeLayout;
 
-    public StreamListAdapter(StreamListFragment c, String url) {
+    public StreamListAdapter(StreamListFragment c) {
         if (mStreams == null) mStreams = new ArrayList<>();
         mActivity = (MainActivity) c.getActivity();
         mInflater = LayoutInflater.from(c.getActivity());
@@ -41,20 +37,10 @@ public class StreamListAdapter extends BaseAdapter {
     }
 
     public void update(ArrayList<Stream> l) {
-        if (getCount() == 0) {
-        }
         mStreams.addAll(l);
         notifyDataSetChanged();
     }
 
-    public void setStream(int index, Stream s) {
-        if (getCount() == 0)
-            return;
-        mStreams.set(index, s);
-        notifyDataSetChanged();
-    }
-
-    // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if(convertView == null || convertView.getTag() == null) {
@@ -63,10 +49,19 @@ public class StreamListAdapter extends BaseAdapter {
             holder.firstLine = (TextView) convertView.findViewById(R.id.firstLine);
             holder.secondLine = (TextView) convertView.findViewById(R.id.secondLine);
             holder.secondLineViewers = (TextView) convertView.findViewById(R.id.secondLineViewers);
+            holder.streamStatus = (TextView) convertView.findViewById(R.id.text_stream_status);
             holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
         }
         else {
             holder = (ViewHolder) convertView.getTag();
+        }
+
+        if (((GridView) parent).getColumnWidth() != mWidth && holder.imageView.getDrawable() != null) {
+            mWidth = ((GridView) parent).getColumnWidth();
+            float scale = 1.0f * holder.imageView.getDrawable().getIntrinsicHeight()/holder.imageView.getDrawable().getIntrinsicWidth();
+            int imageWidth = Math.round(mWidth);
+            int imageHeight = Math.round(imageWidth * scale);
+            mRelativeLayout = new RelativeLayout.LayoutParams(imageWidth, imageHeight);
         }
 
         if (mStreams.get(position).mPreview == null) {
@@ -75,9 +70,13 @@ public class StreamListAdapter extends BaseAdapter {
             holder.imageView.setImageBitmap(mStreams.get(position).mPreview);
         }
 
+        if (mRelativeLayout != null)
+            holder.imageView.setLayoutParams(mRelativeLayout);
+
         holder.firstLine.setText(mStreams.get(position).mTitle);
-        holder.secondLine.setText(mStreams.get(position).mGame);
+        holder.secondLine.setText(mStreams.get(position).printGame());
         holder.secondLineViewers.setText(String.valueOf(mStreams.get(position).mViewers));
+        holder.streamStatus.setText(String.valueOf(mStreams.get(position).mStatus));
 
         return convertView;
     }
@@ -94,11 +93,16 @@ public class StreamListAdapter extends BaseAdapter {
         return mStreams.get(position).mId;
     }
 
+    public void clearData() {
+        mStreams.clear();
+    }
+
     public class ViewHolder {
         public ImageView imageView;
         public TextView secondLine;
         public TextView firstLine;
         public TextView secondLineViewers;
+        public TextView streamStatus;
     }
 
     private void loadImage(final int pos, final ImageView imageView) {

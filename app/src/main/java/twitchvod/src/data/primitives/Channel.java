@@ -8,6 +8,11 @@ public class Channel {
     public HashMap<String, String> mData;
     public Bitmap mLogoBitmap, mBannerBitmap;
 
+    public Channel(String name) {
+        mData = new HashMap<>();
+        mData.put("name", name);
+    }
+
     public Channel(HashMap<String, String> h) {
         mData = h;
     }
@@ -38,5 +43,9 @@ public class Channel {
 
     public String getGame() {
         return mData.get("game");
+    }
+
+    public String getName() {
+        return mData.get("name");
     }
 }

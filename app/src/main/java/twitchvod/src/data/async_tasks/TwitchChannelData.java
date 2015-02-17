@@ -37,7 +37,7 @@ public class TwitchChannelData extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        mChannelListAdapter.updateChannelList(result);
+        //mChannelListAdapter.updateChannelList(result);
         //mChannelListAdapter.loadThumbnails(offset, offset + result.size());
     }
 

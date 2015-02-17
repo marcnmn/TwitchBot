@@ -2,7 +2,6 @@ package twitchvod.src.ui_fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -10,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 
 import twitchvod.src.R;
 import twitchvod.src.adapter.StreamListAdapter;
-import twitchvod.src.data.async_tasks.TwitchBitmapThread;
 import twitchvod.src.data.async_tasks.TwitchJSONDataThread;
 import twitchvod.src.data.async_tasks.TwitchJSONParserThread;
 import twitchvod.src.data.primitives.Stream;
@@ -35,18 +33,13 @@ public class StreamListFragment extends Fragment{
     private String mUrl, mTitle;
 
     private ArrayList<Stream> mStreams;
-    private ArrayList<TwitchJSONDataThread> mDataThreads;
-    private ArrayList<TwitchJSONParserThread> mParserThreads;
-    private ArrayList<TwitchBitmapThread> mBitmapThreads;
-
 
     public Fragment newInstance(String url, String mTitle) {
         StreamListFragment fragment = new StreamListFragment();
         Bundle args = new Bundle();
         args.putString("url", url);
-
         if (mTitle == null)
-            args.putString("bar_title", "Most Viewed");
+            mTitle = "Popular Streams";
         args.putString("bar_title", mTitle);
         fragment.setArguments(args);
         return fragment;
@@ -61,28 +54,15 @@ public class StreamListFragment extends Fragment{
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_top_streams, container, false);
-        ListView listView = (ListView) rootView.findViewById(R.id.channelTopList);
+        GridView listView = (GridView) rootView.findViewById(R.id.grid_top_streams);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.channels_list_progress);
-        mDataThreads = new ArrayList<>();
-        mParserThreads = new ArrayList<>();
-        mBitmapThreads = new ArrayList<>();
-
-        mAdapter = new StreamListAdapter(this, mUrl);
-        listView.setAdapter(mAdapter);
 
         mLoadedItems = getResources().getInteger(R.integer.channel_list_start_items);
         INT_LIST_UPDATE_VALUE = getResources().getInteger(R.integer.channel_list_update_items);
         INT_LIST_UPDATE_THRESHOLD = getResources().getInteger(R.integer.channel_list_update_threshold);
 
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
-                mCallback.onStreamSelected(mAdapter.getItem(position));
-            }
-        });
-
         if (savedInstanceState != null) {
+            mLoadedItems = mStreams.size();
             mUrl = savedInstanceState.getString("url");
             mTitle = savedInstanceState.getString("bar_title");
         } else {
@@ -91,7 +71,16 @@ public class StreamListFragment extends Fragment{
         }
 
         ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(mTitle);
-        downloadStreamData(mLoadedItems, 0);
+
+        mAdapter = new StreamListAdapter(this);
+        listView.setAdapter(mAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
+                mCallback.onStreamSelected(mAdapter.getItem(position));
+            }
+        });
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -107,6 +96,7 @@ public class StreamListFragment extends Fragment{
                 }
             }
         });
+
         return rootView;
     }
 
@@ -115,17 +105,14 @@ public class StreamListFragment extends Fragment{
         request += "limit=" + limit + "&offset=" + offset;
         TwitchJSONDataThread t = new TwitchJSONDataThread(this);
         t.downloadJSONInBackground(request, Thread.MAX_PRIORITY);
-        mDataThreads.add(t);
     }
 
     public void dataReceived(String s) {
         TwitchJSONParserThread t = new TwitchJSONParserThread(this);
         t.parseJSONInBackground(s, Thread.MAX_PRIORITY);
-        mParserThreads.add(t);
     }
 
     public void dataParsed(ArrayList<Stream> l) {
-        int offset = (mStreams  == null) ? 0 : mStreams.size();
         if (mStreams == null) {
             mStreams = l;
             mProgressBar.setVisibility(View.INVISIBLE);
@@ -133,35 +120,7 @@ public class StreamListFragment extends Fragment{
         else
             mStreams.addAll(l);
 
-        //loadThumbnails(offset, mStreams.size());
         mAdapter.update(l);
-    }
-
-    public void loadThumbnails(int start, int stop) {
-        ArrayList<String> urls = new ArrayList<>();
-        for (int i = 0; i < stop-start; i++) {
-            urls.add(mStreams.get(start + i).mPreviewLink);
-        }
-        TwitchBitmapThread t = new TwitchBitmapThread(this);
-        t.downloadImagesInBackground(urls, Thread.NORM_PRIORITY - mBitmapThreads.size(), start);
-        mBitmapThreads.add(t);
-    }
-
-    public void updateThumbnail(Bitmap bmp, int item) {
-        mStreams.get(item).mPreview = bmp;
-        mAdapter.setStream(item, mStreams.get(item));
-    }
-
-    public void cancelAllThreads() {
-        for (TwitchJSONDataThread t: mDataThreads){
-            t.stopThread();
-        }
-        for (TwitchJSONParserThread t: mParserThreads){
-            t.stopThread();
-        }
-        for (TwitchBitmapThread t: mBitmapThreads){
-            t.stopThread();
-        }
     }
 
     @Override
@@ -192,15 +151,18 @@ public class StreamListFragment extends Fragment{
     public void onResume() {
         super.onResume();
         if (mStreams != null) {
+            mAdapter.clearData();
+            mLoadedItems = mStreams.size();
             mAdapter.update(mStreams);
             mProgressBar.setVisibility(View.INVISIBLE);
+        } else {
+            downloadStreamData(mLoadedItems, 0);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        cancelAllThreads();
     }
 
     @Override

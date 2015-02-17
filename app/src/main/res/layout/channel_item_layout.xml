@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:adjustViewBounds="true"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_height="150dp"
+        android:layout_width="150dp"
+        android:src="@drawable/channel_offline_360x360"
+        android:contentDescription="@string/channel_banner_desc" />
+
+    <TextView
+        android:id="@+id/firstLine"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_toEndOf="@id/icon"
+        android:layout_toRightOf="@id/icon"
+        android:gravity="top|center_vertical"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:paddingTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="35dip"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/secondLineViewers"
+        android:gravity="end|bottom"
+        android:paddingTop="5dp"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"/>
+
+    <ImageView
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/secondLineViewers"
+        android:layout_toLeftOf="@id/secondLineViewers"
+        android:id="@+id/viewers_icon"
+        android:src="@drawable/active_viewers_twitch"
+        android:contentDescription="@string/viewer_logo" />
+
+    <TextView
+        android:id="@+id/secondLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentEnd="false"
+        android:layout_toRightOf="@id/icon"
+        android:layout_toEndOf="@id/icon"
+        android:layout_toLeftOf="@id/viewers_icon"
+        android:layout_toStartOf="@id/viewers_icon"
+        android:ellipsize="marquee"
+        android:singleLine="false"
+        android:gravity="start|bottom"
+        android:textSize="16sp"
+        android:paddingTop="5dp"/>
+
+</RelativeLayout>

@@ -9,6 +9,7 @@ import java.util.HashMap;
 public class Stream {
     public String mTitle, mLogoLink, mPreviewLink, mUrl, mStatus, mGame;
     public int mViewers, mId;
+    public Channel mChannel;
     public Bitmap mLogo, mPreview;
 
     public Stream(String title, String url, String status, String game, int viewers,
@@ -32,6 +33,15 @@ public class Stream {
         mStatus = h.get("status");
         mLogoLink = h.get("logoLink");
         mPreviewLink = h.get("previewLink");
+    }
+
+    public Stream(String curl, String game, int viewers, String preview, int id, Channel channel) {
+        mUrl = curl;
+        mViewers = viewers;
+        mGame = game;
+        mId = id;
+        mPreviewLink = preview;
+        mChannel = channel;
     }
 
     public HashMap<String, String> toHashMap() {
@@ -58,6 +68,10 @@ public class Stream {
             e.printStackTrace();
         }
         return url.toLowerCase();
+    }
+
+    public String printGame() {
+        return "playing " + mGame;
     }
 
     @Override

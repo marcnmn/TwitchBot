@@ -1,19 +1,13 @@
 package twitchvod.src;
 
-import android.annotation.TargetApi;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.Transition;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -23,6 +17,7 @@ import twitchvod.src.data.primitives.Game;
 import twitchvod.src.ui_fragments.AuthFragment;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
+import twitchvod.src.ui_fragments.SearchFragment;
 import twitchvod.src.ui_fragments.StreamListFragment;
 import twitchvod.src.ui_fragments.GamesRasterFragment;
 import twitchvod.src.ui_fragments.NavigationDrawerFragment;
@@ -76,18 +71,19 @@ public class MainActivity extends ActionBarActivity
                 transaction.commit();
                 break;
             case 2:
-                ChannelListFragment mChannelListFragment = new ChannelListFragment();
+//                ChannelListFragment searchFragment = new ChannelListFragment();
+                SearchFragment searchFragment = new SearchFragment();
                 transaction = getFragmentManager().beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.replace(R.id.container, mChannelListFragment.newInstance(mUrls[position], "Search"));
+                transaction.replace(R.id.container, searchFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
                 break;
             case 3:
-                mChannelListFragment = new ChannelListFragment();
+                ChannelListFragment favoritesFragment = new ChannelListFragment();
                 transaction = getFragmentManager().beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.replace(R.id.container, mChannelListFragment.newInstance(mUrls[position]));
+                transaction.replace(R.id.container, favoritesFragment.newInstance(mUrls[position]));
                 transaction.addToBackStack(null);
                 transaction.commit();
                 break;
@@ -135,7 +131,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onGameSelected(Game g) {
-        String url = getString(R.string.game_channels_url);
+        String url = getString(R.string.game_streams_url);
         url += g.toURL() + "&";
         StreamListFragment mStreamListFragment = new StreamListFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -150,7 +146,7 @@ public class MainActivity extends ActionBarActivity
         ChannelDetailFragment mChannelDetailFragment = new ChannelDetailFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.replace(R.id.container, mChannelDetailFragment.newInstance(g.toHashMap()));
+        transaction.replace(R.id.container, mChannelDetailFragment.newInstance(g.titleToURL()));
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -164,7 +160,7 @@ public class MainActivity extends ActionBarActivity
         ChannelDetailFragment mChannelDetailFragment = new ChannelDetailFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.replace(R.id.container, mChannelDetailFragment.newInstance(c.mData));
+        transaction.replace(R.id.container, mChannelDetailFragment.newInstance(c.getName()));
         transaction.addToBackStack(null);
         transaction.commit();
     }

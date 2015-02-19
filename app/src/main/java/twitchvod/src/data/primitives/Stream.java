@@ -7,13 +7,13 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 
 public class Stream {
-    public String mTitle, mLogoLink, mPreviewLink, mUrl, mStatus, mGame;
+    public String mTitle, mLogoLink, mPreviewLink, mUrl, mStatus, mGame, mName;
     public int mViewers, mId;
     public Channel mChannel;
     public Bitmap mLogo, mPreview;
 
     public Stream(String title, String url, String status, String game, int viewers,
-                  String logoLink, String previewLink, int id) {
+                  String logoLink, String previewLink, int id, String name) {
         mTitle = title;
         mViewers = viewers;
         mUrl = url;
@@ -22,6 +22,7 @@ public class Stream {
         mStatus = status;
         mLogoLink = logoLink;
         mPreviewLink = previewLink;
+        mName = name;
     }
 
     public Stream(HashMap<String, String> h) {

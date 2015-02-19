@@ -2,6 +2,8 @@
 <resources>
 
     <string name="app_name">TwitchBot</string>
+    <string name="banner_ad_unit_test_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id">ca-app-pub-1959826266269343/9921410110</string>
 
     <string name="search_action">Search</string>
 
@@ -21,11 +23,13 @@
 
     <string name="game_streams_url">https://api.twitch.tv/kraken/streams?game=</string>
     <string name="channel_url">https://api.twitch.tv/kraken/channels/</string>
+    <string name="twitch_user_url">https://api.twitch.tv/kraken/users/</string>
     <string name="channel_stream_url">https://api.twitch.tv/kraken/streams/</string>
-    <string name="channel_past_broadcasts_url">https://api.twitch.tv/kraken/channels/</string>
+    <string name="channel_videos_url">https://api.twitch.tv/kraken/channels/</string>
+    <string name="channel_broadcasts_url_appendix">broadcasts=true&amp;</string>
 
     <string name="stream_token_url">http://api.twitch.tv/api/channels/</string>
-    <string name="past_broadcast_token_url_new">https://api.twitch.tv/api/vods/</string>
+    <string name="twitch_video_token_url">https://api.twitch.tv/api/vods/</string>
 
     <string-array name="drawer_urls">
         <item>https://api.twitch.tv/kraken/games/top?</item>

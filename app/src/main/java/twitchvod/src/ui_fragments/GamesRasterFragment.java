@@ -14,6 +14,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.util.ArrayList;
 
 import twitchvod.src.R;
@@ -55,7 +58,7 @@ public class GamesRasterFragment extends Fragment
         mGridView = (GridView) rootView.findViewById(R.id.gridView);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.games_grid_progress);
         mBaseUrl = getArguments().getString("url");
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle("Top Games");
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getActivity().getString(R.string.title_section1));
 
         mLoadedItems = getResources().getInteger(R.integer.game_grid_start_items);
         INT_GRID_UPDATE_VALUE = getResources().getInteger(R.integer.game_grid_update_items);
@@ -81,7 +84,6 @@ public class GamesRasterFragment extends Fragment
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 int lastVisibleItem = firstVisibleItem + visibleItemCount;
-                Log.v("asdf", lastVisibleItem + " " + mLoadedItems);
                 if (lastVisibleItem >= mLoadedItems - INT_GRID_UPDATE_THRESHOLD) {
                     loadGameData(INT_GRID_UPDATE_VALUE, mLoadedItems);
                     mLoadedItems += INT_GRID_UPDATE_VALUE;

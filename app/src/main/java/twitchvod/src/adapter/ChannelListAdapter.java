@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import twitchvod.src.R;
 import twitchvod.src.data.TwitchNetworkTasks;
-import twitchvod.src.data.async_tasks.TwitchBitmapData;
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.ui_fragments.ChannelListFragment;
 
@@ -75,15 +74,6 @@ public class ChannelListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void loadThumbnails(int start, int stop) {
-        String urls[] = new String[(stop-start)];
-        for (int i = 0; i < stop-start; i++) {
-            urls[i] = mChannels.get(start + i).getLogoLink();
-        }
-        TwitchBitmapData tb = new TwitchBitmapData(this, start);
-        tb.execute(urls);
-    }
-
     public int getCount() {
         return mChannels.size();
     }
@@ -94,10 +84,6 @@ public class ChannelListAdapter extends BaseAdapter {
 
     public long getItemId(int position) {
         return Long.valueOf(mChannels.get(position).getId());
-    }
-
-    public ArrayList<Channel> getChannels() {
-        return mChannels;
     }
 
     public void resetDimensions() {

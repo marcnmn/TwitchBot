@@ -1,23 +1,15 @@
 package twitchvod.src.data.async_tasks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import twitchvod.src.MainActivity;
-import twitchvod.src.adapter.ChannelListAdapter;
-import twitchvod.src.adapter.GamesAdapter;
-import twitchvod.src.adapter.PastBroadcastsListAdapter;
-import twitchvod.src.adapter.StreamListAdapter;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
 import twitchvod.src.ui_fragments.GamesRasterFragment;

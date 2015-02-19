@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -16,16 +17,16 @@ import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.data.primitives.Game;
 import twitchvod.src.data.primitives.PastBroadcast;
 import twitchvod.src.data.primitives.Stream;
+import twitchvod.src.data.primitives.TwitchUser;
+import twitchvod.src.data.primitives.TwitchVideo;
 
-/**
- * Created by marc on 11.02.2015.
- */
 public final class TwitchJSONParser {
     private static String BITMAP_QUALITY = "large";
 
     private TwitchJSONParser() {
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static ArrayList<Game> gameJSONtoArrayList(String r) {
         String title, thumb, id;
         int viewers, channelc;
@@ -58,6 +59,7 @@ public final class TwitchJSONParser {
         return games;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static ArrayList<Channel> channelsJSONtoArrayList(String r) {
         ArrayList<Channel> channels = new ArrayList<>();
         HashMap<String, String> htemp = new HashMap<>();
@@ -92,6 +94,7 @@ public final class TwitchJSONParser {
             htemp.put("followers", j.getString("followers"));
             htemp.put("status", j.getString("status"));
             htemp.put("views", j.getString("views"));
+            htemp.put("followers", j.getString("followers"));
             htemp.put("game", j.getString("game"));
             htemp.put("name", j.getString("name"));
             htemp.put("url", j.getString("url"));
@@ -110,6 +113,7 @@ public final class TwitchJSONParser {
         return channels;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static Channel channelJSONtoChannel(String r) {
         Channel channel = null;
         HashMap<String, String> hTemp = new HashMap<>();
@@ -130,6 +134,7 @@ public final class TwitchJSONParser {
             hTemp.put("logo", jObject.getString("logo"));
             hTemp.put("video_banner", jObject.getString("video_banner"));
             hTemp.put("views", jObject.getString("views"));
+            hTemp.put("followers", jObject.getString("followers"));
             hTemp.put("url", jObject.getString("url"));
             hTemp.put("followers", jObject.getString("followers"));
 
@@ -146,6 +151,7 @@ public final class TwitchJSONParser {
         return channel;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static Stream streamJSONtoStream(String s) {
         String preview, curl, game;
         HashMap<String, String> hTemp = new HashMap<>();
@@ -193,8 +199,9 @@ public final class TwitchJSONParser {
         return stream;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static ArrayList<Stream> streamJSONtoArrayList(String r) {
-        String title, logo, preview, curl, stat, game;
+        String title, logo, preview, curl, stat, game, name;
         int viewers, id;
         ArrayList<Stream> streams = new ArrayList<>();
 
@@ -209,10 +216,10 @@ public final class TwitchJSONParser {
                 game = jArray.getJSONObject(i).getString("game");
                 viewers = jArray.getJSONObject(i).getInt("viewers");
                 curl = jArray.getJSONObject(i).getJSONObject("_links").getString("self");
-
                 preview = jArray.getJSONObject(i).getJSONObject("preview").getString(BITMAP_QUALITY);
 
                 channel = jArray.getJSONObject(i).getJSONObject("channel");
+                name = channel.getString("name");
                 title = channel.getString("display_name");
                 try {
                     stat = channel.getString("status");
@@ -221,7 +228,7 @@ public final class TwitchJSONParser {
                 }
                 logo = channel.getString("logo");
 
-                Stream temp = new Stream(title, curl, stat, game, viewers, logo, preview, id);
+                Stream temp = new Stream(title, curl, stat, game, viewers, logo, preview, id, name);
                 streams.add(temp);
             }
         } catch (JSONException e) {
@@ -234,6 +241,7 @@ public final class TwitchJSONParser {
         return streams;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static ArrayList<PastBroadcast> broadcastJSONtoArrayList(String r) throws JSONException {
         String title, description, recorded_at, preview, status, game, id, length, views, broadcast_type, name, display_name;
         ArrayList<PastBroadcast> broadcasts = new ArrayList<>();
@@ -268,6 +276,7 @@ public final class TwitchJSONParser {
         return broadcasts;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static String recordedAtToDate(String s) {
         int year = Integer.valueOf(s.substring(0, 4));
         int month = Integer.valueOf(s.substring(5, 7));
@@ -297,4 +306,63 @@ public final class TwitchJSONParser {
         return "recorded on " + day + "." + month + "." + year;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    public static ArrayList<TwitchVideo> dataToVideoList(String s) {
+        ArrayList<TwitchVideo> videos = new ArrayList<>();
+        String title, description, recorded_at, preview, status, game, id, length, views;
+
+        JSONObject jObject;
+        try {
+            jObject = new JSONObject(s);
+            JSONArray jArray = jObject.getJSONArray("videos");
+            JSONObject video;
+
+            for (int i=0; i<jArray.length(); i++) {
+                video = jArray.getJSONObject(i);
+
+                title = video.getString("title");
+                description = video.getString("description");
+                status = video.getString("status");
+                id = video.getString("_id");
+                recorded_at = video.getString("recorded_at");
+                game = video.getString("game");
+                length = video.getString("length");
+                preview = video.getString("preview");
+                views = video.getString("views");
+
+                TwitchVideo temp = new TwitchVideo(title, description, status, id, recorded_at, game,
+                        length, preview, views);
+                videos.add(temp);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return videos;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    public static TwitchUser userDataToUser(String s) {
+        String display_name, name, bio, updated_at, type, created_at, logo;
+        TwitchUser user = null;
+
+        JSONObject jUser;
+        try {
+            jUser = new JSONObject(s);
+            display_name = jUser.getString("display_name");
+            name = jUser.getString("name");
+            bio = jUser.getString("bio");
+            updated_at = jUser.getString("updated_at");
+            type = jUser.getString("type");
+            created_at = jUser.getString("created_at");
+            logo = jUser.getString("logo");
+
+            user = new TwitchUser(display_name, name, bio, updated_at, type, created_at, logo);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.v("userDataToUser", "Nothing to parse. String is empty");
+        }
+        return user;
+    }
 }

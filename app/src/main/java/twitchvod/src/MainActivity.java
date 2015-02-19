@@ -11,6 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.data.primitives.Stream;
 import twitchvod.src.data.primitives.Game;
@@ -30,6 +33,7 @@ public class MainActivity extends ActionBarActivity
 
     private static final String ARG_ACTIONBAR_TITLE = "action_bar";
     private String mUrls[];
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,10 @@ public class MainActivity extends ActionBarActivity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        //mAdView.loadAd(adRequest);
 
         NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -99,6 +107,25 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
+    public void onPause() {
+        mAdView.pause();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mAdView.resume();
+    }
+
+    @Override
+    public void onDestroy() {
+        mAdView.destroy();
+        super.onDestroy();
+    }
+
+
+    @Override
     public void onBackPressed() {
         FragmentManager fm = getFragmentManager();
         if (fm.getBackStackEntryCount() > 1) {
@@ -146,7 +173,7 @@ public class MainActivity extends ActionBarActivity
         ChannelDetailFragment mChannelDetailFragment = new ChannelDetailFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.replace(R.id.container, mChannelDetailFragment.newInstance(g.titleToURL()));
+        transaction.replace(R.id.container, mChannelDetailFragment.newInstance(g.mName));
         transaction.addToBackStack(null);
         transaction.commit();
     }

@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -14,34 +13,27 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import twitchvod.src.R;
-import twitchvod.src.adapter.PastBroadcastsListAdapter;
+import twitchvod.src.adapter.PastBroadcastsListAdapter2;
 import twitchvod.src.data.TwitchJSONParser;
 import twitchvod.src.data.TwitchNetworkTasks;
-import twitchvod.src.data.async_tasks.TwitchBitmapData;
-import twitchvod.src.data.async_tasks.TwitchBitmapThread;
+import twitchvod.src.data.async_tasks.TwitchBroadcastThread;
 import twitchvod.src.data.async_tasks.TwitchJSONDataThread;
-import twitchvod.src.data.async_tasks.TwitchLiveStream;
 import twitchvod.src.data.async_tasks.TwitchLiveStreamThread;
-import twitchvod.src.data.async_tasks.TwitchPastBroadcastNew;
-import twitchvod.src.data.async_tasks.TwitchToken;
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.data.primitives.Stream;
+import twitchvod.src.data.primitives.TwitchUser;
+import twitchvod.src.data.primitives.TwitchVideo;
 
 
 /**
@@ -52,22 +44,24 @@ public class ChannelDetailFragment extends Fragment {
     HashMap<String, String> mData;
     private int mLoadedItems, INT_LIST_UPDATE_VALUE, INT_LIST_UPDATE_THRESHOLD;
     onStreamSelectedListener mCallback;
-    PastBroadcastsListAdapter mPastAdapter;
-    private Spinner mSpinner;
     private ImageView mPlayOverlay;
     private ProgressBar mProgressBar;
     private ImageView mVideo;
     private View.OnTouchListener mTouchListener;
+    private AdapterView.OnItemClickListener mVideoClicked;
 
-    private ViewGroup mContainer;
-    private RelativeLayout mStreamView;
+    private RelativeLayout mStreamView, mOverlay;
     private Channel mChannel;
     private Stream mStream;
+    private TwitchUser mUser;
 
-    private boolean mIsStreaming;
-    private ImageView mThumbnail;
+    private ImageView mThumbnail, mChannelBanner;
     private TextView mStreamTitle, mStreamGameTitle, mStreamViewers, mStreamStatus;
     private String mToken, mSig;
+    private ListView mVideoList;
+    private PastBroadcastsListAdapter2 mVideoListAdapter2;
+    private View mStreamHeader, mFooter;
+    private View mChannelHeader;
 
     public ChannelDetailFragment newInstance(HashMap<String,String> h) {
         ChannelDetailFragment fragment = new ChannelDetailFragment();
@@ -86,6 +80,8 @@ public class ChannelDetailFragment extends Fragment {
         return fragment;
     }
 
+
+
     public interface onStreamSelectedListener {
         public void onStreamSelected(String s);
     }
@@ -95,16 +91,20 @@ public class ChannelDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_channel_detail, container, false);
-        mContainer = container;
         //mSpinner = (Spinner) rootView.findViewById(R.id.quality_spinner);
         mStreamView = (RelativeLayout) rootView.findViewById(R.id.stream_layout_top);
         mThumbnail = (ImageView) rootView.findViewById(R.id.videoFeed);
 
         mPlayOverlay = (ImageView) rootView.findViewById(R.id.imageOverlay);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.channel_detail_progress);
-        ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
+
+        //mLoadedItems = getResources().getInteger(R.integer.channel_list_start_items);
+        mLoadedItems = 8;
+        INT_LIST_UPDATE_VALUE = getResources().getInteger(R.integer.channel_list_update_items);
+        INT_LIST_UPDATE_THRESHOLD = getResources().getInteger(R.integer.channel_list_update_threshold);
 
         if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
             rootView.setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -114,32 +114,24 @@ public class ChannelDetailFragment extends Fragment {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
 
-//        String mBroadcastsBaseUrl = getString(R.string.channel_past_broadcasts_url) + mData.get("name") + "/videos?broadcasts=true&";
+        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mVideoList = (ListView) rootView.findViewById(R.id.expandableVideoList);
+            mVideoListAdapter2 = new PastBroadcastsListAdapter2(this);
+            mVideoList.setAdapter(mVideoListAdapter2);
 
-//        mLoadedItems = getResources().getInteger(R.integer.channel_list_start_items);
-//        INT_LIST_UPDATE_VALUE = getResources().getInteger(R.integer.channel_list_update_items);
-//        INT_LIST_UPDATE_THRESHOLD = getResources().getInteger(R.integer.channel_list_update_threshold);
+            mChannelHeader = getActivity().getLayoutInflater().inflate(R.layout.channel_video_header, null);
+            mStreamHeader = getActivity().getLayoutInflater().inflate(R.layout.stream_video_header, null);
+            mFooter = getActivity().getLayoutInflater().inflate(R.layout.channel_video_footer, null);
+        }
+
+        mVideoClicked = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                playSelectedVideo(mVideoListAdapter2.getItem(position));
+            }
+        };
 
 
-//        GridView listView = (GridView) rootView.findViewById(R.id.list_past_broadcasts);
-//        mPastAdapter = new PastBroadcastsListAdapter(getActivity(), mBroadcastsBaseUrl);
-//        listView.setAdapter(mPastAdapter);
-//
-//        text_title.setText(mData.get("display_name"));
-//        text_game.setText("playing " + mData.get("game"));
-//        text_viewers.setText(mData.get("views"));
-//        text_status.setText("Status: \n" + mData.get("status"));
-
-        //video.setVideoPath("http://video59.ams01.hls.twitch.tv/hls95/imaqtpie_13065546016_202388579/medium/py-index-live.m3u8?token=id=7279848897392817578,bid=13065546016,exp=1423576850,node=video59-1.ams01.hls.justin.tv,nname=video59.ams01,fmt=medium&sig=d92ded9f6bc81cc8cc4e6932c140a0657aef1443");
-        //video.start();
-
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-//                Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
-//                startBroadcast(mPastAdapter.getItemID(position));
-//            }
-//        });
-//
         mTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -150,26 +142,11 @@ public class ChannelDetailFragment extends Fragment {
             }
         };
 
-//        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(AbsListView view, int scrollState) {
-//            }
-//
-//            @Override
-//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//                int lastVisibleItem = firstVisibleItem + visibleItemCount;
-//                if (lastVisibleItem >= mLoadedItems - INT_LIST_UPDATE_THRESHOLD) {
-//                    mPastAdapter.loadTopData(INT_LIST_UPDATE_VALUE, mLoadedItems);
-//                    mLoadedItems += INT_LIST_UPDATE_VALUE;
-//                }
-//            }
-//        });
-
         return rootView;
     }
 
 
-    //------------------Channel Stuff -------------------------///////////////////
+    //------------------ Channel Stuff -------------------------///////////////////
     private void downloadChannelData() {
         String request = getActivity().getResources().getString(R.string.channel_url);
         request += getArguments().getString("channel_name");
@@ -180,16 +157,36 @@ public class ChannelDetailFragment extends Fragment {
     public void channelDataReceived(String s) {
         mChannel = TwitchJSONParser.channelJSONtoChannel(s);
         if (mChannel == null) errorScreen();
-        else
+        else {
             updateChannelLayout();
+            downloadHighlightData(mLoadedItems, 0);
+            downloadBroadcastData(mLoadedItems, 0);
+        }
     }
 
     private void updateChannelLayout() {
+        if (mChannel == null || mUser == null) return;
+
         mProgressBar.setVisibility(View.INVISIBLE);
-        mStreamView.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
+        mStreamView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 0));
+
+        if (mVideoList != null) {
+            mVideoList.setOnItemClickListener(mVideoClicked);
+            if (mVideoList.getHeaderViewsCount() == 0) {
+                mVideoList.addHeaderView(mChannelHeader);
+            }
+
+            mChannelBanner = (ImageView) mChannelHeader.findViewById(R.id.channel_banner);
+            loadLogo(mChannel.getLogoLink(), mChannelBanner);
+
+            ((TextView) mChannelHeader.findViewById(R.id.textTitleView)).setText(mChannel.getDisplayName());
+            ((TextView) mChannelHeader.findViewById(R.id.textBioView)).setText(mUser.getBio());
+            ((TextView) mChannelHeader.findViewById(R.id.textViewsView)).setText(mChannel.getFollowers() + " Followers");
+            mVideoList.setVisibility(View.VISIBLE);
+        }
     }
 
-    //------------------Stream Stuff -------------------------///////////////////
+    //------------------ Stream Stuff -------------------------///////////////////
     private void downloadStreamData(String name) {
         String request = getActivity().getResources().getString(R.string.channel_stream_url);
         request += name;
@@ -202,15 +199,19 @@ public class ChannelDetailFragment extends Fragment {
         if (mStream == null) {
             downloadChannelData();
         } else {
-            mIsStreaming = true;
+            mChannel = mStream.mChannel;
             updateLiveStreamLayout();
+            downloadHighlightData(mLoadedItems, 0);
+            downloadBroadcastData(mLoadedItems, 0);
         }
     }
 
     private void updateLiveStreamLayout() {
+        if (mStream == null || mUser == null) return;
         mProgressBar.setVisibility(View.INVISIBLE);
+        mStreamView.setVisibility(View.VISIBLE);
 
-        loadImage(mStream.mPreviewLink, mThumbnail);
+        loadLogo(mStream.mPreviewLink, mThumbnail);
         TextView sTitle = (TextView) mStreamView.findViewById(R.id.channelTitel);
         sTitle.setText(mStream.mChannel.getDisplayName());
         TextView sGame = (TextView) mStreamView.findViewById(R.id.channelGame);
@@ -219,9 +220,23 @@ public class ChannelDetailFragment extends Fragment {
         sViewers.setText(String.valueOf(mStream.mViewers));
         ImageView viewers_icon = (ImageView)mStreamView.findViewById(R.id.viewers_icon);
         viewers_icon.setVisibility(View.VISIBLE);
+
+        if (mVideoList != null) {
+            mVideoList.setOnItemClickListener(mVideoClicked);
+            if (mVideoList.getHeaderViewsCount() == 0) {
+                mVideoList.addHeaderView(mStreamHeader);
+            }
+
+            mChannelBanner = (ImageView) mStreamHeader.findViewById(R.id.channel_banner);
+            loadLogo(mChannel.getLogoLink(), mChannelBanner);
+
+            ((TextView) mStreamHeader.findViewById(R.id.textTitleView)).setText(mChannel.getStatus());
+            ((TextView) mStreamHeader.findViewById(R.id.textViewsView)).setText(mStream.mViewers + " Viewers");
+            mVideoList.setVisibility(View.VISIBLE);
+        }
     }
 
-    //------------------Livestream Stuff -------------------------///////////////////
+    //------------------ Livestream Stuff -------------------------/////////////////////////////////////////////
     private void fetchStreamToken(String s) {
         String tokenUrl = getString(R.string.stream_token_url) + s + "/access_token";
         TwitchLiveStreamThread t = new TwitchLiveStreamThread(this);
@@ -234,77 +249,73 @@ public class ChannelDetailFragment extends Fragment {
         mThumbnail.setOnTouchListener(mTouchListener);
     }
 
-    public void tokenDataReceived(String s) {
-        JSONObject jObject = null;
-        try {
-            jObject = new JSONObject(s);
-            mToken = jObject.getString("token");
-            mSig = jObject.getString("sig");
-        } catch (JSONException e) {
-            e.printStackTrace();
+    //------------------ User Stuff -------------------------///////////////////
+    private void downloadUserData(String name) {
+        String request = getActivity().getResources().getString(R.string.twitch_user_url);
+        request += name;
+        TwitchJSONDataThread t = new TwitchJSONDataThread(this, 4);
+        t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+    }
+
+    public void userDataReceived(String s) {
+        mUser = TwitchJSONParser.userDataToUser(s);
+        if (mUser == null) {
+            return;
+        } else {
+            updateLiveStreamLayout();
         }
     }
 
-    public void fetchStreamM3U8Playlists(String tok, String sig) {
-        String m3u8Url = "http://usher.twitch.tv/api/channel/hls/";
-        m3u8Url += mData.get("name") + ".m3u8?player=twitchweb&token=";
-        m3u8Url += tok + "&sig=" + sig;
-        m3u8Url += "&allow_audio_only=true&allow_source=true&type=any&p=8732417";
-        Log.v("asdfa", m3u8Url);
+    //------------------ Video Stuff -------------------------///////////////////////////////////////////
 
-        TwitchJSONDataThread tokenData = new TwitchJSONDataThread(this, 3);
-        tokenData.downloadJSONInBackground(m3u8Url, Thread.NORM_PRIORITY);
+    public void playSelectedVideo(TwitchVideo v) {
+        String prefix = v.mId.substring(0,1);
+        String suffix = v.mId.substring(1, v.mId.length());
+        String request;
+        TwitchBroadcastThread t = new TwitchBroadcastThread(this);
+        switch (prefix) {
+            case "v":
+                request = getString(R.string.twitch_video_token_url) + suffix + "/access_token";
+                t.downloadJSONInBackground(request, suffix, 0, Thread.NORM_PRIORITY);
+                break;
+        }
     }
 
-    public void livePlaylistReceived(String s) {
-        //TwitchJSONDataThread tokenData = new TwitchJSONDataThread(this, 3);
-        //tokenData.downloadJSONInBackground(m3u8Url, Thread.NORM_PRIORITY);
+    public void videoPlaylistReceived(HashMap<String, String> result) {
+        if (bestPossibleQuality(result) != null) {
+             playStream(result.get(bestPossibleQuality(result)));
+        }
     }
 
+    //------------------ Highlight Stuff -------------------------///////////////////////////////////////////
 
+    public void downloadHighlightData(int limit, int offset) {
+        String request = getString(R.string.channel_videos_url);
+        request += getArguments().getString("channel_name") + "/videos?";
+        request += "limit=" + limit + "&offset=" + offset;
+        TwitchJSONDataThread t = new TwitchJSONDataThread(this, 2);
+        t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+    }
 
+    public void highlightDataReceived(String s) {
+        mChannel.mHighlights = TwitchJSONParser.dataToVideoList(s);
+        mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
+    }
 
+    //------------------ PastBroadcast Stuff -------------------------/////////////////////////////////////////////
+
+    public void downloadBroadcastData(int limit, int offset) {
+        String request = getString(R.string.channel_videos_url);
+        request += getArguments().getString("channel_name") + "/videos?";
+        request += getString(R.string.channel_broadcasts_url_appendix);
+        request += "limit=" + limit + "&offset=" + offset;
+        TwitchJSONDataThread t = new TwitchJSONDataThread(this, 3);
+        t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+    }
 
     public void broadcastDataReceived(String s) {
-    }
-
-    private void startBroadcast(String s) {
-        String prefix = s.substring(0,1);
-        String suffix = s.substring(1, s.length());
-        switch (prefix) {
-            case "v": fetchBroadcastTokenNew(suffix); break;
-        }
-    }
-
-    private void fetchBroadcastTokenNew(String s) {
-        String tokenUrl = getString(R.string.past_broadcast_token_url_new) + s + "/access_token";
-        new TwitchToken(this, s).execute(tokenUrl);
-    }
-
-    public void fetchBroadcastM3U8PlaylistsNew(String token, String sig, String id) {
-        String m3u8Url = "http://usher.twitch.tv/vod/" + id + "?nauth=";
-        m3u8Url += token + "&nauthsig=" + sig;
-        Log.v("tvvod", m3u8Url);
-        new TwitchPastBroadcastNew(this).execute(m3u8Url);
-    }
-
-
-    public void updateStreamData(HashMap<String, String> hmap) {
-        mProgressBar.setProgress(4);
-        mAvailableQualities = hmap;
-        ArrayList<String> q = qualHashmapToArrayList(hmap);
-        ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, q);
-        itemsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinner.setAdapter(itemsAdapter);
-
-        if (mAvailableQualities.size() > 0) {
-            mPlayOverlay.setImageResource(R.drawable.play_logo);
-            mVideo.setOnTouchListener(mTouchListener);
-        } else {
-            mPlayOverlay.setImageResource(R.drawable.no_livestream);
-        }
-        mProgressBar.setVisibility(View.INVISIBLE);
+        mChannel.mBroadcasts = TwitchJSONParser.dataToVideoList(s);
+        mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
     }
 
     public void playStream(String s) {
@@ -313,52 +324,39 @@ public class ChannelDetailFragment extends Fragment {
         startActivity(stream);
     }
 
-    public void playBroadcast(HashMap<String, String> h) {
-        Intent stream = new Intent(Intent.ACTION_VIEW);
-        String sUrl;
-
-        if (h.containsKey(mSpinner.getSelectedItem())) {
-            sUrl = h.get(mSpinner.getSelectedItem());
-        }
-        else {
-            sUrl = h.get("source");
-            if (sUrl == null) sUrl = h.get("source");
-            if (sUrl == null) sUrl = h.get("high");
-            if (sUrl == null) sUrl = h.get("medium");
-        }
-
-        stream.setDataAndType(Uri.parse(sUrl), "video/*");
-        startActivity(stream);
-    }
-
-    public void fetchThumbnail() {
-        TwitchBitmapData t = new TwitchBitmapData(this);
-        TwitchBitmapThread tt = new TwitchBitmapThread(this);
-        if (mData.get("previewLink") != null) {
-            tt.downloadImageInBackground(mData.get("previewLink"), Thread.NORM_PRIORITY);
-            tt.stopThread();
-        } else if (mData.get("video_banner") != null) {
-            tt.downloadImageInBackground(mData.get("previewLink"), Thread.NORM_PRIORITY);
-            tt.stopThread();
-        }
-    }
-
     public void updateThumbnail(Bitmap bitmap) {
         mVideo.setImageBitmap(bitmap);
     }
 
     @Override
     public void onResume() {
-        if (mStream != null) {
+       // ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
+        if (mStream != null && mUser != null) {
             updateLiveStreamLayout();
+            mVideoListAdapter2.clearAllData();
+            mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
+            mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
             if (mAvailableQualities != null) {
                 liveLinksReceived(mAvailableQualities);
             }
+        } else if (mChannel != null && mUser != null) {
+            updateChannelLayout();
+            mVideoListAdapter2.clearAllData();
+            mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
+            mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
         } else {
+            mVideoListAdapter2.clearAllData();
             downloadStreamData(getArguments().getString("channel_name"));
+            downloadUserData(getArguments().getString("channel_name"));
             fetchStreamToken(getArguments().getString("channel_name"));
         }
         super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //((ActionBarActivity) getActivity()).getSupportActionBar().show();
     }
 
     @Override
@@ -387,7 +385,6 @@ public class ChannelDetailFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        ((ActionBarActivity) getActivity()).getSupportActionBar().show();
         mCallback = null;
     }
 
@@ -400,7 +397,7 @@ public class ChannelDetailFragment extends Fragment {
         return l;
     }
 
-    private void loadImage(final String url, final ImageView imageView) {
+    private void loadLogo(final String url, final ImageView imageView) {
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(url);
@@ -413,6 +410,16 @@ public class ChannelDetailFragment extends Fragment {
         });
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
+    }
+
+    public String bestPossibleQuality(HashMap<String, String> qualities) {
+        if (qualities.containsKey("source")) return "source";
+        if (qualities.containsKey("high")) return "high";
+        if (qualities.containsKey("medium")) return "medium";
+        if (qualities.containsKey("low")) return "low";
+        if (qualities.containsKey("mobile")) return "mobile";
+        if (qualities.containsKey("audio_only")) return "audio_only";
+        return null;
     }
 
     private void errorScreen() {

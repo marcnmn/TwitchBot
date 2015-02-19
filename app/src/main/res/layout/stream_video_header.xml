@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/channel_banner"
+        android:layout_height="150dp"
+        android:layout_width="150dp"
+        android:src="@drawable/channel_offline_360x360"
+        android:contentDescription="@string/channel_banner_desc" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:paddingLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_toRightOf="@id/channel_banner"
+        android:lines="2"
+        android:id="@+id/textTitleView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Header"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/textTitleView"
+        android:layout_alignLeft="@+id/textTitleView"
+        android:id="@+id/textViewsView" />
+</RelativeLayout>

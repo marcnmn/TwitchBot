@@ -58,7 +58,6 @@ public class NavigationDrawerFragment extends Fragment {
         if (!mFromSavedInstanceState) {
             selectItem(mCurrentSelectedPosition);
         }
-
     }
 
     @Override

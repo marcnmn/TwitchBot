@@ -85,7 +85,9 @@ public class TwitchJSONDataThread {
 
         if (mChannelDetailFragment != null && mDetailRequestType == 0) mChannelDetailFragment.channelDataReceived(s);
         if (mChannelDetailFragment != null && mDetailRequestType == 1) mChannelDetailFragment.streamDataReceived(s);
-        if (mChannelDetailFragment != null && mDetailRequestType == 2) mChannelDetailFragment.tokenDataReceived(s);
+        if (mChannelDetailFragment != null && mDetailRequestType == 2) mChannelDetailFragment.highlightDataReceived(s);
+        if (mChannelDetailFragment != null && mDetailRequestType == 3) mChannelDetailFragment.broadcastDataReceived(s);
+        if (mChannelDetailFragment != null && mDetailRequestType == 4) mChannelDetailFragment.userDataReceived(s);
     }
 
     private String downloadJSONData(String myurl) {

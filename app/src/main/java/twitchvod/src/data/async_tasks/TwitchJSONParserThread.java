@@ -77,7 +77,7 @@ public class TwitchJSONParserThread {
     }
 
     private void parseAndPushGame(String j) {
-        final ArrayList<Game> games = TwitchJSONParser.gameJSONtoArrayList(j);
+        final ArrayList<Game> games = TwitchJSONParser.topGamesJSONtoArrayList(j);
         mGamesRasterFragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

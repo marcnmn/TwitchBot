@@ -36,7 +36,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 0;
+    private int mCurrentSelectedPosition = 2;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -107,7 +107,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerToggle = new ActionBarDrawerToggle (
                 getActivity(),
                 mDrawerLayout,
-                toolbar,
+                null,
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {

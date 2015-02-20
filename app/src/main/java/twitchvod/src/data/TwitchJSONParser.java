@@ -27,7 +27,7 @@ public final class TwitchJSONParser {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    public static ArrayList<Game> gameJSONtoArrayList(String r) {
+    public static ArrayList<Game> topGamesJSONtoArrayList(String r) {
         String title, thumb, id;
         int viewers, channelc;
         JSONObject game;
@@ -54,11 +54,40 @@ public final class TwitchJSONParser {
             Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
             e.printStackTrace();
-            Log.v("gameJSONtoArrayList", "Nothing to parse. String is empty");
+            Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
         }
         return games;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    public static ArrayList<Game> gameJSONtoArrayList(String r) {
+        String title, thumb, id;
+        int viewers, channelc;
+        JSONObject game;
+
+        ArrayList<Game> games = new ArrayList<>();
+
+        try {
+            JSONObject jObject = new JSONObject(r);
+            JSONArray jArray = jObject.getJSONArray("games");
+
+            for (int i=0; i<jArray.length(); i++) {
+                game = jArray.getJSONObject(i);
+                title = game.getString("name");
+                id = game.getString("_id");
+                thumb = game.getJSONObject("box").getString(BITMAP_QUALITY);
+                Game temp = new Game(title,thumb,0,0,id,null);
+                games.add(temp);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
+        }
+        return games;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static ArrayList<Channel> channelsJSONtoArrayList(String r) {
         ArrayList<Channel> channels = new ArrayList<>();
@@ -107,7 +136,7 @@ public final class TwitchJSONParser {
             Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
             e.printStackTrace();
-            Log.v("gameJSONtoArrayList", "Nothing to parse. String is empty");
+            Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
         }
 
         return channels;
@@ -193,7 +222,7 @@ public final class TwitchJSONParser {
             e.printStackTrace();
         } catch (NullPointerException e) {
             e.printStackTrace();
-            Log.v("gameJSONtoArrayList", "Nothing to parse. String is empty");
+            Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
         }
 
         return stream;
@@ -235,7 +264,7 @@ public final class TwitchJSONParser {
             e.printStackTrace();
         } catch (NullPointerException e) {
             e.printStackTrace();
-            Log.v("gameJSONtoArrayList", "Nothing to parse. String is empty");
+            Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
         }
 
         return streams;

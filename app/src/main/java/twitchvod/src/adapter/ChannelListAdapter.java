@@ -111,7 +111,6 @@ public class ChannelListAdapter extends BaseAdapter {
                     public void run() {
                         imageView.setImageBitmap(bitmap);
                         mChannels.get(pos).mLogoBitmap = bitmap;
-                        mChannels.get(pos).mLogoBitmap = bitmap;
                     }
                 });
             }

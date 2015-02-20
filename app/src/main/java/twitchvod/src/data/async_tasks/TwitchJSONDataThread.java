@@ -25,15 +25,17 @@ import twitchvod.src.data.primitives.Stream;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
 import twitchvod.src.ui_fragments.GamesRasterFragment;
+import twitchvod.src.ui_fragments.SearchFragment;
 import twitchvod.src.ui_fragments.StreamListFragment;
 
 public class TwitchJSONDataThread {
+    private SearchFragment mSearchFragment;
     private StreamListFragment mStreamListFragment;
     private GamesRasterFragment mGamesRasterFragment;
     private ChannelListFragment mChannelListFragment;
     private ChannelDetailFragment mChannelDetailFragment;
     private Thread mThread;
-    private int mDetailRequestType;
+    private int mDetailRequestType, mSearchRequestType;
 
     public TwitchJSONDataThread(ChannelDetailFragment c, int request_type) {
         mChannelDetailFragment = c;
@@ -50,6 +52,11 @@ public class TwitchJSONDataThread {
 
     public TwitchJSONDataThread(StreamListFragment s) {
         mStreamListFragment = s;
+    }
+
+    public TwitchJSONDataThread(SearchFragment s, int request_type) {
+        mSearchFragment = s;
+        mSearchRequestType = request_type;
     }
 
     public void downloadJSONInBackground(String s, int priority) {
@@ -75,6 +82,7 @@ public class TwitchJSONDataThread {
         if (mChannelListFragment != null) return mChannelListFragment.getActivity();
         if (mGamesRasterFragment != null) return mGamesRasterFragment.getActivity();
         if (mStreamListFragment != null) return mStreamListFragment.getActivity();
+        if (mSearchFragment != null) return mSearchFragment.getActivity();
         return null;
     }
 
@@ -88,6 +96,10 @@ public class TwitchJSONDataThread {
         if (mChannelDetailFragment != null && mDetailRequestType == 2) mChannelDetailFragment.highlightDataReceived(s);
         if (mChannelDetailFragment != null && mDetailRequestType == 3) mChannelDetailFragment.broadcastDataReceived(s);
         if (mChannelDetailFragment != null && mDetailRequestType == 4) mChannelDetailFragment.userDataReceived(s);
+
+        if (mSearchFragment != null && mSearchRequestType == 0) mSearchFragment.channelDataReceived(s);
+        if (mSearchFragment != null && mSearchRequestType == 1) mSearchFragment.streamDataReceived(s);
+        if (mSearchFragment != null && mSearchRequestType == 2) mSearchFragment.gameDataReceived(s);
     }
 
     private String downloadJSONData(String myurl) {

@@ -23,10 +23,15 @@
 
     <string name="game_streams_url">https://api.twitch.tv/kraken/streams?game=</string>
     <string name="channel_url">https://api.twitch.tv/kraken/channels/</string>
+
     <string name="twitch_user_url">https://api.twitch.tv/kraken/users/</string>
     <string name="channel_stream_url">https://api.twitch.tv/kraken/streams/</string>
     <string name="channel_videos_url">https://api.twitch.tv/kraken/channels/</string>
     <string name="channel_broadcasts_url_appendix">broadcasts=true&amp;</string>
+
+    <string name="twitch_search_channels">https://api.twitch.tv/kraken/search/channels?</string>
+    <string name="twitch_search_streams">https://api.twitch.tv/kraken/search/streams?</string>
+    <string name="twitch_search_games">https://api.twitch.tv/kraken/search/games?</string>
 
     <string name="stream_token_url">http://api.twitch.tv/api/channels/</string>
     <string name="twitch_video_token_url">https://api.twitch.tv/api/vods/</string>

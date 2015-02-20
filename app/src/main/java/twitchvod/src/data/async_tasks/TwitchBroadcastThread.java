@@ -16,8 +16,10 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 
+import twitchvod.src.data.TwitchJSONParser;
 import twitchvod.src.data.TwitchNetworkTasks;
 import twitchvod.src.data.primitives.TwitchVideo;
+import twitchvod.src.data.primitives.TwitchVod;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
 import twitchvod.src.ui_fragments.GamesRasterFragment;
@@ -31,6 +33,8 @@ public class TwitchBroadcastThread {
     private TwitchVideo mVideo;
     private Thread mThread;
     private HashMap<String, String> mStreamUrls;
+    private boolean mIsAuthenticated;
+    private String mUserToken;
 
     public TwitchBroadcastThread(ChannelDetailFragment c) {
         mChannelDetailFragment = c;
@@ -40,10 +44,17 @@ public class TwitchBroadcastThread {
         mVideo = v;
     }
 
+    public TwitchBroadcastThread(ChannelDetailFragment c, String token) {
+        mChannelDetailFragment = c;
+        mIsAuthenticated = true;
+        mUserToken = token;
+    }
+
     public void downloadJSONInBackground(final String tokenUrl, final String videoId, final int requestType, int priority) {
         mThread = new Thread(new Runnable() {
             public void run() {
                 if (requestType == 0) mStreamUrls = liveStreamUrls(tokenUrl, videoId);
+                if (requestType == 1) mStreamUrls = oldVods(tokenUrl, videoId);
                     mChannelDetailFragment.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -54,6 +65,14 @@ public class TwitchBroadcastThread {
         });
         if (priority > 0) mThread.setPriority(priority);
         mThread.start();
+    }
+
+    private HashMap<String, String> oldVods(String s, String id) {
+        HashMap<String, String> videoPlaylist = null;
+        JSONObject jData = TwitchNetworkTasks.downloadJSONData(s);
+        TwitchVod vod = TwitchJSONParser.oldVideoDataToPlaylist(jData);
+
+        return videoPlaylist;
     }
 
     private void pushResult(HashMap<String, String> result, int req) {
@@ -69,6 +88,7 @@ public class TwitchBroadcastThread {
 
             String m3u8Url = "http://usher.twitch.tv/vod/" + id + "?nauth=";
             m3u8Url += token + "&nauthsig=" + sig;
+            if (mIsAuthenticated) m3u8Url += "&oauth_token=" + mUserToken;
             Log.v("asdfa", m3u8Url);
 
             videoPlaylist = TwitchNetworkTasks.fetchTwitchPlaylist(m3u8Url);

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity$SetupFragment">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/button_bar"
+        android:layout_alignParentBottom="true"
+        android:background="@color/background_material_light">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/skipButton"
+            android:layout_marginRight="1dp"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:text="Skip"/>
+
+        <ImageView
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#c8bdbdbd"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/nextButton"
+            android:layout_marginLeft="1dp"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:text="Next"/>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:id="@+id/borderButtonBar"
+        android:layout_above="@id/button_bar"
+        android:background="#c8bdbdbd"/>
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="2dp"
+        android:id="@+id/borderIndicator"
+        android:layout_above="@id/button_bar"
+        android:background="#9575CD"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/screenContainer"
+        android:layout_above="@id/borderButtonBar">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/greetings"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textWelcome"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:text="Welcome!"/>
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:id="@+id/welcome_image"
+            android:layout_below="@id/textWelcome"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"
+            android:src="@drawable/ic_launcher"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:layout_below="@id/welcome_image"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:gravity="center"
+            android:text="You can now import your Twitch Data and some other basic settings."/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/choose_login"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textTwitchSetup"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:text="Twitch Setup"/>
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:id="@+id/imageTwitchLogo"
+            android:layout_below="@id/textTwitchSetup"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/twitch_logo"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textLoginDesc"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_below="@id/imageTwitchLogo"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:gravity="center_horizontal"
+            android:text="Please choose your Login method."/>
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioLoginMethod"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_centerInParent="true"
+            android:layout_below="@+id/textLoginDesc">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:text="Twitch Login"
+                android:checked="true"
+                android:id="@+id/radioTwitchLogin" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:text="Username only"
+                android:clickable="true"
+                android:id="@+id/radioTwitchUserLogin" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textLoginDetails"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_below="@id/radioLoginMethod"
+            android:layout_alignParentBottom="true"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:gravity="center|bottom"
+            android:text="(For restricted quality Streams choose Twitch Login)"
+            android:paddingBottom="10dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/twitch_login"
+        android:visibility="visible">
+        <WebView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/webView">
+        </WebView>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/twitchProgress"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/name_login"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/name_enter"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:textSize="@dimen/abc_text_size_large_material"
+                android:text="Twitch Setup"/>
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:id="@+id/imageTwitchLogoName"
+                android:layout_below="@id/name_enter"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/twitch_logo"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/nameLoginText"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_below="@id/imageTwitchLogoName"
+                android:textSize="@dimen/abc_text_size_large_material"
+                android:gravity="center_horizontal"
+                android:text="Please enter your Twitch Username"/>
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_below="@+id/nameLoginText"
+            android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textLoginName"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_below="@id/editText"
+                android:layout_alignParentBottom="true"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:gravity="center|bottom"
+                android:text="Your username is required to fetch your followed games"
+                android:paddingBottom="10dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/setupCompleted"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_completed"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:textSize="@dimen/abc_text_size_large_material"
+                android:text="Twitch Setup"/>
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:id="@+id/imageTwitchLogoFinished"
+                android:layout_below="@id/text_completed"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/twitch_logo"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/finishedText"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_below="@id/imageTwitchLogoFinished"
+                android:textSize="@dimen/abc_text_size_large_material"
+                android:gravity="center_horizontal"
+                android:text="Congratulations! \n Twitchbot is now ready"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/finishedTipps"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_below="@id/finishedText"
+                android:layout_alignParentBottom="true"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:gravity="center|bottom"
+                android:text="If your Twitch Credentials have changed, your can always edit them in settings."
+                android:paddingBottom="10dp"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

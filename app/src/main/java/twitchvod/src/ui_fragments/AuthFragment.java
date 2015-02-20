@@ -46,7 +46,7 @@ public class AuthFragment extends Fragment {
 
         ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle("Authentication");
 
-        final String url = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=cgkxsqu4n4wwrq4enos0dyhz60bzea4&redirect_uri=https://twitchbot&scope=chat_login";
+        final String url = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=cgkxsqu4n4wwrq4enos0dyhz60bzea4&redirect_uri=https://twitchbot&scope=user_subscriptions";
         final String url2 = "http://google.com/";
 
         w.getSettings().setJavaScriptEnabled(true);
@@ -82,15 +82,9 @@ public class AuthFragment extends Fragment {
                         fm.popBackStack();
                     }
 
+                    Log.v("token", token);
+                    Log.v("scopes", scopes);
                     Log.v("Authentication Test", url);
-                } else {
-                    try {
-                        w.wait(1000);
-                        w.loadUrl(url2);
-                        Toast.makeText(activity, "Could not login. Trying again.", Toast.LENGTH_SHORT).show();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         });

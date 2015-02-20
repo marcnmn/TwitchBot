@@ -19,6 +19,9 @@ import twitchvod.src.data.primitives.PastBroadcast;
 import twitchvod.src.data.primitives.Stream;
 import twitchvod.src.data.primitives.TwitchUser;
 import twitchvod.src.data.primitives.TwitchVideo;
+import twitchvod.src.data.primitives.TwitchVod;
+import twitchvod.src.data.primitives.TwitchVodFile;
+import twitchvod.src.data.primitives.TwitchVodFileOld;
 
 public final class TwitchJSONParser {
     private static String BITMAP_QUALITY = "large";
@@ -51,7 +54,7 @@ public final class TwitchJSONParser {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
+            Log.v("channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
             e.printStackTrace();
             Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
@@ -81,7 +84,7 @@ public final class TwitchJSONParser {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
+            Log.v("channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
             e.printStackTrace();
             Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
@@ -133,7 +136,7 @@ public final class TwitchJSONParser {
         }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
+            Log.v("channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
             e.printStackTrace();
             Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
@@ -172,7 +175,7 @@ public final class TwitchJSONParser {
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.v("TwitchBot channelsJSONtoArrayList", "no JSON Data");
+            Log.v("channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
             e.printStackTrace();
             Log.v("channelsJSONtoArrayList", "Nothing to parse. String is empty");
@@ -371,7 +374,7 @@ public final class TwitchJSONParser {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static TwitchUser userDataToUser(String s) {
-        String display_name, name, bio, updated_at, type, created_at, logo;
+        String display_name = "", name = "", bio = "", updated_at= "", type = "", created_at = "", logo = "";
         TwitchUser user = null;
 
         JSONObject jUser;
@@ -379,7 +382,8 @@ public final class TwitchJSONParser {
             jUser = new JSONObject(s);
             display_name = jUser.getString("display_name");
             name = jUser.getString("name");
-            bio = jUser.getString("bio");
+            if (jUser.getString("bio") != null)
+                bio = jUser.getString("bio");
             updated_at = jUser.getString("updated_at");
             type = jUser.getString("type");
             created_at = jUser.getString("created_at");
@@ -388,10 +392,49 @@ public final class TwitchJSONParser {
             user = new TwitchUser(display_name, name, bio, updated_at, type, created_at, logo);
         } catch (JSONException e) {
             e.printStackTrace();
+           return new TwitchUser(display_name, name, bio, updated_at, type, created_at, logo);
         } catch (NullPointerException e) {
             e.printStackTrace();
             Log.v("userDataToUser", "Nothing to parse. String is empty");
+            return new TwitchUser(display_name, name, bio, updated_at, type, created_at, logo);
         }
         return user;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    public static TwitchVod oldVideoDataToPlaylist(JSONObject jToken) {
+        TwitchVod result = new TwitchVod();
+        ArrayList<TwitchVodFileOld> fo = new ArrayList<>();
+
+        ArrayList<String> qualities;
+
+        try {
+            result.setDuration(jToken.getString("duration"));
+            result.setChannel(jToken.getString("channel"));
+            result.setPreviewLink(jToken.getString("preview"));
+
+            JSONObject jsonObject = jToken.getJSONObject("chunks");
+            JSONArray jPlaylist;
+
+            for (int i = 0; i < jsonObject.names().length(); i++) {
+                TwitchVodFileOld to = new TwitchVodFileOld();
+                to.setQuality(jsonObject.names().getString(i));
+
+                ArrayList<TwitchVodFile> vf = new ArrayList<>();
+                jPlaylist = jsonObject.getJSONArray(jsonObject.names().getString(i));
+                for (int j = 0; j < jPlaylist.length(); j++) {
+                    String url = jPlaylist.getJSONObject(j).getString("url");
+                    String length = jPlaylist.getJSONObject(j).getString("length");
+                    vf.add(new TwitchVodFile(url, length));
+                }
+                to.setVideo(vf);
+                fo.add(to);
+            }
+            result.setVideo(fo);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+
     }
 }

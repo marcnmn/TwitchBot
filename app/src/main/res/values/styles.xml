@@ -11,4 +11,8 @@
         <item name="color">@android:color/white</item>
     </style>
 
+    <style name="LightThemeSelector" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="selectableItemBackground">?android:attr/selectableItemBackground</item>
+    </style>
+
 </resources>

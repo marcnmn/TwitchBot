@@ -3,10 +3,12 @@ package twitchvod.src.ui_fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,10 +32,12 @@ import twitchvod.src.data.TwitchNetworkTasks;
 import twitchvod.src.data.async_tasks.TwitchBroadcastThread;
 import twitchvod.src.data.async_tasks.TwitchJSONDataThread;
 import twitchvod.src.data.async_tasks.TwitchLiveStreamThread;
+import twitchvod.src.data.async_tasks.TwitchOldBroadcastThread;
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.data.primitives.Stream;
 import twitchvod.src.data.primitives.TwitchUser;
 import twitchvod.src.data.primitives.TwitchVideo;
+import twitchvod.src.data.primitives.TwitchVod;
 
 
 /**
@@ -54,6 +58,12 @@ public class ChannelDetailFragment extends Fragment {
     private Channel mChannel;
     private Stream mStream;
     private TwitchUser mUser;
+
+    private static String USER_AUTH_TOKEN = "user_auth_token";
+    private static String USER_IS_AUTHENTICATED = "user_is_authenticated";
+    private static String SCOPES_OF_USER = "scopes_of_user";
+    private String mUserToken, mUserScope;
+    private boolean mIsAuthenticated;
 
     private ImageView mThumbnail, mChannelBanner;
     private TextView mStreamTitle, mStreamGameTitle, mStreamViewers, mStreamStatus;
@@ -91,6 +101,15 @@ public class ChannelDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_channel_detail, container, false);
+
+        SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(getActivity());
+        mIsAuthenticated = sp.getBoolean(USER_IS_AUTHENTICATED, false);
+        if (mIsAuthenticated) {
+            mUserToken = sp.getString(USER_AUTH_TOKEN, "");
+            mUserScope = sp.getString(SCOPES_OF_USER, "");
+        }
+
         //mSpinner = (Spinner) rootView.findViewById(R.id.quality_spinner);
         mStreamView = (RelativeLayout) rootView.findViewById(R.id.stream_layout_top);
         mThumbnail = (ImageView) rootView.findViewById(R.id.videoFeed);
@@ -150,6 +169,7 @@ public class ChannelDetailFragment extends Fragment {
     private void downloadChannelData() {
         String request = getActivity().getResources().getString(R.string.channel_url);
         request += getArguments().getString("channel_name");
+        if (mIsAuthenticated) request += "?oauth_token=" + mUserToken;
         TwitchJSONDataThread t = new TwitchJSONDataThread(this, 0);
         t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
     }
@@ -190,6 +210,7 @@ public class ChannelDetailFragment extends Fragment {
     private void downloadStreamData(String name) {
         String request = getActivity().getResources().getString(R.string.channel_stream_url);
         request += name;
+        if (mIsAuthenticated) request += "?oauth=" + mUserToken;
         TwitchJSONDataThread t = new TwitchJSONDataThread(this, 1);
         t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
     }
@@ -239,7 +260,12 @@ public class ChannelDetailFragment extends Fragment {
     //------------------ Livestream Stuff -------------------------/////////////////////////////////////////////
     private void fetchStreamToken(String s) {
         String tokenUrl = getString(R.string.stream_token_url) + s + "/access_token";
-        TwitchLiveStreamThread t = new TwitchLiveStreamThread(this);
+        TwitchLiveStreamThread t;
+        if (mIsAuthenticated) {
+            t = new TwitchLiveStreamThread(this, mUserToken);
+        } else {
+            t = new TwitchLiveStreamThread(this);
+        }
         t.downloadJSONInBackground(tokenUrl, getArguments().getString("channel_name"), 0, Thread.NORM_PRIORITY);
     }
 
@@ -273,10 +299,20 @@ public class ChannelDetailFragment extends Fragment {
         String suffix = v.mId.substring(1, v.mId.length());
         String request;
         TwitchBroadcastThread t = new TwitchBroadcastThread(this);
+        TwitchOldBroadcastThread to = new TwitchOldBroadcastThread(this);
+        if (mIsAuthenticated)
+            t = new TwitchBroadcastThread(this, mUserToken);
         switch (prefix) {
             case "v":
                 request = getString(R.string.twitch_video_token_url) + suffix + "/access_token";
                 t.downloadJSONInBackground(request, suffix, 0, Thread.NORM_PRIORITY);
+                break;
+            case "a":
+                request = "https://api.twitch.tv/api/videos/" + v.mId + "?as3=t";
+                if (mIsAuthenticated)
+                    request += "&oauth_token=" + mUserToken;
+                to.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+                Log.v("request: ", request);
                 break;
         }
     }
@@ -284,6 +320,12 @@ public class ChannelDetailFragment extends Fragment {
     public void videoPlaylistReceived(HashMap<String, String> result) {
         if (bestPossibleQuality(result) != null) {
              playStream(result.get(bestPossibleQuality(result)));
+        }
+    }
+
+    public void oldVideoPlaylistReceived(TwitchVod t) {
+        if (t.bestPossibleUrl() != null) {
+            playStream(t.bestPossibleUrl());
         }
     }
 
@@ -330,7 +372,7 @@ public class ChannelDetailFragment extends Fragment {
 
     @Override
     public void onResume() {
-       // ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
+       ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
         if (mStream != null && mUser != null) {
             updateLiveStreamLayout();
             mVideoListAdapter2.clearAllData();
@@ -356,7 +398,7 @@ public class ChannelDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        //((ActionBarActivity) getActivity()).getSupportActionBar().show();
+        ((ActionBarActivity) getActivity()).getSupportActionBar().show();
     }
 
     @Override
@@ -403,7 +445,8 @@ public class ChannelDetailFragment extends Fragment {
                 final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(url);
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        imageView.setImageBitmap(bitmap);
+                        if (imageView != null)
+                            imageView.setImageBitmap(bitmap);
                     }
                 });
             }

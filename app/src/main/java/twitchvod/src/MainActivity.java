@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import twitchvod.src.ui_fragments.AuthFragment;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
 import twitchvod.src.ui_fragments.SearchFragment;
+import twitchvod.src.ui_fragments.SetupFragment;
 import twitchvod.src.ui_fragments.StreamListFragment;
 import twitchvod.src.ui_fragments.GamesRasterFragment;
 import twitchvod.src.ui_fragments.NavigationDrawerFragment;
@@ -98,11 +100,17 @@ public class MainActivity extends ActionBarActivity
                 transaction.commit();
                 break;
             case 4:
-                AuthFragment a = new AuthFragment();
+//                AuthFragment a = new AuthFragment();
+//                transaction = getFragmentManager().beginTransaction();
+//                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//                transaction.replace(R.id.container, a.newInstance());
+//                transaction.addToBackStack(null);
+//                transaction.commit();
+                break;
+            case 100:
+                SetupFragment s = new SetupFragment();
                 transaction = getFragmentManager().beginTransaction();
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.replace(R.id.container, a.newInstance());
-                transaction.addToBackStack(null);
+                transaction.replace(R.id.container, s);
                 transaction.commit();
                 break;
         }
@@ -199,4 +207,12 @@ public class MainActivity extends ActionBarActivity
         Log.v("ASDFasdf", intent.toString());
     }
 
+    public void startApp() {
+        GamesRasterFragment mGamesRasterFragment = new GamesRasterFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.replace(R.id.container, mGamesRasterFragment.newInstance(mUrls[0]));
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }

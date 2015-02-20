@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TVVOD.iml" filepath="$PROJECT_DIR$/TVVOD.iml" />
       <module fileurl="file://$PROJECT_DIR$/TwitchBot.iml" filepath="$PROJECT_DIR$/TwitchBot.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

@@ -1,11 +1,6 @@
 package twitchvod.src.data.primitives;
 
 import android.graphics.Bitmap;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-
 import twitchvod.src.data.TwitchJSONParser;
 
 public class TwitchVideo {

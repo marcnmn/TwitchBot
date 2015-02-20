@@ -28,6 +28,7 @@ public class NavigationDrawerFragment extends Fragment {
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
+    private static final String PREF_USER_COMPLETED_SETUP = "user_completed_setup";
     private NavigationDrawerCallbacks mCallbacks;
 
     private ActionBarDrawerToggle mDrawerToggle;
@@ -36,9 +37,9 @@ public class NavigationDrawerFragment extends Fragment {
 
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 2;
+    private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
-    private boolean mUserLearnedDrawer;
+    private boolean mUserLearnedDrawer, mUserHasCompletedSetup;
 
     public NavigationDrawerFragment() {
     }
@@ -49,6 +50,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
+        mUserHasCompletedSetup = sp.getBoolean(PREF_USER_COMPLETED_SETUP, false);
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
@@ -154,6 +156,9 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void selectItem(int position) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mUserHasCompletedSetup = sp.getBoolean(PREF_USER_COMPLETED_SETUP, false);
+
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
@@ -162,7 +167,12 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            if (!mUserHasCompletedSetup) {
+                mCallbacks.onNavigationDrawerItemSelected(100);
+                mCurrentSelectedPosition = 0;
+            }
+            else
+                mCallbacks.onNavigationDrawerItemSelected(position);
         }
     }
 

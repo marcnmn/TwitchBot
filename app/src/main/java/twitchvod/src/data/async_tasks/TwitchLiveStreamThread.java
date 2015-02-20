@@ -30,10 +30,18 @@ public class TwitchLiveStreamThread {
     private ChannelDetailFragment mChannelDetailFragment;
     private Thread mThread;
     private HashMap<String, String> mStreamUrls;
+    private boolean mIsAuthenticated;
+    private String mUserToken;
 
     public TwitchLiveStreamThread(ChannelDetailFragment c) {
         mChannelDetailFragment = c;
     }
+    public TwitchLiveStreamThread(ChannelDetailFragment c, String token) {
+        mChannelDetailFragment = c;
+        mIsAuthenticated = true;
+        mUserToken = token;
+    }
+
 
     public void downloadJSONInBackground(final String s, final String name, final int requestType, int priority) {
         mThread = new Thread(new Runnable() {
@@ -67,6 +75,7 @@ public class TwitchLiveStreamThread {
             m3u8Url += name + ".m3u8?player=twitchweb&token=";
             m3u8Url += token + "&sig=" + sig;
             m3u8Url += "&allow_audio_only=true&allow_source=true&type=any&p=8732417";
+            if (mIsAuthenticated) m3u8Url += "&oauth_token=" + mUserToken;
             Log.v("asdfa", m3u8Url);
 
             streams = fetchLivePlaylist(m3u8Url);

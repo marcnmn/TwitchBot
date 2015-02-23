@@ -1,7 +1,9 @@
 package twitchvod.src.ui_fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -21,9 +23,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import twitchvod.src.R;
 import twitchvod.src.adapter.PastBroadcastsListAdapter2;
@@ -44,7 +48,7 @@ import twitchvod.src.data.primitives.TwitchVod;
  * Created by marc on 27.01.2015. Gridview of available games
  */
 public class ChannelDetailFragment extends Fragment {
-    HashMap<String, String> mAvailableQualities;
+    LinkedHashMap<String, String> mAvailableQualities;
     HashMap<String, String> mData;
     private int mLoadedItems, INT_LIST_UPDATE_VALUE, INT_LIST_UPDATE_THRESHOLD;
     onStreamSelectedListener mCallback;
@@ -53,6 +57,9 @@ public class ChannelDetailFragment extends Fragment {
     private ImageView mVideo;
     private View.OnTouchListener mTouchListener;
     private AdapterView.OnItemClickListener mVideoClicked;
+
+    private ViewGroup mContainer;
+    private int mQualitySelected;
 
     private RelativeLayout mStreamView, mOverlay;
     private Channel mChannel;
@@ -99,9 +106,7 @@ public class ChannelDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.fragment_channel_detail, container, false);
-
         SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(getActivity());
         mIsAuthenticated = sp.getBoolean(USER_IS_AUTHENTICATED, false);
@@ -122,21 +127,9 @@ public class ChannelDetailFragment extends Fragment {
         INT_LIST_UPDATE_VALUE = getResources().getInteger(R.integer.channel_list_update_items);
         INT_LIST_UPDATE_THRESHOLD = getResources().getInteger(R.integer.channel_list_update_threshold);
 
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-            rootView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
-
         if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mVideoList = (ListView) rootView.findViewById(R.id.expandableVideoList);
             mVideoListAdapter2 = new PastBroadcastsListAdapter2(this);
-            mVideoList.setAdapter(mVideoListAdapter2);
 
             mChannelHeader = getActivity().getLayoutInflater().inflate(R.layout.channel_video_header, null);
             mStreamHeader = getActivity().getLayoutInflater().inflate(R.layout.stream_video_header, null);
@@ -154,9 +147,9 @@ public class ChannelDetailFragment extends Fragment {
         mTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                //String s = (String) mSpinner.getSelectedItem();
-                //s = s.replace(" ", "_");
-                playStream(mAvailableQualities.get("source"));
+                if (bestPossibleQuality2(mAvailableQualities) >= 0) {
+                    showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities));
+                }
                 return false;
             }
         };
@@ -187,13 +180,14 @@ public class ChannelDetailFragment extends Fragment {
     private void updateChannelLayout() {
         if (mChannel == null || mUser == null) return;
 
-        mProgressBar.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.GONE);
         mStreamView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 0));
 
         if (mVideoList != null) {
             mVideoList.setOnItemClickListener(mVideoClicked);
             if (mVideoList.getHeaderViewsCount() == 0) {
                 mVideoList.addHeaderView(mChannelHeader);
+                mVideoList.setAdapter(mVideoListAdapter2);
             }
 
             mChannelBanner = (ImageView) mChannelHeader.findViewById(R.id.channel_banner);
@@ -229,7 +223,7 @@ public class ChannelDetailFragment extends Fragment {
 
     private void updateLiveStreamLayout() {
         if (mStream == null || mUser == null) return;
-        mProgressBar.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.GONE);
         mStreamView.setVisibility(View.VISIBLE);
 
         loadLogo(mStream.mPreviewLink, mThumbnail);
@@ -246,6 +240,7 @@ public class ChannelDetailFragment extends Fragment {
             mVideoList.setOnItemClickListener(mVideoClicked);
             if (mVideoList.getHeaderViewsCount() == 0) {
                 mVideoList.addHeaderView(mStreamHeader);
+                mVideoList.setAdapter(mVideoListAdapter2);
             }
 
             mChannelBanner = (ImageView) mStreamHeader.findViewById(R.id.channel_banner);
@@ -269,7 +264,7 @@ public class ChannelDetailFragment extends Fragment {
         t.downloadJSONInBackground(tokenUrl, getArguments().getString("channel_name"), 0, Thread.NORM_PRIORITY);
     }
 
-    public void liveLinksReceived(HashMap<String, String> result) {
+    public void liveLinksReceived(LinkedHashMap<String, String> result) {
         mAvailableQualities = result;
         mPlayOverlay.setImageResource(R.drawable.play_logo);
         mThumbnail.setOnTouchListener(mTouchListener);
@@ -295,6 +290,12 @@ public class ChannelDetailFragment extends Fragment {
     //------------------ Video Stuff -------------------------///////////////////////////////////////////
 
     public void playSelectedVideo(TwitchVideo v) {
+        if (v == null) {
+            Toast.makeText(getActivity(), "Could not load Video", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mProgressBar.setVisibility(View.VISIBLE);
         String prefix = v.mId.substring(0,1);
         String suffix = v.mId.substring(1, v.mId.length());
         String request;
@@ -314,18 +315,31 @@ public class ChannelDetailFragment extends Fragment {
                 to.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
                 Log.v("request: ", request);
                 break;
+            case "c":
+                request = "https://api.twitch.tv/api/videos/" + v.mId + "?as3=t";
+                if (mIsAuthenticated)
+                    request += "&oauth_token=" + mUserToken;
+                to.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+                Log.v("request: ", request);
+                break;
         }
     }
 
-    public void videoPlaylistReceived(HashMap<String, String> result) {
-        if (bestPossibleQuality(result) != null) {
-             playStream(result.get(bestPossibleQuality(result)));
+    public void videoPlaylistReceived(LinkedHashMap<String, String> result) {
+        mProgressBar.setVisibility(View.INVISIBLE);
+        if (bestPossibleQuality2(result) >= 0) {
+            showPlayDialog(result, bestPossibleQuality2(result));
+        } else {
+            Toast.makeText(getActivity(), "Could not load Video, You need to subscribe to the channel.", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void oldVideoPlaylistReceived(TwitchVod t) {
-        if (t.bestPossibleUrl() != null) {
-            playStream(t.bestPossibleUrl());
+        mProgressBar.setVisibility(View.INVISIBLE);
+        if (t.bestPossibleUrl() >= 0) {
+            showPlayDialog(t.getAvailableQualities(), t.bestPossibleUrl());
+        } else {
+            Toast.makeText(getActivity(), "Could not load Video, You need to subscribe to the channel.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -341,7 +355,7 @@ public class ChannelDetailFragment extends Fragment {
 
     public void highlightDataReceived(String s) {
         mChannel.mHighlights = TwitchJSONParser.dataToVideoList(s);
-        mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
+        if (mVideoListAdapter2 != null) mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
     }
 
     //------------------ PastBroadcast Stuff -------------------------/////////////////////////////////////////////
@@ -357,7 +371,7 @@ public class ChannelDetailFragment extends Fragment {
 
     public void broadcastDataReceived(String s) {
         mChannel.mBroadcasts = TwitchJSONParser.dataToVideoList(s);
-        mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
+        if (mVideoListAdapter2 != null) mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
     }
 
     public void playStream(String s) {
@@ -372,33 +386,37 @@ public class ChannelDetailFragment extends Fragment {
 
     @Override
     public void onResume() {
-       ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
+        super.onResume();
+        ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
+        if(isInLandscape()) fullscreen();
         if (mStream != null && mUser != null) {
             updateLiveStreamLayout();
-            mVideoListAdapter2.clearAllData();
-            mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
-            mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
+            if (mVideoListAdapter2 != null) {
+                mVideoListAdapter2.clearAllData();
+                mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
+                mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
+            }
             if (mAvailableQualities != null) {
                 liveLinksReceived(mAvailableQualities);
             }
         } else if (mChannel != null && mUser != null) {
+            if (mVideoListAdapter2 != null) {
+                mVideoListAdapter2.clearAllData();
+                mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
+                mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
+            }
             updateChannelLayout();
-            mVideoListAdapter2.clearAllData();
-            mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
-            mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
         } else {
-            mVideoListAdapter2.clearAllData();
+            if (mVideoListAdapter2 != null) mVideoListAdapter2.clearAllData();
             downloadStreamData(getArguments().getString("channel_name"));
             downloadUserData(getArguments().getString("channel_name"));
             fetchStreamToken(getArguments().getString("channel_name"));
         }
-        super.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((ActionBarActivity) getActivity()).getSupportActionBar().show();
     }
 
     @Override
@@ -430,6 +448,18 @@ public class ChannelDetailFragment extends Fragment {
         mCallback = null;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        ((ActionBarActivity) getActivity()).getSupportActionBar().show();
+        if(isInLandscape()) showUi();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
     private ArrayList<String> qualHashmapToArrayList(HashMap<String, String> h) {
         ArrayList<String> l = new ArrayList<>();
         String[] keys = getResources().getStringArray(R.array.livestream_qualities);
@@ -443,6 +473,7 @@ public class ChannelDetailFragment extends Fragment {
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(url);
+                if (getActivity() == null) return;
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         if (imageView != null)
@@ -465,7 +496,109 @@ public class ChannelDetailFragment extends Fragment {
         return null;
     }
 
+    public int bestPossibleQuality2(HashMap<String, String> q) {
+        final String qa[] = q.keySet().toArray(new String[q.size()]);
+        int bestQ = -1;
+        int bestI = -1;
+
+        for (int i = 0; i < qa.length; i++) {
+            if (qualityValue(qa[i]) > bestQ) {
+                bestQ = qualityValue(qa[i]);
+                bestI = i;
+            }
+        }
+        return bestI;
+    }
+
+    private boolean isInLandscape() {
+        return getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    private void fullscreen() {
+        int i = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                ;
+
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(i);
+    }
+
+    private void showUi() {
+        View decorView = getActivity().getWindow().getDecorView();
+        int i = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                ;
+
+        if(decorView.getSystemUiVisibility() != i) {return;
+        }
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    }
+
+    private void showPlayDialog(final LinkedHashMap<String, String> q, int best) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final String qualities[] = q.keySet().toArray(new String[q.size()]);
+        String cleanQualities[] = getCleanQualities(qualities);
+
+        builder.setTitle("Select Quality")
+                .setSingleChoiceItems(cleanQualities, best, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mQualitySelected = which;
+                        Toast.makeText(getActivity(), "" + which, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setPositiveButton("Play", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Toast.makeText(getActivity(),""+ mQualitySelected,Toast.LENGTH_SHORT).show();
+                        playStream(q.get(qualities[mQualitySelected]));
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Toast.makeText(getActivity(),""+ mQualitySelected,Toast.LENGTH_SHORT).show();
+                    }
+                });
+        builder.create();
+        builder.show();
+
+    }
+
     private void errorScreen() {
 
+    }
+
+    private int qualityValue(String s) {
+        if (s.contains("240")) return 0;
+        if (s.contains("360")) return 1;
+        if (s.contains("480")) return 2;
+        if (s.contains("720")) return 3;
+        if (s.contains("live")) return 4;
+        if (s.contains("source")) return 4;
+        if (s.contains("chunked")) return 4;
+        return -1;
+    }
+
+    private String[] getCleanQualities(String[] s) {
+        String q[] = new String[s.length];
+
+        for (int i = 0; i < s.length; i++) {
+            if (s[i].contains("live")) {
+                q[i] = "source";
+                continue;
+            }
+            if (s[i].contains("chunked")){
+                q[i] = "source";
+                continue;
+            }
+            if (s[i].contains("audio_only")) {
+                q[i] = "audio only";
+                continue;
+            }
+            q[i] = s[i];
+        }
+        return q;
     }
 }

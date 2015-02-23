@@ -28,6 +28,7 @@ import twitchvod.src.ui_fragments.SetupFragment;
 import twitchvod.src.ui_fragments.StreamListFragment;
 import twitchvod.src.ui_fragments.GamesRasterFragment;
 import twitchvod.src.ui_fragments.NavigationDrawerFragment;
+import twitchvod.src.ui_fragments.TestFragment;
 
 
 public class MainActivity extends ActionBarActivity
@@ -104,8 +105,11 @@ public class MainActivity extends ActionBarActivity
 //                transaction = getFragmentManager().beginTransaction();
 //                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 //                transaction.replace(R.id.container, a.newInstance());
-//                transaction.addToBackStack(null);
-//                transaction.commit();
+                TestFragment t = new TestFragment();
+                transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, t.newInstance());
+                transaction.addToBackStack(null);
+                transaction.commit();
                 break;
             case 100:
                 SetupFragment s = new SetupFragment();

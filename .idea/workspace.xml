@@ -20,8 +20,8 @@
     <shared>
       <config>
         <devices>
-          <device id="Nexus 5" />
           <device id="Nexus 9" />
+          <device id="Nexus 5" />
           <device id="Nexus S" />
         </devices>
       </config>
@@ -102,35 +102,36 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ChannelDetailFragment.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/MainActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2346" max-vertical-offset="3876">
+              <caret line="138" column="5" selection-start-line="138" selection-start-column="5" selection-end-line="138" selection-end-column="5" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ChannelDetailFragment.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/ChannelDetailFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.354717" vertical-offset="4563" max-vertical-offset="7259">
-              <caret line="328" column="9" selection-start-line="328" selection-start-column="9" selection-end-line="328" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2091" max-vertical-offset="10353">
+              <caret line="123" column="0" selection-start-line="123" selection-start-column="0" selection-end-line="123" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TwitchOldBroadcastThread.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchOldBroadcastThread.java">
+      <file leaf-file-name="setup.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/setup.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="782">
-              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.18323353" vertical-offset="0" max-vertical-offset="5406">
+              <caret line="9" column="43" selection-start-line="9" selection-start-column="43" selection-end-line="9" selection-end-column="43" />
               <folding />
             </state>
           </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TwitchVod.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVod.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
-              <caret line="26" column="25" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
+          <provider editor-type-id="android-designer">
+            <state />
           </provider>
         </entry>
       </file>
@@ -1217,28 +1218,16 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/res/values/numbers.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/StreamListAdapter.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/StreamListFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/ChannelListFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/video_list_group.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/VideoListAdapter2.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/channel_video_footer.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/Stream.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchStreamData.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/broadcast_row_layout.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/VideoListAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchBitmapThread.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/PastBroadcastsListAdapter2.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/TwitchNetworkTasks.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchUser.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_channel_detail.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/channel_video_header.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/Channel.java" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_games.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout-land/fragment_channel_detail.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/toolbar.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/menu/global.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/toolbar_search.xml" />
@@ -1246,28 +1235,40 @@
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchJSONDataThread.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_search.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/ChannelListAdapter.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/SearchFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/GamesRasterFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/styles.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/test.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/AuthFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/MainActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/setup.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchOldVideo.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVideo.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchPlaylist.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVodFileOld.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVodFile.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/SetupFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchBroadcastThread.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchLiveStreamThread.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/NavigationDrawerFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/TwitchJSONParser.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/ChannelDetailFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/AuthFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/SearchFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/ChannelListAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchOldBroadcastThread.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/ChannelListFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/StreamListFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/PastBroadcastsListAdapter2.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_test.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/TestFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/NavigationDrawerFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchLiveStreamThread.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVod.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchBroadcastThread.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/TwitchNetworkTasks.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchJSONParserThread.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/values/numbers.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_channel_detail.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout-land/fragment_channel_detail.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/streams_row_layout.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/ChannelDetailFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/broadcast_row_layout.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/setup.xml" />
       </list>
     </option>
   </component>
@@ -1275,8 +1276,8 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1088" />
-    <option name="width" value="1475" />
+    <option name="x" value="783" />
+    <option name="width" value="1780" />
     <option name="height" value="1410" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -1305,6 +1306,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="ProjectPane" />
+      <pane id="Scope" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -1547,9 +1550,7 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="ProjectPane" />
       <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1590,9 +1591,9 @@
       <recent name="com.src" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="twitchvod.src.ui_fragments" />
       <recent name="twitchvod.src.data.async_tasks" />
       <recent name="twitchvod.src.data.primitives" />
-      <recent name="twitchvod.src.ui_fragments" />
       <recent name="twitchvod.src.adapter" />
       <recent name="twitchvod.src.data" />
     </key>
@@ -1788,7 +1789,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1088" y="0" width="1475" height="1410" extended-state="0" />
+    <frame x="783" y="0" width="1780" height="1410" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
@@ -1800,14 +1801,14 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2793296" sideWeight="0.49032688" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32933334" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23148766" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33837208" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24022347" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3264166" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2793296" sideWeight="0.5096731" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2793296" sideWeight="0.5096731" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33359936" sideWeight="0.5" order="13" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2353357" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22790697" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="true" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1840,206 +1841,24 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1617" />
+      <option name="time" value="1707" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_channel_detail.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.7407408" vertical-offset="946" max-vertical-offset="1802">
-          <caret line="60" column="29" selection-start-line="60" selection-start-column="29" selection-end-line="60" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout-land/fragment_channel_detail.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15943728" vertical-offset="0" max-vertical-offset="1802">
-          <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/GamesAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.71022725" vertical-offset="820" max-vertical-offset="1700">
-          <caret line="109" column="54" selection-start-line="109" selection-start-column="54" selection-end-line="109" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/menu/main.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
-          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
-          <folding>
-            <element signature="e#516#540#0" expanded="false" />
-            <element signature="e#646#671#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/menu/global.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
-          <caret line="9" column="37" selection-start-line="9" selection-start-column="37" selection-end-line="9" selection-end-column="37" />
-          <folding>
-            <element signature="e#165#190#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/toolbar_search.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.7777777" vertical-offset="0" max-vertical-offset="357">
-          <caret line="6" column="35" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/toolbar.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.444445" vertical-offset="0" max-vertical-offset="374">
-          <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36704546" vertical-offset="0" max-vertical-offset="880">
-          <caret line="19" column="22" selection-start-line="19" selection-start-column="22" selection-end-line="19" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Filesl/Android/sdk/sources/android-21/android/widget/SearchView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1836478" vertical-offset="8065" max-vertical-offset="28951">
-          <caret line="563" column="25" selection-start-line="563" selection-start-column="25" selection-end-line="563" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/drawable-hdpi/abc_textfield_search_default_mtrl_alpha.9.png">
-      <provider editor-type-id="images">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="ninepatcheditor">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/drawable-mdpi/abc_textfield_search_activated_mtrl_alpha.9.png">
-      <provider editor-type-id="images">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="ninepatcheditor">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/drawable-hdpi/abc_textfield_search_activated_mtrl_alpha.9.png">
-      <provider editor-type-id="images">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="ninepatcheditor">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/drawable-mdpi/abc_textfield_search_default_mtrl_alpha.9.png">
-      <provider editor-type-id="images">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="ninepatcheditor">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/drawable/abc_textfield_search_material.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44418052" vertical-offset="0" max-vertical-offset="842">
-          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/search_layout.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.265625" vertical-offset="0" max-vertical-offset="768">
-          <caret line="12" column="74" selection-start-line="12" selection-start-column="74" selection-end-line="12" selection-end-column="74" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchJSONDataThread.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1955">
-          <caret line="98" column="0" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/ChannelListAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.74886364" vertical-offset="854" max-vertical-offset="1734">
-          <caret line="112" column="64" selection-start-line="112" selection-start-column="64" selection-end-line="112" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/game_item_layout.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-24.037037" vertical-offset="252" max-vertical-offset="1105">
-          <caret line="53" column="37" selection-start-line="53" selection-start-column="25" selection-end-line="53" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_search.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="714">
           <caret line="23" column="44" selection-start-line="23" selection-start-column="29" selection-end-line="23" selection-end-column="44" />
-          <folding />
         </state>
       </provider>
       <provider editor-type-id="android-designer">
         <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/channel_item_layout.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="456" max-vertical-offset="1309">
-          <caret line="55" column="35" selection-start-line="55" selection-start-column="25" selection-end-line="55" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/GamesRasterFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5943182" vertical-offset="650" max-vertical-offset="2499">
-          <caret line="94" column="5" selection-start-line="94" selection-start-column="5" selection-end-line="94" selection-end-column="5" />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_games.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.11957796" vertical-offset="0" max-vertical-offset="853">
           <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="47" />
-          <folding />
         </state>
       </provider>
       <provider editor-type-id="android-designer">
@@ -2068,41 +1887,11 @@
       </provider>
     </entry>
     <entry file="file://D:/Program Filesl/Android/sdk/platforms/android-21/data/res/drawable-ldpi/list_selector_background_focus.9.png">
-      <provider editor-type-id="images">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="ninepatcheditor">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/ChannelListFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6375" vertical-offset="663" max-vertical-offset="2703">
-          <caret line="94" column="11" selection-start-line="94" selection-start-column="11" selection-end-line="94" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/PastBroadcastsListAdapter2.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.42045453" vertical-offset="1602" max-vertical-offset="2482">
-          <caret line="136" column="20" selection-start-line="136" selection-start-column="20" selection-end-line="136" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/styles.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408">
-          <caret line="14" column="58" selection-start-line="14" selection-start-column="58" selection-end-line="14" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/SearchFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.30454546" vertical-offset="2010" max-vertical-offset="3502">
-          <caret line="168" column="8" selection-start-line="168" selection-start-column="8" selection-end-line="171" selection-end-column="23" />
-          <folding />
-        </state>
+      <provider editor-type-id="images">
+        <state />
       </provider>
     </entry>
     <entry file="file://D:/Program Filesl/Android/sdk/sources/android-21/android/widget/RelativeLayout.java">
@@ -2116,7 +1905,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="323">
           <caret line="2" column="69" selection-start-line="2" selection-start-column="57" selection-end-line="2" selection-end-column="69" />
-          <folding />
         </state>
       </provider>
       <provider editor-type-id="android-designer">
@@ -2137,25 +1925,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_auth.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="136" max-vertical-offset="357">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="12" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Filesl/Android/sdk/sources/android-21/android/view/View.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33257142" vertical-offset="280838" max-vertical-offset="347888">
-          <caret line="16954" column="22" selection-start-line="16954" selection-start-column="22" selection-end-line="16954" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-16.32" vertical-offset="204" max-vertical-offset="1496">
@@ -2164,42 +1933,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/AuthFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2563805" vertical-offset="0" max-vertical-offset="1496">
-          <caret line="31" column="38" selection-start-line="31" selection-start-column="38" selection-end-line="31" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/setup.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3298" max-vertical-offset="5406">
-          <caret line="194" column="50" selection-start-line="194" selection-start-column="50" selection-end-line="194" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/TwitchNetworkTasks.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33257142" vertical-offset="236" max-vertical-offset="2312">
-          <caret line="56" column="29" selection-start-line="56" selection-start-column="29" selection-end-line="56" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVideo.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="493">
           <caret line="5" column="26" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="26" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#720#721#0" expanded="true" />
-            <element signature="e#789#790#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2207,99 +1944,317 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="544">
           <caret line="15" column="34" selection-start-line="15" selection-start-column="34" selection-end-line="15" selection-end-column="34" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Filesl/Android/sdk/sources/android-21/android/app/Fragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33257142" vertical-offset="22438" max-vertical-offset="36261">
+          <caret line="1477" column="16" selection-start-line="1477" selection-start-column="16" selection-end-line="1477" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/AuthFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3549884" vertical-offset="0" max-vertical-offset="1496">
+          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/TwitchJSONParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6647332" vertical-offset="6754" max-vertical-offset="7616">
+          <caret line="431" column="22" selection-start-line="431" selection-start-column="20" selection-end-line="431" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/GamesRasterFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.51542854" vertical-offset="1624" max-vertical-offset="2499">
+          <caret line="94" column="5" selection-start-line="94" selection-start-column="5" selection-end-line="94" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/SearchFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7474286" vertical-offset="2593" max-vertical-offset="3519">
+          <caret line="236" column="39" selection-start-line="236" selection-start-column="39" selection-end-line="236" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/ChannelListAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="820" max-vertical-offset="1734">
+          <caret line="108" column="106" selection-start-line="108" selection-start-column="106" selection-end-line="108" selection-end-column="106" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/ChannelListFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49485713" vertical-offset="349" max-vertical-offset="2703">
+          <caret line="66" column="88" selection-start-line="66" selection-start-column="88" selection-end-line="66" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/adapter/PastBroadcastsListAdapter2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4709977" vertical-offset="87" max-vertical-offset="2550">
+          <caret line="47" column="30" selection-start-line="47" selection-start-column="30" selection-end-line="47" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/StreamListFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7862857" vertical-offset="1607" max-vertical-offset="2635">
+          <caret line="156" column="48" selection-start-line="156" selection-start-column="48" selection-end-line="156" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Filesl/Android/sdk/sources/android-21/android/view/View.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33257142" vertical-offset="39438" max-vertical-offset="347888">
+          <caret line="2444" column="28" selection-start-line="2444" selection-start-column="28" selection-end-line="2444" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchJSONDataThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="712" max-vertical-offset="1955">
+          <caret line="96" column="0" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVodFileOld.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="748">
-          <caret line="9" column="42" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="42" />
-          <folding>
-            <element signature="e#459#460#0" expanded="true" />
-            <element signature="e#489#490#0" expanded="true" />
-            <element signature="e#535#536#0" expanded="true" />
-            <element signature="e#573#574#0" expanded="true" />
-            <element signature="e#623#624#0" expanded="true" />
-            <element signature="e#651#652#0" expanded="true" />
-            <element signature="e#711#712#0" expanded="true" />
-            <element signature="e#745#746#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.136" vertical-offset="0" max-vertical-offset="875">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_test.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="255">
+          <caret line="6" column="47" selection-start-line="6" selection-start-column="47" selection-end-line="6" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/NavigationDrawerFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33028573" vertical-offset="0" max-vertical-offset="3536">
+          <caret line="39" column="44" selection-start-line="39" selection-start-column="44" selection-end-line="39" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVod.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1428">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/TwitchNetworkTasks.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7321212" vertical-offset="620" max-vertical-offset="2312">
+          <caret line="98" column="62" selection-start-line="98" selection-start-column="62" selection-end-line="98" selection-end-column="62" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchBroadcastThread.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6502857" vertical-offset="417" max-vertical-offset="1292">
-          <caret line="90" column="58" selection-start-line="90" selection-start-column="58" selection-end-line="90" selection-end-column="58" />
+        <state vertical-scroll-proportion="0.45721272" vertical-offset="204" max-vertical-offset="1309">
+          <caret line="67" column="56" selection-start-line="67" selection-start-column="56" selection-end-line="67" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/styles.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.272" vertical-offset="0" max-vertical-offset="875">
+          <caret line="14" column="58" selection-start-line="14" selection-start-column="58" selection-end-line="14" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchOldBroadcastThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5134694" vertical-offset="0" max-vertical-offset="1225">
+          <caret line="58" column="96" selection-start-line="57" selection-start-column="46" selection-end-line="59" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/numbers.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.15265307" vertical-offset="0" max-vertical-offset="1225">
+          <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchJSONParserThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5836735" vertical-offset="696" max-vertical-offset="1921">
+          <caret line="83" column="63" selection-start-line="83" selection-start-column="63" selection-end-line="83" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/TestFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.58285713" vertical-offset="0" max-vertical-offset="1225">
+          <caret line="68" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/grey_overlay.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/stream_offline_preview.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1377" max-vertical-offset="3332">
+          <caret line="138" column="5" selection-start-line="138" selection-start-column="5" selection-end-line="138" selection-end-column="5" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchLiveStreamThread.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.312" vertical-offset="1981" max-vertical-offset="2856">
-          <caret line="77" column="58" selection-start-line="77" selection-start-column="58" selection-end-line="77" selection-end-column="58" />
-          <folding />
+        <state vertical-scroll-proportion="0.0" vertical-offset="440" max-vertical-offset="2873">
+          <caret line="72" column="0" selection-start-line="72" selection-start-column="0" selection-end-line="72" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/TwitchJSONParser.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_top_streams.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.572327" vertical-offset="6430" max-vertical-offset="7225">
-          <caret line="426" column="80" selection-start-line="426" selection-start-column="80" selection-end-line="426" selection-end-column="80" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="848">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/channel_video_footer.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8226415" vertical-offset="2406" max-vertical-offset="3281">
-          <caret line="211" column="11" selection-start-line="211" selection-start-column="11" selection-end-line="211" selection-end-column="11" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="848">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/NavigationDrawerFragment.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/streams_row_layout.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.27295598" vertical-offset="2027" max-vertical-offset="3536">
-          <caret line="162" column="25" selection-start-line="162" selection-start-column="25" selection-end-line="162" selection-end-column="25" />
+        <state vertical-scroll-proportion="0.6214623" vertical-offset="748" max-vertical-offset="1734">
+          <caret line="75" column="50" selection-start-line="75" selection-start-column="50" selection-end-line="75" selection-end-column="50" />
           <folding />
         </state>
       </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/SetupFragment.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout-land/fragment_channel_detail.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.99360615" vertical-offset="1433" max-vertical-offset="3621">
-          <caret line="167" column="14" selection-start-line="167" selection-start-column="14" selection-end-line="167" selection-end-column="14" />
+        <state vertical-scroll-proportion="0.38089624" vertical-offset="0" max-vertical-offset="1836">
+          <caret line="19" column="43" selection-start-line="19" selection-start-column="43" selection-end-line="19" selection-end-column="43" />
           <folding />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/primitives/TwitchVod.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
-          <caret line="26" column="25" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
+      <provider editor-type-id="android-designer">
+        <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/data/async_tasks/TwitchOldBroadcastThread.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_channel_detail.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="782">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.6014151" vertical-offset="102" max-vertical-offset="1734">
+          <caret line="36" column="41" selection-start-line="36" selection-start-column="41" selection-end-line="36" selection-end-column="41" />
           <folding />
         </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/channel_item_layout.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-14.592592" vertical-offset="456" max-vertical-offset="1309">
+          <caret line="50" column="38" selection-start-line="50" selection-start-column="38" selection-end-line="50" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/broadcast_row_layout.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4587264" vertical-offset="359" max-vertical-offset="1224">
+          <caret line="44" column="35" selection-start-line="44" selection-start-column="35" selection-end-line="44" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_auth.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.16037735" vertical-offset="0" max-vertical-offset="848">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="12" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/ChannelDetailFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.354717" vertical-offset="4563" max-vertical-offset="7259">
-          <caret line="328" column="9" selection-start-line="328" selection-start-column="9" selection-end-line="328" selection-end-column="9" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1012" max-vertical-offset="9265">
+          <caret line="123" column="0" selection-start-line="123" selection-start-column="0" selection-end-line="123" selection-end-column="0" />
           <folding />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/app_icon_borderless.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/twitch_logo.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/twitchvod/src/ui_fragments/SetupFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2737819" vertical-offset="189" max-vertical-offset="3621">
+          <caret line="52" column="13" selection-start-line="52" selection-start-column="13" selection-end-line="52" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/setup.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.18323353" vertical-offset="0" max-vertical-offset="5406">
+          <caret line="9" column="43" selection-start-line="9" selection-start-column="43" selection-end-line="9" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
       </provider>
     </entry>
   </component>

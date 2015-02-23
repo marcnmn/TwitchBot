@@ -3,6 +3,8 @@ package twitchvod.src.data.primitives;
 import android.graphics.Bitmap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Created by marc on 20.02.2015.
@@ -23,17 +25,17 @@ public class TwitchVod {
         video = v;
     }
 
-    public String bestPossibleUrl() {
+    public Integer bestPossibleUrl() {
         int bestQual = -1;
-        String result = null;
+        int bestIndex = -1;
+
         for (int i = 0; i < video.size(); i++) {
             if (quality(video.get(i).getQuality()) > bestQual) {
-                bestQual = i;
+                bestQual = quality(video.get(i).getQuality());
+                bestIndex = i;
             }
         }
-        if (bestQual > -1)
-            result =  video.get(bestQual).getVideo().get(0).getUrl();
-        return result;
+        return bestIndex;
     }
 
     private int quality(String s) {
@@ -42,7 +44,21 @@ public class TwitchVod {
         if (s.contains("480")) return 2;
         if (s.contains("720")) return 3;
         if (s.contains("live")) return 4;
+        if (s.contains("source")) return 4;
+        if (s.contains("chunked")) return 4;
         return -1;
+    }
+
+    public LinkedHashMap<String, String> getAvailableQualities() {
+        LinkedHashMap<String, String> q = new LinkedHashMap<>();
+        String qualities[] = new String[video.size()];
+        TwitchVodFileOld t;
+        for (int i = 0; i < video.size(); i++) {
+            t = video.get(i);
+            q.put(t.getQuality(), t.getVideo().get(0).getUrl());
+            qualities[i] = video.get(i).getQuality();
+        }
+        return q;
     }
 
     public String getDuration() {

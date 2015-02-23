@@ -36,6 +36,7 @@ public class TwitchOldBroadcastThread {
         mThread = new Thread(new Runnable() {
             public void run() {
                 mVod = oldVods(url);
+                if (mChannelDetailFragment.getActivity() == null) return;
                     mChannelDetailFragment.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

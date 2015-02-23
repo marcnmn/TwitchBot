@@ -7,21 +7,20 @@
     tools:context=".MainActivity$ChannelDetailFragment">
 
         <RelativeLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/stream_layout_top"
             android:background="#ffececec"
             android:elevation="8dp"
-            android:layout_alignParentTop="true"
-            android:visibility="invisible">
+            android:layout_alignParentTop="true">
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/videoFeed"
+                android:layout_alignParentTop="true"
                 android:adjustViewBounds="true"
-                android:src="@drawable/stream_offline_preview"
-                android:layout_alignParentTop="true"/>
+                android:src="@drawable/stream_offline_preview"/>
 
             <ImageView
                 android:layout_width="fill_parent"
@@ -29,10 +28,7 @@
                 android:id="@+id/imageOverlay"
                 android:layout_alignParentTop="true"
                 android:adjustViewBounds="true"
-                android:src="@drawable/grey_overlay"
-                android:visibility="visible"/>
-
-
+                android:src="@drawable/grey_overlay"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -88,7 +84,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/expandableVideoList"
         android:layout_below="@id/stream_layout_top"
-        android:visibility="invisible"/>
+        android:visibility="gone"/>
 
     <ProgressBar
         android:layout_width="fill_parent"

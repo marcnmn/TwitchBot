@@ -8,12 +8,11 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/stream_layout_top"
-            android:background="#ffececec"
+            android:background="#cb000000"
             android:elevation="8dp"
-            android:layout_alignParentTop="true"
-            android:visibility="invisible">
+            android:layout_alignParentTop="true">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -21,6 +20,7 @@
                 android:id="@+id/videoFeed"
                 android:adjustViewBounds="true"
                 android:src="@drawable/stream_offline_preview"
+                android:scaleType="fitCenter"
                 android:layout_alignParentTop="true"/>
 
             <ImageView
@@ -30,14 +30,14 @@
                 android:layout_alignParentTop="true"
                 android:adjustViewBounds="true"
                 android:src="@drawable/grey_overlay"
-                android:visibility="visible"/>
-
-
+                android:scaleType="fitCenter"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/channelTitel"
+                android:shadowColor="#000"
+                android:shadowRadius="7.0"
                 android:paddingLeft="5dp"
                 android:textStyle="bold"
                 android:textColor="#ffededed"
@@ -48,6 +48,8 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
                 android:layout_below="@+id/channelTitel"
+                android:shadowColor="#000"
+                android:shadowRadius="7.0"
                 android:textColor="#ffededed"
                 android:id="@+id/channelGame"/>
 
@@ -88,7 +90,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/expandableVideoList"
         android:layout_below="@id/stream_layout_top"
-        android:visibility="invisible"/>
+        android:visibility="gone"/>
 
     <ProgressBar
         android:layout_width="fill_parent"

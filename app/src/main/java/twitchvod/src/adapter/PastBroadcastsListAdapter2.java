@@ -38,11 +38,15 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
     }
 
     public void updateHighlights(ArrayList <TwitchVideo> c) {
+        if (c == null) return;
+        if (mHighlights == null) mHighlights = new ArrayList<>();
         mHighlights.addAll(c);
         notifyDataSetChanged();
     }
 
     public void updateBroadcasts(ArrayList <TwitchVideo> c) {
+        if (c == null) return;
+        if (mHighlights == null) mBroadcasts = new ArrayList<>();
         mBroadcasts.addAll(c);
         notifyDataSetChanged();
     }

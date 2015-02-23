@@ -427,8 +427,10 @@ public final class TwitchJSONParser {
                     String length = jPlaylist.getJSONObject(j).getString("length");
                     vf.add(new TwitchVodFile(url, length));
                 }
-                to.setVideo(vf);
-                fo.add(to);
+                if (vf.size() > 0) {
+                    to.setVideo(vf);
+                    fo.add(to);
+                }
             }
             result.setVideo(fo);
         } catch (JSONException e) {

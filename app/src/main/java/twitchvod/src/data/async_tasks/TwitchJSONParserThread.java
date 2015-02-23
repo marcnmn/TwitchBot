@@ -58,6 +58,7 @@ public class TwitchJSONParserThread {
 
     private void parseAndPushOneChannel(String j) {
         final Channel channel = TwitchJSONParser.channelJSONtoChannel(j);
+        if (mChannelDetailFragment.getActivity() == null) return;
         mChannelDetailFragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -68,16 +69,19 @@ public class TwitchJSONParserThread {
 
     private void parseAndPushChannel(String j) {
         final ArrayList<Channel> channels = TwitchJSONParser.channelsJSONtoArrayList(j);
+        if (mChannelListFragment.getActivity() == null) return;
         mChannelListFragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mChannelListFragment.dataParsed(channels);
+                if (mChannelListFragment != null)
+                    mChannelListFragment.dataParsed(channels);
             }
         });
     }
 
     private void parseAndPushGame(String j) {
         final ArrayList<Game> games = TwitchJSONParser.topGamesJSONtoArrayList(j);
+        if (mGamesRasterFragment.getActivity() == null) return;
         mGamesRasterFragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -88,6 +92,7 @@ public class TwitchJSONParserThread {
 
     private void parseAndPushStream(String j) {
         final ArrayList<Stream> streams = TwitchJSONParser.streamJSONtoArrayList(j);
+        if (mStreamListFragment.getActivity() == null) return;
         mStreamListFragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

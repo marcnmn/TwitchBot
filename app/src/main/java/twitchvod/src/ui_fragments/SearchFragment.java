@@ -232,6 +232,7 @@ public class SearchFragment extends Fragment {
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(url);
+                if (getActivity() == null) return;
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         if (bitmap == null) return;

@@ -17,6 +17,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
@@ -29,7 +30,7 @@ public class TwitchLiveStreamThread {
     private ChannelListFragment mChannelListFragment;
     private ChannelDetailFragment mChannelDetailFragment;
     private Thread mThread;
-    private HashMap<String, String> mStreamUrls;
+    private LinkedHashMap<String, String> mStreamUrls;
     private boolean mIsAuthenticated;
     private String mUserToken;
 
@@ -48,6 +49,7 @@ public class TwitchLiveStreamThread {
             public void run() {
                 if (requestType == 0) mStreamUrls = liveStreamUrls(s, name);
                 if (requestType == 1) mStreamUrls = broadcastUrls(s, name);
+                if (mChannelDetailFragment.getActivity() == null) return;
                     mChannelDetailFragment.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -60,12 +62,12 @@ public class TwitchLiveStreamThread {
         mThread.start();
     }
 
-    private void pushResult(HashMap<String, String> result, int req) {
+    private void pushResult(LinkedHashMap<String, String> result, int req) {
          if (mChannelDetailFragment != null && req == 0) mChannelDetailFragment.liveLinksReceived(result);
     }
 
-    private HashMap<String, String> liveStreamUrls(String s, String name) {
-        HashMap<String, String> streams = null;
+    private LinkedHashMap<String, String> liveStreamUrls(String s, String name) {
+        LinkedHashMap<String, String> streams = null;
         JSONObject jToken = downloadJSONData(s);
         try {
             String token = jToken.getString("token");
@@ -86,7 +88,7 @@ public class TwitchLiveStreamThread {
         return streams;
     }
 
-    private HashMap<String, String> broadcastUrls(String s, String n) {
+    private LinkedHashMap<String, String> broadcastUrls(String s, String n) {
         return null;
     }
 
@@ -130,9 +132,9 @@ public class TwitchLiveStreamThread {
         return null;
     }
 
-    private HashMap<String, String> fetchLivePlaylist(String myurl) {
+    private LinkedHashMap<String, String> fetchLivePlaylist(String myurl) {
         InputStream is = null;
-        HashMap<String, String> hmap = new HashMap<>();
+        LinkedHashMap<String, String> hmap = new LinkedHashMap<>();
         try {
             URL url = new URL(myurl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

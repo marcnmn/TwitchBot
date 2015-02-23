@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import twitchvod.src.data.TwitchJSONParser;
 import twitchvod.src.data.TwitchNetworkTasks;
@@ -32,7 +33,7 @@ public class TwitchBroadcastThread {
     private ChannelDetailFragment mChannelDetailFragment;
     private TwitchVideo mVideo;
     private Thread mThread;
-    private HashMap<String, String> mStreamUrls;
+    private LinkedHashMap<String, String> mStreamUrls;
     private boolean mIsAuthenticated;
     private String mUserToken;
 
@@ -55,6 +56,7 @@ public class TwitchBroadcastThread {
             public void run() {
                 if (requestType == 0) mStreamUrls = liveStreamUrls(tokenUrl, videoId);
                 if (requestType == 1) mStreamUrls = oldVods(tokenUrl, videoId);
+                if (mChannelDetailFragment.getActivity() == null) return;
                     mChannelDetailFragment.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -67,20 +69,20 @@ public class TwitchBroadcastThread {
         mThread.start();
     }
 
-    private HashMap<String, String> oldVods(String s, String id) {
-        HashMap<String, String> videoPlaylist = null;
+    private LinkedHashMap<String, String> oldVods(String s, String id) {
+        LinkedHashMap<String, String> videoPlaylist = null;
         JSONObject jData = TwitchNetworkTasks.downloadJSONData(s);
         TwitchVod vod = TwitchJSONParser.oldVideoDataToPlaylist(jData);
 
         return videoPlaylist;
     }
 
-    private void pushResult(HashMap<String, String> result, int req) {
+    private void pushResult(LinkedHashMap<String, String> result, int req) {
          if (mChannelDetailFragment != null && req == 0) mChannelDetailFragment.videoPlaylistReceived(result);
     }
 
-    private HashMap<String, String> liveStreamUrls(String s, String id) {
-        HashMap<String, String> videoPlaylist = null;
+    private LinkedHashMap<String, String> liveStreamUrls(String s, String id) {
+        LinkedHashMap<String, String> videoPlaylist = null;
         JSONObject jToken = TwitchNetworkTasks.downloadJSONData(s);
         try {
             String token = jToken.getString("token");

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.data.primitives.Game;
@@ -93,9 +94,9 @@ public final class TwitchNetworkTasks {
         return jObject;
     }
 
-    public static HashMap<String, String> fetchTwitchPlaylist(String myurl) {
+    public static LinkedHashMap<String, String> fetchTwitchPlaylist(String myurl) {
         InputStream is = null;
-        HashMap<String, String> hmap = new HashMap<>();
+        LinkedHashMap<String, String> hmap = new LinkedHashMap<>();
         try {
             URL url = new URL(myurl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

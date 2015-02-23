@@ -2,10 +2,15 @@ package twitchvod.src.adapter;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,6 +28,10 @@ public class GamesAdapter extends BaseAdapter {
     private double aspectRatio;
     private RelativeLayout.LayoutParams mRelativeLayout;
     private Activity mActivity;
+    private AlphaAnimation mAlpha;
+    private boolean heightSet = false;
+
+    private ArrayList<Thread> mThreads = new ArrayList<>();
 
 
     public GamesAdapter(GamesRasterFragment c) {
@@ -30,6 +39,7 @@ public class GamesAdapter extends BaseAdapter {
         mActivity = c.getActivity();
         mInflater = LayoutInflater.from(c.getActivity());
         mGames = new ArrayList<>();
+        mAlpha = new AlphaAnimation(0,1);
     }
 
     public void update(ArrayList<Game> g) {
@@ -64,17 +74,20 @@ public class GamesAdapter extends BaseAdapter {
             mRelativeLayout = new RelativeLayout.LayoutParams(conWidth,conHeight);
         }
 
+
         Game tempGame = mGames.get(position);
 
         if (tempGame.mBitmapThumb != null) {
             holder.thumbImage.setImageBitmap(tempGame.mBitmapThumb);
         } else {
             holder.thumbImage.setImageResource(R.drawable.game_offline);
-            loadImage(position, holder.thumbImage);
+            loadImage2(position, holder.thumbImage);
         }
 
-        if (mRelativeLayout != null)
+        if (mRelativeLayout != null ) {
             holder.thumbImage.setLayoutParams(mRelativeLayout);
+            heightSet = true;
+        }
 
         holder.title.setText(tempGame.mTitle);
         holder.viewers.setText(Integer.toString(tempGame.mViewers));
@@ -110,13 +123,31 @@ public class GamesAdapter extends BaseAdapter {
 //                storeImage(bitmap, mGames.get(fPos).mId);
                 mActivity.runOnUiThread(new Runnable() {
                     public void run() {
-                    fImg.setImageBitmap(bitmap);
-                    mGames.get(fPos).mBitmapThumb = bitmap;
+                        fImg.setAlpha(0f);
+                        fImg.setImageBitmap(bitmap);
+                        fImg.animate().alpha(1f).setDuration(1000);
+                        mGames.get(fPos).mBitmapThumb = bitmap;
                     }
                 });
             }
         });
-        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setPriority(Thread.NORM_PRIORITY);
         thread.start();
+    }
+
+    private void loadImage2(int pos, final ImageView imageView) {
+        final int fPos = pos;
+        new Thread(new Runnable() {
+            public void run() {
+                final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(mGames.get(fPos).mThumbnail);
+                mGames.get(fPos).mBitmapThumb = bitmap;
+                imageView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.setImageBitmap(bitmap);
+                    }
+                });
+            }
+        }).start();
     }
 }

@@ -49,14 +49,44 @@ public class TwitchVod {
         return -1;
     }
 
-    public LinkedHashMap<String, String> getAvailableQualities() {
+    public ArrayList<String> getAvailableQualities() {
+        ArrayList <String> q = new ArrayList<>();
+        for (TwitchVodFileOld t: video) {
+           q.add(t.getQuality());
+        }
+        return q;
+    }
+
+    public LinkedHashMap<String, String> toHashmap() {
         LinkedHashMap<String, String> q = new LinkedHashMap<>();
-        String qualities[] = new String[video.size()];
-        TwitchVodFileOld t;
-        for (int i = 0; i < video.size(); i++) {
-            t = video.get(i);
-            q.put(t.getQuality(), t.getVideo().get(0).getUrl());
-            qualities[i] = video.get(i).getQuality();
+        String quality;
+        for (TwitchVodFileOld t: video) {
+            quality = t.getQuality();
+            for (int i = 0; i < t.getVideo().size(); i++) {
+                q.put(t.getQuality()+i, t.getVideo().get(i).getUrl());
+            }
+        }
+        return q;
+    }
+
+    public ArrayList<String> getLengths() {
+        ArrayList<String> q = new ArrayList<>();
+        TwitchVodFileOld  t = video.get(0);
+        TwitchVodFile tf;
+        for (int i = 0; i < t.getVideo().size(); i++) {
+            tf = t.getVideo().get(i);
+            q.add(tf.getLength());
+        }
+        return q;
+    }
+
+    public ArrayList<String> getQualities() {
+        ArrayList<String> q = new ArrayList<>();
+        TwitchVodFileOld  t = video.get(0);
+        TwitchVodFile tf;
+        for (int i = 0; i < t.getVideo().size(); i++) {
+            tf = t.getVideo().get(i);
+            q.add(tf.getLength());
         }
         return q;
     }

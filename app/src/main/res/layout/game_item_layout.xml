@@ -7,11 +7,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/game_thumbnail"
-        android:src="@drawable/game_offline"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:background="#ff343434" />
+        android:background="@drawable/game_offline" />
 
     <TextView
         android:id="@+id/game_desc"

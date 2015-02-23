@@ -2,6 +2,8 @@ package twitchvod.src.ui_fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;

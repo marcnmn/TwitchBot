@@ -119,6 +119,7 @@ public class SetupFragment extends Fragment
                     makeSteps(1);
                     loadTwitchAuthenication();
                     nameLogin.setVisibility(View.GONE);
+                    (mButtonContainer.findViewById(R.id.nextButton)).setVisibility(View.GONE);
                 }
                 else {
                     twitchLogin.setVisibility(View.GONE);
@@ -139,8 +140,9 @@ public class SetupFragment extends Fragment
         if(page >= mScreenContainer.getChildCount()) return;
 
         if (page+steps == 3){
+            ((TextView)mButtonContainer.findViewById(R.id.nextButton)).setVisibility(View.VISIBLE);
             ((TextView)mButtonContainer.findViewById(R.id.nextButton)).setText("Finish");
-            ((TextView)mButtonContainer.findViewById(R.id.skipButton)).setText("");
+            (mButtonContainer.findViewById(R.id.skipButton)).setVisibility(View.GONE);
         }
 
         ObjectAnimator m1 = ObjectAnimator.ofFloat(greetings, "translationX", -page * width, -(page +steps)* width);

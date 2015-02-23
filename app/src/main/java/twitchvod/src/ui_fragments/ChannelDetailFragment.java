@@ -3,6 +3,7 @@ package twitchvod.src.ui_fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -337,10 +339,19 @@ public class ChannelDetailFragment extends Fragment {
     public void oldVideoPlaylistReceived(TwitchVod t) {
         mProgressBar.setVisibility(View.INVISIBLE);
         if (t.bestPossibleUrl() >= 0) {
-            showPlayDialog(t.getAvailableQualities(), t.bestPossibleUrl());
+            showOldVodFragment(t);
         } else {
             Toast.makeText(getActivity(), "Could not load Video, You need to subscribe to the channel.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showOldVodFragment(TwitchVod t) {
+        VideoFragment videoFragment = new VideoFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.replace(R.id.container, videoFragment.newInstance(t));
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     //------------------ Highlight Stuff -------------------------///////////////////////////////////////////
@@ -563,7 +574,6 @@ public class ChannelDetailFragment extends Fragment {
                 });
         builder.create();
         builder.show();
-
     }
 
     private void errorScreen() {

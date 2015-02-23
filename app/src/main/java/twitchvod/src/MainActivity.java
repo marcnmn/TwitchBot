@@ -101,13 +101,13 @@ public class MainActivity extends ActionBarActivity
                 transaction.commit();
                 break;
             case 4:
-//                AuthFragment a = new AuthFragment();
-//                transaction = getFragmentManager().beginTransaction();
-//                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//                transaction.replace(R.id.container, a.newInstance());
-                TestFragment t = new TestFragment();
+                AuthFragment a = new AuthFragment();
                 transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, t.newInstance());
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                transaction.replace(R.id.container, a.newInstance());
+//                TestFragment t = new TestFragment();
+//                transaction = getFragmentManager().beginTransaction();
+//                transaction.replace(R.id.container, t.newInstance());
                 transaction.addToBackStack(null);
                 transaction.commit();
                 break;

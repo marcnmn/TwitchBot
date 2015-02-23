@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:id="@+id/videoHeader"
+        android:background="#ffececec"
+        android:elevation="8dp">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/videoThumb"
+            android:adjustViewBounds="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/stream_offline_preview"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/videoTitle"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/videoThumb"
+            android:maxLines="3"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:text="asdfasdfasdf"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/viewsAndRecorded"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:layout_toRightOf="@+id/videoThumb"
+            android:layout_alignParentBottom="true"
+            android:text="asdfasdfasdf"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/videoViews"
+            android:layout_alignRight="@+id/videoThumb"
+            android:paddingRight="5dp"
+            android:text="123456"/>
+
+        <ImageView
+            android:layout_width="11sp"
+            android:layout_height="wrap_content"
+            android:id="@+id/videoViewsIcon"
+            android:layout_marginBottom="3dp"
+            android:layout_marginRight="2dp"
+            android:layout_toLeftOf="@+id/videoViews"
+            android:layout_alignBottom="@+id/videoViews"
+            android:adjustViewBounds="true"
+            android:src="@drawable/active_viewers_twitch"/>
+    </RelativeLayout>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/videoList"/>
+
+
+</LinearLayout>

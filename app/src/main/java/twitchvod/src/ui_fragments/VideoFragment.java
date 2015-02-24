@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import twitchvod.src.R;
 import twitchvod.src.adapter.OldVideoListAdapter;
 import twitchvod.src.data.primitives.TwitchVod;
-import twitchvod.src.data.primitives.TwitchVodFileOld;
 
 
 /**
@@ -62,7 +61,7 @@ public class VideoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video, container, false);
-        ListView videos = (ListView) rootView.findViewById(R.id.videoList);
+        ListView videos = (ListView) rootView.findViewById(R.id.fullVideoList);
 
         ArrayList<String> lengths = getArguments().getStringArrayList("lengths");
         qualities = getArguments().getStringArrayList("qualities");

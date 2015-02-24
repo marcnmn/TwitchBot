@@ -88,7 +88,7 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/expandableVideoList"
+        android:id="@+id/videoList"
         android:layout_below="@id/stream_layout_top"
         android:visibility="gone"/>
 

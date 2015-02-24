@@ -13,12 +13,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -50,6 +50,12 @@ import twitchvod.src.data.primitives.TwitchVod;
  * Created by marc on 27.01.2015. Gridview of available games
  */
 public class ChannelDetailFragment extends Fragment {
+    private final static int IS_HEADER = 0;
+    private final static int IS_HIGHLIGHT_HEADER = 1;
+    private final static int IS_HIGHLIGHT = 2;
+    private final static int IS_BROADCAST_HEADER = 3;
+    private final static int IS_BROADCAST = 4;
+
     LinkedHashMap<String, String> mAvailableQualities;
     HashMap<String, String> mData;
     private int mLoadedItems, INT_LIST_UPDATE_VALUE, INT_LIST_UPDATE_THRESHOLD;
@@ -77,7 +83,7 @@ public class ChannelDetailFragment extends Fragment {
     private ImageView mThumbnail, mChannelBanner;
     private TextView mStreamTitle, mStreamGameTitle, mStreamViewers, mStreamStatus;
     private String mToken, mSig;
-    private ListView mVideoList;
+    private ListView mVideoList, mFullVideoList;
     private PastBroadcastsListAdapter2 mVideoListAdapter2;
     private View mStreamHeader, mFooter;
     private View mChannelHeader;
@@ -121,6 +127,8 @@ public class ChannelDetailFragment extends Fragment {
         mStreamView = (RelativeLayout) rootView.findViewById(R.id.stream_layout_top);
         mThumbnail = (ImageView) rootView.findViewById(R.id.videoFeed);
 
+        mFullVideoList = (ListView) rootView.findViewById(R.id.fullVideoList);
+
         mPlayOverlay = (ImageView) rootView.findViewById(R.id.imageOverlay);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.channel_detail_progress);
 
@@ -130,7 +138,7 @@ public class ChannelDetailFragment extends Fragment {
         INT_LIST_UPDATE_THRESHOLD = getResources().getInteger(R.integer.channel_list_update_threshold);
 
         if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mVideoList = (ListView) rootView.findViewById(R.id.expandableVideoList);
+            mVideoList = (ListView) rootView.findViewById(R.id.videoList);
             mVideoListAdapter2 = new PastBroadcastsListAdapter2(this);
 
             mChannelHeader = getActivity().getLayoutInflater().inflate(R.layout.channel_video_header, null);
@@ -141,7 +149,18 @@ public class ChannelDetailFragment extends Fragment {
         mVideoClicked = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                playSelectedVideo(mVideoListAdapter2.getItem(position));
+                int group = mVideoListAdapter2.getGroup(position);
+                int childPos = mVideoListAdapter2.getChildPosition(position, group);
+                switch (group) {
+                    case IS_HEADER: Toast.makeText(getActivity(), "Please choose a video", Toast.LENGTH_SHORT).show(); break;
+                    case IS_HIGHLIGHT_HEADER: setFullVideoLayout(IS_HIGHLIGHT_HEADER); break;
+                    case IS_HIGHLIGHT: playSelectedVideo(mVideoListAdapter2.getHighlight(childPos)); break;
+                    case IS_BROADCAST_HEADER: setFullVideoLayout(IS_BROADCAST_HEADER); break;
+                    case IS_BROADCAST: playSelectedVideo(mVideoListAdapter2.getBroadcast(childPos)); break;
+                }
+                Toast.makeText(getActivity(), "" + childPos + " Gruppe " + mVideoListAdapter2.getGroup(position) + " Position " + position, Toast.LENGTH_SHORT).show();
+                //setFullVideoLayout();
+                //playSelectedVideo(mVideoListAdapter2.getItem(position));
             }
         };
 
@@ -384,6 +403,31 @@ public class ChannelDetailFragment extends Fragment {
         mChannel.mBroadcasts = TwitchJSONParser.dataToVideoList(s);
         if (mVideoListAdapter2 != null) mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
     }
+
+    //--------------------------------------------------------------------------------------------------------------
+
+    private void setFullVideoLayout(final int type) {
+        if (type == IS_HIGHLIGHT_HEADER) mVideoListAdapter2.clearHighlightData();
+        if (type == IS_BROADCAST_HEADER) mVideoListAdapter2.clearBroadcastData();
+        mLoadedItems = 10;
+
+        mVideoList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                int lastVisibleItem = firstVisibleItem + visibleItemCount;
+                if (lastVisibleItem >= mLoadedItems - INT_LIST_UPDATE_THRESHOLD) {
+                    if (type == IS_HIGHLIGHT_HEADER) downloadHighlightData(INT_LIST_UPDATE_VALUE, mLoadedItems);
+                    if (type == IS_BROADCAST_HEADER) downloadBroadcastData(INT_LIST_UPDATE_VALUE, mLoadedItems);
+                    mLoadedItems += INT_LIST_UPDATE_VALUE;
+                }
+            }
+        });
+    }
+
+    //------------------------------- Stuff ---------------------------//////////////////////////////
 
     public void playStream(String s) {
         Intent stream = new Intent(Intent.ACTION_VIEW);

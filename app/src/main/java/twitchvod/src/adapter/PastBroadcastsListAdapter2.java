@@ -1,15 +1,13 @@
 package twitchvod.src.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,6 +19,12 @@ import twitchvod.src.data.primitives.TwitchVideo;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 
 public class PastBroadcastsListAdapter2 extends BaseAdapter {
+    private final static int IS_HEADER = 0;
+    private final static int IS_HIGHLIGHT_HEADER = 1;
+    private final static int IS_HIGHLIGHT = 2;
+    private final static int IS_BROADCAST_HEADER = 3;
+    private final static int IS_BROADCAST = 4;
+
     private Activity mActivity;
     private ChannelDetailFragment mFragment;
     private ArrayList<TwitchVideo> mHighlights;
@@ -74,15 +78,15 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
             mRelativeLayout = new RelativeLayout.LayoutParams(imageWidth, imageHeight);
         }
 
+        int j = getGroup(position+1);
         int i = mHighlights.isEmpty() ? 0 : 1;
-        if (position == 0 && i > 0) {
+        if (j == IS_HIGHLIGHT_HEADER) {
             View highlights = mInflater.inflate(R.layout.channel_video_footer, null);
             ((TextView)highlights.findViewById(R.id.textView)).setText("Recent Highlights");
             if (mHighlights.isEmpty()) highlights.setVisibility(View.INVISIBLE);
             return highlights;
-
-        } else if (position < mHighlights.size() + i && i > 0) {
-            int index = position-1;
+        } else if (j == IS_HIGHLIGHT) {
+            int index = getChildPosition(position, j)+1;
             holder.firstLine.setText(mHighlights.get(index).mTitle);
             holder.secondLine.setText(mHighlights.get(index).timeAgo());
             holder.secondLineViewers.setText(mHighlights.get(index).mViews);
@@ -92,20 +96,14 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
             else
                 holder.imageView.setImageBitmap(mHighlights.get(index).mPreview);
 
-        } else if (position == mHighlights.size() + i && i > 0) {
-            View moreHighlights = mInflater.inflate(R.layout.channel_video_footer, null);
-            ((TextView)moreHighlights.findViewById(R.id.textView)).setText("More Highlights ...");
-            if (mHighlights.isEmpty()) moreHighlights.setVisibility(View.INVISIBLE);
-            return moreHighlights;
-
-        } else if (position == mHighlights.size() + 2*i) {
+        } else if (j == IS_BROADCAST_HEADER) {
             View broadcasts = mInflater.inflate(R.layout.channel_video_footer, null);
             ((TextView)broadcasts.findViewById(R.id.textView)).setText("Recent Broadcasts");
             if (mBroadcasts.isEmpty()) broadcasts.setVisibility(View.INVISIBLE);
             return broadcasts;
 
-        } else if (position < mBroadcasts.size() + mHighlights.size() + 2*i + 1) {
-            int broadPos = position - mHighlights.size() - 2*i - 1;
+        } else if (j == IS_BROADCAST) {
+            int broadPos = getChildPosition(position, j)+1;
             holder.firstLine.setText(mBroadcasts.get(broadPos).mTitle);
             holder.secondLine.setText(mBroadcasts.get(broadPos).timeAgo());
             holder.secondLineViewers.setText(mBroadcasts.get(broadPos).mViews);
@@ -115,17 +113,22 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
                 holder.imageView.setImageBitmap(mBroadcasts.get(broadPos).mPreview);
         }
 
-        //if (mRelativeLayout != null)
-            //holder.imageView.setLayoutParams(mRelativeLayout);
-
         return convertView;
     }
 
     public int getCount() {
         int count = 0;
-        if (!mHighlights.isEmpty()) count += mHighlights.size() + 2;
+        if (!mHighlights.isEmpty()) count += mHighlights.size() + 1;
         if (!mBroadcasts.isEmpty()) count += mBroadcasts.size() + 1;
         return count;
+    }
+
+    public TwitchVideo getHighlight(int position) {
+        return mHighlights.get(position);
+    }
+
+    public TwitchVideo getBroadcast(int position) {
+        return mBroadcasts.get(position);
     }
 
     public TwitchVideo getItem(int position) {
@@ -134,8 +137,31 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
         return null;
     }
 
+    @Override
     public long getItemId(int position) {
         return 0;
+    }
+
+    public int getGroup(int position) {
+        if (position == 0) return IS_HEADER;
+        if (!mHighlights.isEmpty() && position == 1) return IS_HIGHLIGHT_HEADER;
+        if (!mHighlights.isEmpty() && position <= mHighlights.size() + 1) return IS_HIGHLIGHT;
+        if (!mHighlights.isEmpty() && position == mHighlights.size() + 2) return IS_BROADCAST_HEADER;
+        if (!mHighlights.isEmpty() && position <= mHighlights.size() + mBroadcasts.size() + 2) return IS_BROADCAST;
+        if (mHighlights.isEmpty() && position == 1) return IS_BROADCAST_HEADER;
+        if (mHighlights.isEmpty() && position <= mBroadcasts.size()+2) return IS_BROADCAST;
+        return -1;
+    }
+
+    public int getChildPosition(int position, int group) {
+        if (group == IS_HEADER) return 0;
+        if (!mHighlights.isEmpty() && group == IS_HIGHLIGHT_HEADER) return 0;
+        if (!mHighlights.isEmpty() && group == IS_HIGHLIGHT) return position - 2;
+        if (!mHighlights.isEmpty() && group == IS_BROADCAST_HEADER) return 0;
+        if (!mHighlights.isEmpty() && group == IS_BROADCAST) return position - mHighlights.size() - 3;
+        if (mHighlights.isEmpty() && group == IS_BROADCAST_HEADER) return 0;
+        if (mHighlights.isEmpty() && group == IS_BROADCAST) return position - 2;
+        return -1;
     }
 
     private void loadImage(final int group, final int child, final String url, final ImageView imageView) {
@@ -158,6 +184,16 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
     public void clearAllData() {
         mHighlights.clear();
         mBroadcasts.clear();
+    }
+
+    public void clearHighlightData() {
+        mHighlights.clear();
+        notifyDataSetChanged();
+    }
+
+    public void clearBroadcastData() {
+        mBroadcasts.clear();
+        notifyDataSetChanged();
     }
 
     public class ViewHolder {

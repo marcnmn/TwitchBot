@@ -25,6 +25,8 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
     private final static int IS_BROADCAST_HEADER = 3;
     private final static int IS_BROADCAST = 4;
 
+    private String mHighlightHeader = "Highlights", mBroadcastHeader = "Broadcasts";
+
     private Activity mActivity;
     private ChannelDetailFragment mFragment;
     private ArrayList<TwitchVideo> mHighlights;
@@ -82,7 +84,7 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
         int i = mHighlights.isEmpty() ? 0 : 1;
         if (j == IS_HIGHLIGHT_HEADER) {
             View highlights = mInflater.inflate(R.layout.channel_video_footer, null);
-            ((TextView)highlights.findViewById(R.id.textView)).setText("Recent Highlights");
+            ((TextView)highlights.findViewById(R.id.textView)).setText(mHighlightHeader);
             if (mHighlights.isEmpty()) highlights.setVisibility(View.INVISIBLE);
             return highlights;
         } else if (j == IS_HIGHLIGHT) {
@@ -98,7 +100,7 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
 
         } else if (j == IS_BROADCAST_HEADER) {
             View broadcasts = mInflater.inflate(R.layout.channel_video_footer, null);
-            ((TextView)broadcasts.findViewById(R.id.textView)).setText("Recent Broadcasts");
+            ((TextView)broadcasts.findViewById(R.id.textView)).setText(mBroadcastHeader);
             if (mBroadcasts.isEmpty()) broadcasts.setVisibility(View.INVISIBLE);
             return broadcasts;
 
@@ -179,6 +181,22 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
         });
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
+    }
+
+    public void setHighlightHeader(String h) {
+        mHighlightHeader = h;
+    }
+
+    public void setBroadcastHeader(String h) {
+        mBroadcastHeader = h;
+    }
+
+    public ArrayList<TwitchVideo> getHighlights() {
+        return mHighlights;
+    }
+
+    public ArrayList<TwitchVideo> getBroadcasts() {
+        return mBroadcasts;
     }
 
     public void clearAllData() {

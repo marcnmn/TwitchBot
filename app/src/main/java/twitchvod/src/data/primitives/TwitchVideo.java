@@ -1,6 +1,10 @@
 package twitchvod.src.data.primitives;
 
 import android.graphics.Bitmap;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 import twitchvod.src.data.TwitchJSONParser;
 
 public class TwitchVideo {
@@ -18,6 +22,18 @@ public class TwitchVideo {
         mLength = length;
         mPreviewLink = previewLink;
         mViews = views;
+    }
+
+    public LinkedHashMap<String, String> toHashmap() {
+        LinkedHashMap<String, String> data = new LinkedHashMap<>();
+        data.put("title", mTitle);
+        data.put("description", mDesc);
+        data.put("status", mStatus);
+        data.put("recordedAt", mRecordedAt);
+        data.put("length", mLength);
+        data.put("previewLink", mPreviewLink);
+        data.put("views", mViews);
+        return data;
     }
 
     public String timeAgo() {

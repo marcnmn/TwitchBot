@@ -192,6 +192,7 @@ public final class TwitchJSONParser {
 
         JSONObject jStream;
         JSONObject jChannel;
+        Log.v("streamString", s);
         try {
             jStream = new JSONObject(s).getJSONObject("stream");
             id = jStream.getInt("_id");
@@ -342,6 +343,7 @@ public final class TwitchJSONParser {
     public static ArrayList<TwitchVideo> dataToVideoList(String s) {
         ArrayList<TwitchVideo> videos = new ArrayList<>();
         String title, description, recorded_at, preview, status, game, id, length, views;
+        Log.d("highlightString", s);
 
         JSONObject jObject;
         try {
@@ -361,6 +363,8 @@ public final class TwitchJSONParser {
                 length = video.getString("length");
                 preview = video.getString("preview");
                 views = video.getString("views");
+
+                if (preview.equals("null")) continue;
 
                 TwitchVideo temp = new TwitchVideo(title, description, status, id, recorded_at, game,
                         length, preview, views);
@@ -402,18 +406,16 @@ public final class TwitchJSONParser {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    public static TwitchVod oldVideoDataToPlaylist(JSONObject jToken) {
+    public static TwitchVod oldVideoDataToPlaylist(JSONObject json) {
         TwitchVod result = new TwitchVod();
         ArrayList<TwitchVodFileOld> fo = new ArrayList<>();
 
-        ArrayList<String> qualities;
-
         try {
-            result.setDuration(jToken.getString("duration"));
-            result.setChannel(jToken.getString("channel"));
-            result.setPreviewLink(jToken.getString("preview"));
+            result.setDuration(json.getString("duration"));
+            result.setChannel(json.getString("channel"));
+            result.setPreviewLink(json.getString("preview"));
 
-            JSONObject jsonObject = jToken.getJSONObject("chunks");
+            JSONObject jsonObject = json.getJSONObject("chunks");
             JSONArray jPlaylist;
 
             for (int i = 0; i < jsonObject.names().length(); i++) {

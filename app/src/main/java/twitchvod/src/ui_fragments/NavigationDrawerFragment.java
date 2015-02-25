@@ -37,7 +37,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 3;
+    private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer, mUserHasCompletedSetup;
 

@@ -39,7 +39,7 @@ public class OldVideoListAdapter extends BaseAdapter {
         }
 
         holder.part.setText("Part " + (position+1) + " of " + mLengths.size());
-        holder.length.setText("Length: " + secondsInMinutes(mLengths.get(position)) + " min");
+        holder.length.setText(secondsInMinutes(mLengths.get(position)));
 
         return convertView;
     }
@@ -68,6 +68,6 @@ public class OldVideoListAdapter extends BaseAdapter {
         int min = (int) ((1.0 * sec / 60) % 60);
         sec = sec % 60;
 
-        return "" + min + ":" + sec;
+        return min + "min " + sec + "seconds";
     }
 }

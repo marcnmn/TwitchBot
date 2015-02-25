@@ -1,5 +1,6 @@
 package twitchvod.src.ui_fragments;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -66,8 +68,11 @@ public class ChannelDetailFragment extends Fragment {
     private View.OnTouchListener mTouchListener;
     private AdapterView.OnItemClickListener mVideoClicked;
 
+    private ArrayList<TwitchVideo> mSavedHighlights, mSavedBroadcasts;
+
     private ViewGroup mContainer;
     private int mQualitySelected;
+    private boolean isFullListView = false;
 
     private RelativeLayout mStreamView, mOverlay;
     private Channel mChannel;
@@ -87,6 +92,8 @@ public class ChannelDetailFragment extends Fragment {
     private PastBroadcastsListAdapter2 mVideoListAdapter2;
     private View mStreamHeader, mFooter;
     private View mChannelHeader;
+    private TwitchVideo mPlayingVideo;
+    private boolean isLoading;
 
     public ChannelDetailFragment newInstance(HashMap<String,String> h) {
         ChannelDetailFragment fragment = new ChannelDetailFragment();
@@ -153,9 +160,15 @@ public class ChannelDetailFragment extends Fragment {
                 int childPos = mVideoListAdapter2.getChildPosition(position, group);
                 switch (group) {
                     case IS_HEADER: Toast.makeText(getActivity(), "Please choose a video", Toast.LENGTH_SHORT).show(); break;
-                    case IS_HIGHLIGHT_HEADER: setFullVideoLayout(IS_HIGHLIGHT_HEADER); break;
+                    case IS_HIGHLIGHT_HEADER:
+                        if (!isFullListView) setFullVideoLayout(IS_HIGHLIGHT_HEADER);
+                        if (isFullListView) reloadOldLayout();
+                        isFullListView = !isFullListView; break;
                     case IS_HIGHLIGHT: playSelectedVideo(mVideoListAdapter2.getHighlight(childPos)); break;
-                    case IS_BROADCAST_HEADER: setFullVideoLayout(IS_BROADCAST_HEADER); break;
+                    case IS_BROADCAST_HEADER:
+                        if (!isFullListView) setFullVideoLayout(IS_BROADCAST_HEADER);
+                        if (isFullListView) reloadOldLayout();
+                        isFullListView = !isFullListView; break;
                     case IS_BROADCAST: playSelectedVideo(mVideoListAdapter2.getBroadcast(childPos)); break;
                 }
                 Toast.makeText(getActivity(), "" + childPos + " Gruppe " + mVideoListAdapter2.getGroup(position) + " Position " + position, Toast.LENGTH_SHORT).show();
@@ -311,6 +324,7 @@ public class ChannelDetailFragment extends Fragment {
     //------------------ Video Stuff -------------------------///////////////////////////////////////////
 
     public void playSelectedVideo(TwitchVideo v) {
+        mPlayingVideo = v;
         if (v == null) {
             Toast.makeText(getActivity(), "Could not load Video", Toast.LENGTH_SHORT).show();
             return;
@@ -368,7 +382,7 @@ public class ChannelDetailFragment extends Fragment {
         VideoFragment videoFragment = new VideoFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.replace(R.id.container, videoFragment.newInstance(t));
+        transaction.replace(R.id.container, videoFragment.newInstance(t, mPlayingVideo));
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -381,11 +395,15 @@ public class ChannelDetailFragment extends Fragment {
         request += "limit=" + limit + "&offset=" + offset;
         TwitchJSONDataThread t = new TwitchJSONDataThread(this, 2);
         t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+        isLoading = true;
     }
 
     public void highlightDataReceived(String s) {
         mChannel.mHighlights = TwitchJSONParser.dataToVideoList(s);
-        if (mVideoListAdapter2 != null) mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
+        if (mVideoListAdapter2 != null) {
+            mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
+            mLoadedItems = mVideoListAdapter2.getHighlights().size();
+        }
     }
 
     //------------------ PastBroadcast Stuff -------------------------/////////////////////////////////////////////
@@ -397,19 +415,34 @@ public class ChannelDetailFragment extends Fragment {
         request += "limit=" + limit + "&offset=" + offset;
         TwitchJSONDataThread t = new TwitchJSONDataThread(this, 3);
         t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+        isLoading = true;
     }
 
     public void broadcastDataReceived(String s) {
         mChannel.mBroadcasts = TwitchJSONParser.dataToVideoList(s);
-        if (mVideoListAdapter2 != null) mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
+        if (mVideoListAdapter2 != null) {
+            mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);;
+            mLoadedItems = mVideoListAdapter2.getBroadcasts().size();
+        }
     }
 
     //--------------------------------------------------------------------------------------------------------------
 
     private void setFullVideoLayout(final int type) {
-        if (type == IS_HIGHLIGHT_HEADER) mVideoListAdapter2.clearHighlightData();
-        if (type == IS_BROADCAST_HEADER) mVideoListAdapter2.clearBroadcastData();
-        mLoadedItems = 10;
+        //mVideoList.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mVideoList.getMeasuredHeight() + mStreamView.getMeasuredHeight()));
+        mSavedHighlights = (ArrayList<TwitchVideo>) mVideoListAdapter2.getHighlights().clone();
+        mSavedBroadcasts = (ArrayList<TwitchVideo>) mVideoListAdapter2.getBroadcasts().clone();
+
+        if (type == IS_HIGHLIGHT_HEADER) {
+            mVideoListAdapter2.setHighlightHeader("Back");
+            mVideoListAdapter2.clearBroadcastData();
+            mLoadedItems = mSavedHighlights.size();
+        }
+        if (type == IS_BROADCAST_HEADER) {
+            mVideoListAdapter2.setBroadcastHeader("Back");
+            mVideoListAdapter2.clearHighlightData();
+            mLoadedItems = mSavedBroadcasts.size();
+        }
 
         mVideoList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -425,6 +458,30 @@ public class ChannelDetailFragment extends Fragment {
                 }
             }
         });
+
+        ObjectAnimator m1 = ObjectAnimator.ofFloat(mStreamView, "translationY", 0, -mStreamView.getMeasuredHeight());
+        ObjectAnimator m2 = ObjectAnimator.ofFloat(mVideoList, "translationY", 0, -mStreamView.getMeasuredHeight());
+        m1.start();
+        m2.start();
+    }
+
+    //--------------------------------------------------------------------------------------------------------------
+
+    private void reloadOldLayout() {
+        //mVideoList.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mVideoList.getMeasuredHeight() + mStreamView.getMeasuredHeight()));
+        mLoadedItems = 8;
+        mVideoList.setOnScrollListener(null);
+
+        ObjectAnimator m1 = ObjectAnimator.ofFloat(mStreamView, "translationY", -mStreamView.getMeasuredHeight(), 0);
+        ObjectAnimator m2 = ObjectAnimator.ofFloat(mVideoList, "translationY", -mStreamView.getMeasuredHeight(), 0);
+        m1.start();
+        m2.start();
+
+        mVideoListAdapter2.clearAllData();
+        mVideoListAdapter2.setHighlightHeader("Highlights");
+        mVideoListAdapter2.setBroadcastHeader("Broadcasts");
+        mVideoListAdapter2.updateHighlights(mSavedHighlights);
+        mVideoListAdapter2.updateBroadcasts(mSavedBroadcasts);
     }
 
     //------------------------------- Stuff ---------------------------//////////////////////////////
@@ -625,13 +682,18 @@ public class ChannelDetailFragment extends Fragment {
     }
 
     private int qualityValue(String s) {
-        if (s.contains("240")) return 0;
-        if (s.contains("360")) return 1;
-        if (s.contains("480")) return 2;
-        if (s.contains("720")) return 3;
-        if (s.contains("live")) return 4;
-        if (s.contains("source")) return 4;
-        if (s.contains("chunked")) return 4;
+        if (s.contains("audio_only")) return 0;
+        if (s.contains("240")) return 1;
+        if (s.contains("mobile")) return 1;
+        if (s.contains("360")) return 2;
+        if (s.contains("low")) return 2;
+        if (s.contains("480")) return 3;
+        if (s.contains("medium")) return 3;
+        if (s.contains("720")) return 4;
+        if (s.contains("high")) return 4;
+        if (s.contains("live")) return 5;
+        if (s.contains("source")) return 5;
+        if (s.contains("chunked")) return 5;
         return -1;
     }
 

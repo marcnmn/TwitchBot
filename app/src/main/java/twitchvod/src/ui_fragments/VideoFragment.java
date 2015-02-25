@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,13 +16,18 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import twitchvod.src.MainActivity;
 import twitchvod.src.R;
 import twitchvod.src.adapter.OldVideoListAdapter;
+import twitchvod.src.data.TwitchNetworkTasks;
+import twitchvod.src.data.primitives.TwitchVideo;
 import twitchvod.src.data.primitives.TwitchVod;
 
 
@@ -30,7 +37,7 @@ import twitchvod.src.data.primitives.TwitchVod;
 public class VideoFragment extends Fragment {
 
     private ArrayList<String> qualities;
-    private LinkedHashMap <String,String> mData;
+    private LinkedHashMap <String,String> mData, mVideoInfo;
     private TwitchVod mVideo;
     onStreamSelectedListener mCallback;
     private ImageView mPlayOverlay;
@@ -43,12 +50,13 @@ public class VideoFragment extends Fragment {
     private ListView mVideoList;
     private int mQualitySelected;
 
-    public VideoFragment newInstance(TwitchVod h) {
+    public VideoFragment newInstance(TwitchVod h, TwitchVideo twitchVideo) {
         VideoFragment fragment = new VideoFragment();
         Bundle args = new Bundle();
         args.putStringArrayList("lengths", h.getLengths());
         args.putStringArrayList("qualities", h.getAvailableQualities());
         args.putSerializable("data", h.toHashmap());
+        args.putSerializable("video_info", twitchVideo.toHashmap());
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,15 +69,24 @@ public class VideoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video, container, false);
+        RelativeLayout header = (RelativeLayout) rootView.findViewById(R.id.videoHeader);
         ListView videos = (ListView) rootView.findViewById(R.id.fullVideoList);
+
+        ((MainActivity)getActivity()).getSupportActionBar().setTitle("");
 
         ArrayList<String> lengths = getArguments().getStringArrayList("lengths");
         qualities = getArguments().getStringArrayList("qualities");
         mData = (LinkedHashMap) getArguments().getSerializable("data");
+        mVideoInfo = (LinkedHashMap) getArguments().getSerializable("video_info");
 
         OldVideoListAdapter adapter = new OldVideoListAdapter(this, lengths);
 
-        mThumbnail = (ImageView) rootView.findViewById(R.id.videoFeed);
+        ImageView thumb = (ImageView) rootView.findViewById(R.id.videoFeed);
+        loadLogo(mVideoInfo.get("previewLink"), thumb);
+
+        ((TextView)header.findViewById(R.id.videoTitle)).setText(mVideoInfo.get("title"));
+        ((TextView)header.findViewById(R.id.viewsAndRecorded)).setText(mVideoInfo.get("description"));
+        ((TextView)header.findViewById(R.id.videoViews)).setText(mVideoInfo.get("views"));
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.channel_detail_progress);
 
@@ -172,6 +189,23 @@ public class VideoFragment extends Fragment {
         if (s.contains("source")) return 4;
         if (s.contains("chunked")) return 4;
         return -1;
+    }
+
+    private void loadLogo(final String url, final ImageView imageView) {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(url);
+                if (getActivity() == null) return;
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (imageView != null)
+                            imageView.setImageBitmap(bitmap);
+                    }
+                });
+            }
+        });
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
     }
 
     @Override

@@ -5,15 +5,16 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:id="@+id/videoHeader"
         android:background="#ffececec"
         android:elevation="8dp">
 
         <ImageView
-            android:layout_width="150dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:id="@+id/videoThumb"
+            android:layout_margin="10dp"
             android:adjustViewBounds="true"
             android:layout_centerVertical="true"
             android:src="@drawable/stream_offline_preview"/>

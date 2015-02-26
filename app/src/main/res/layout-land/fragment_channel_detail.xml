@@ -18,19 +18,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/videoFeed"
-                android:adjustViewBounds="true"
-                android:src="@drawable/stream_offline_preview"
-                android:scaleType="fitCenter"
+                android:layout_centerHorizontal="true"
                 android:layout_alignParentTop="true"/>
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/imageOverlay"
+                android:layout_centerHorizontal="true"
                 android:layout_alignParentTop="true"
-                android:adjustViewBounds="true"
-                android:src="@drawable/grey_overlay"
-                android:scaleType="fitCenter"/>
+                android:src="@drawable/grey_overlay"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -84,6 +81,8 @@
                 android:visibility="invisible" />
 
         </RelativeLayout>
+
+
 
     <ListView
         android:layout_width="match_parent"

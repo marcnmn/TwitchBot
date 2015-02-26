@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="120dp">
+    android:layout_width="match_parent" android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:layout_width="wrap_content"
-        android:layout_marginRight="6dip"
-        android:adjustViewBounds="true"
-        android:src="@drawable/stream_offline_preview"/>
+        android:layout_margin="5dp"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/broadcast_preview"/>
 
     <TextView
         android:id="@+id/firstLine"
@@ -46,7 +46,7 @@
         android:layout_toLeftOf="@id/secondLineViewers"
         android:id="@+id/viewers_icon"
         android:src="@drawable/active_viewers_twitch"
-        android:layout_toStartOf="@+id/game_viewers" />
+        android:layout_toStartOf="@+id/secondLineViewers" />
 
     <TextView
         android:id="@+id/secondLine"

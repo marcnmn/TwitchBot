@@ -5,10 +5,13 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +42,6 @@ public class VideoFragment extends Fragment {
     private ArrayList<String> qualities;
     private LinkedHashMap <String,String> mData, mVideoInfo;
     private TwitchVod mVideo;
-    onStreamSelectedListener mCallback;
     private ImageView mPlayOverlay;
     private ProgressBar mProgressBar;
     private View.OnTouchListener mTouchListener;
@@ -61,10 +63,6 @@ public class VideoFragment extends Fragment {
         return fragment;
     }
 
-    public interface onStreamSelectedListener {
-        public void onStreamSelected(String s);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,7 +70,7 @@ public class VideoFragment extends Fragment {
         RelativeLayout header = (RelativeLayout) rootView.findViewById(R.id.videoHeader);
         ListView videos = (ListView) rootView.findViewById(R.id.fullVideoList);
 
-        ((MainActivity)getActivity()).getSupportActionBar().setTitle("");
+        ((MainActivity)getActivity()).getSupportActionBar().hide();
 
         ArrayList<String> lengths = getArguments().getStringArrayList("lengths");
         qualities = getArguments().getStringArrayList("qualities");
@@ -81,8 +79,10 @@ public class VideoFragment extends Fragment {
 
         OldVideoListAdapter adapter = new OldVideoListAdapter(this, lengths);
 
-        ImageView thumb = (ImageView) rootView.findViewById(R.id.videoFeed);
+        ImageView thumb = (ImageView) rootView.findViewById(R.id.videoThumb);
         loadLogo(mVideoInfo.get("previewLink"), thumb);
+
+        setHeaderHeight(thumb);
 
         ((TextView)header.findViewById(R.id.videoTitle)).setText(mVideoInfo.get("title"));
         ((TextView)header.findViewById(R.id.viewsAndRecorded)).setText(mVideoInfo.get("description"));
@@ -100,6 +100,20 @@ public class VideoFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    private void setHeaderHeight(ImageView header) {
+        int width, height;
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
+        height = size.y;
+
+        if (isInLandscape())
+            header.getLayoutParams().width = width/4;
+        else
+            header.getLayoutParams().width = width/3;
     }
 
     private LinkedHashMap<String, String> getHash(int p) {
@@ -206,6 +220,10 @@ public class VideoFragment extends Fragment {
         });
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
+    }
+
+    private boolean isInLandscape() {
+        return getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     @Override

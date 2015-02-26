@@ -1,6 +1,7 @@
 package twitchvod.src.adapter;
 
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,8 @@ public class StreamListAdapter extends BaseAdapter {
         }
 
         if (mStreams.get(position).mPreview == null) {
-            loadImage(position, holder.imageView);
+//            loadImage(position, holder.imageView);
+            new DownloadImageTask(holder.imageView, position).execute(mStreams.get(position).mPreviewLink);
         } else {
             holder.imageView.setImageBitmap(mStreams.get(position).mPreview);
         }
@@ -119,5 +121,24 @@ public class StreamListAdapter extends BaseAdapter {
         });
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        private ImageView imageView;
+        private int pos;
+
+        public DownloadImageTask(ImageView imageView, int pos) {
+            this.imageView = imageView;
+            this.pos = pos;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            return TwitchNetworkTasks.downloadBitmap(urls[0]);
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            imageView.setImageBitmap(result);
+            mStreams.get(pos).mPreview = result;
+        }
     }
 }

@@ -34,7 +34,7 @@ import twitchvod.src.ui_fragments.TestFragment;
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         GamesRasterFragment.OnGameSelectedListener, StreamListFragment.onStreamSelectedListener,
-        ChannelDetailFragment.onStreamSelectedListener, ChannelListFragment.onChannelSelectedListener {
+        ChannelListFragment.onChannelSelectedListener {
 
     private static final String ARG_ACTIONBAR_TITLE = "action_bar";
     private String mUrls[];
@@ -190,10 +190,6 @@ public class MainActivity extends ActionBarActivity
         transaction.replace(R.id.container, mChannelDetailFragment.newInstance(g.mName));
         transaction.addToBackStack(null);
         transaction.commit();
-    }
-
-    @Override
-    public void onStreamSelected(String s) {
     }
 
     @Override

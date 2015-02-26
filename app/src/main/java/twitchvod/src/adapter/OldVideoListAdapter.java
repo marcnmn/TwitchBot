@@ -68,6 +68,6 @@ public class OldVideoListAdapter extends BaseAdapter {
         int min = (int) ((1.0 * sec / 60) % 60);
         sec = sec % 60;
 
-        return min + "min " + sec + "seconds";
+        return "Length " + min + ": " + sec + " min";
     }
 }

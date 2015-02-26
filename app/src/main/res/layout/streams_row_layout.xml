@@ -77,7 +77,7 @@
         android:layout_toLeftOf="@id/secondLineViewers"
         android:id="@+id/viewers_icon"
         android:src="@drawable/active_viewers_twitch"
-        android:layout_toStartOf="@+id/game_viewers" />
+        android:layout_toStartOf="@+id/secondLineViewers" />
 
     <TextView
         android:id="@+id/text_stream_status"

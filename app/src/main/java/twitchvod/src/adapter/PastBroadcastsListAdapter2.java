@@ -2,7 +2,9 @@ package twitchvod.src.adapter;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,8 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
     private final static int IS_BROADCAST_HEADER = 3;
     private final static int IS_BROADCAST = 4;
 
+    private boolean IS_PAUSED = false;
+
     private String mHighlightHeader = "Highlights", mBroadcastHeader = "Broadcasts";
 
     private Activity mActivity;
@@ -33,7 +37,7 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
     private ArrayList<TwitchVideo> mBroadcasts;
     private LayoutInflater mInflater;
     private int mWidth;
-    private RelativeLayout.LayoutParams mRelativeLayout;
+    private ViewGroup.LayoutParams mParams;
 
     public PastBroadcastsListAdapter2(ChannelDetailFragment c) {
         mActivity = c.getActivity();
@@ -72,12 +76,12 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (parent.getMeasuredWidth() != mWidth && holder.imageView.getDrawable() != null) {
-            mWidth = parent.getMeasuredWidth();
+        if (mWidth == 0 && holder.imageView.getDrawable() != null) {
+            mWidth = getWindowWidth();
             float scale = 1.0f * holder.imageView.getDrawable().getIntrinsicHeight()/holder.imageView.getDrawable().getIntrinsicWidth();
-            int imageWidth = Math.round(mWidth);
-            int imageHeight = Math.round(imageWidth * scale);
-            mRelativeLayout = new RelativeLayout.LayoutParams(imageWidth, imageHeight);
+            mParams = holder.imageView.getLayoutParams();
+            mParams.height = (int) (scale*mWidth*0.35);
+            mParams.width = (int) (mWidth*0.35);
         }
 
         int j = getGroup(position+1);
@@ -94,7 +98,7 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
             holder.secondLineViewers.setText(mHighlights.get(index).mViews);
 
             if (mHighlights.get(index).mPreview == null)
-                loadImage(0, index, mHighlights.get(index).mPreviewLink, holder.imageView);
+                loadImage(j, index, mHighlights.get(index).mPreviewLink, holder.imageView);
             else
                 holder.imageView.setImageBitmap(mHighlights.get(index).mPreview);
 
@@ -105,17 +109,31 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
             return broadcasts;
 
         } else if (j == IS_BROADCAST) {
-            int broadPos = getChildPosition(position, j)+1;
+            int broadPos = getChildPosition(position+1, j);
             holder.firstLine.setText(mBroadcasts.get(broadPos).mTitle);
             holder.secondLine.setText(mBroadcasts.get(broadPos).timeAgo());
             holder.secondLineViewers.setText(mBroadcasts.get(broadPos).mViews);
             if (mBroadcasts.get(broadPos).mPreview == null)
-                loadImage(1, broadPos, mBroadcasts.get(broadPos).mPreviewLink, holder.imageView);
+                loadImage(j, broadPos, mBroadcasts.get(broadPos).mPreviewLink, holder.imageView);
             else
                 holder.imageView.setImageBitmap(mBroadcasts.get(broadPos).mPreview);
         }
+        preloadImages(position + 1);
 
+        if (mParams != null) holder.imageView.setLayoutParams(mParams);
         return convertView;
+    }
+
+    private void preloadImages(int position) {
+        int j;
+        int k;
+        for (int i = position+1; i < position + 5; i++) {
+            if (i >= getCount()) return;
+            j = getGroup(i);
+            k = getChildPosition(i, j);
+            if (j == IS_HIGHLIGHT && mHighlights.get(k).mPreview == null) loadImage(j, k, mHighlights.get(k).mPreviewLink, null);
+            if (j == IS_BROADCAST && mBroadcasts.get(k).mPreview == null) loadImage(j, k, mBroadcasts.get(k).mPreviewLink, null);
+        }
     }
 
     public int getCount() {
@@ -169,12 +187,13 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
     private void loadImage(final int group, final int child, final String url, final ImageView imageView) {
         Thread thread = new Thread(new Runnable() {
             public void run() {
+                if (IS_PAUSED) return;
                 final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(url);
                 mActivity.runOnUiThread(new Runnable() {
                     public void run() {
-                        imageView.setImageBitmap(bitmap);
-                        if (group == 0) mHighlights.get(child).mPreview = bitmap;
-                        if (group == 1) mBroadcasts.get(child).mPreview = bitmap;
+                        if (imageView != null)imageView.setImageBitmap(bitmap);
+                        if (group == IS_HIGHLIGHT) mHighlights.get(child).mPreview = bitmap;
+                        if (group == IS_BROADCAST) mBroadcasts.get(child).mPreview = bitmap;
                     }
                 });
             }
@@ -212,6 +231,27 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
     public void clearBroadcastData() {
         mBroadcasts.clear();
         notifyDataSetChanged();
+    }
+
+
+    private int getWindowHeight() {
+        int height;
+        Display display = mActivity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        height = size.y;
+
+        return height;
+    }
+
+    private int getWindowWidth() {
+        int width;
+        Display display = mActivity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
+
+        return width;
     }
 
     public class ViewHolder {

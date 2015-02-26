@@ -1,5 +1,7 @@
 package twitchvod.src.ui_fragments;
 
+import android.animation.Animator;
+import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,16 +12,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.Transformation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -58,10 +65,11 @@ public class ChannelDetailFragment extends Fragment {
     private final static int IS_BROADCAST_HEADER = 3;
     private final static int IS_BROADCAST = 4;
 
+    private boolean mPaused = false;
+
     LinkedHashMap<String, String> mAvailableQualities;
     HashMap<String, String> mData;
     private int mLoadedItems, INT_LIST_UPDATE_VALUE, INT_LIST_UPDATE_THRESHOLD;
-    onStreamSelectedListener mCallback;
     private ImageView mPlayOverlay;
     private ProgressBar mProgressBar;
     private ImageView mVideo;
@@ -88,12 +96,12 @@ public class ChannelDetailFragment extends Fragment {
     private ImageView mThumbnail, mChannelBanner;
     private TextView mStreamTitle, mStreamGameTitle, mStreamViewers, mStreamStatus;
     private String mToken, mSig;
-    private ListView mVideoList, mFullVideoList;
+    private ListView mVideoList;
     private PastBroadcastsListAdapter2 mVideoListAdapter2;
-    private View mStreamHeader, mFooter;
+    private View mStreamHeader;
     private View mChannelHeader;
     private TwitchVideo mPlayingVideo;
-    private boolean isLoading;
+    private View rootView;
 
     public ChannelDetailFragment newInstance(HashMap<String,String> h) {
         ChannelDetailFragment fragment = new ChannelDetailFragment();
@@ -121,10 +129,14 @@ public class ChannelDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_channel_detail, container, false);
+
+        rootView = inflater.inflate(R.layout.fragment_channel_detail, container, false);
+
         SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(getActivity());
+
         mIsAuthenticated = sp.getBoolean(USER_IS_AUTHENTICATED, false);
+
         if (mIsAuthenticated) {
             mUserToken = sp.getString(USER_AUTH_TOKEN, "");
             mUserScope = sp.getString(SCOPES_OF_USER, "");
@@ -134,23 +146,21 @@ public class ChannelDetailFragment extends Fragment {
         mStreamView = (RelativeLayout) rootView.findViewById(R.id.stream_layout_top);
         mThumbnail = (ImageView) rootView.findViewById(R.id.videoFeed);
 
-        mFullVideoList = (ListView) rootView.findViewById(R.id.fullVideoList);
-
         mPlayOverlay = (ImageView) rootView.findViewById(R.id.imageOverlay);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.channel_detail_progress);
+
+        mVideoList = (ListView) rootView.findViewById(R.id.videoList);
+        mChannelHeader = getActivity().getLayoutInflater().inflate(R.layout.channel_video_header, null);
+        mStreamHeader = getActivity().getLayoutInflater().inflate(R.layout.stream_video_header, null);
 
         //mLoadedItems = getResources().getInteger(R.integer.channel_list_start_items);
         mLoadedItems = 8;
         INT_LIST_UPDATE_VALUE = getResources().getInteger(R.integer.channel_list_update_items);
         INT_LIST_UPDATE_THRESHOLD = getResources().getInteger(R.integer.channel_list_update_threshold);
 
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mVideoList = (ListView) rootView.findViewById(R.id.videoList);
-            mVideoListAdapter2 = new PastBroadcastsListAdapter2(this);
 
-            mChannelHeader = getActivity().getLayoutInflater().inflate(R.layout.channel_video_header, null);
-            mStreamHeader = getActivity().getLayoutInflater().inflate(R.layout.stream_video_header, null);
-            mFooter = getActivity().getLayoutInflater().inflate(R.layout.channel_video_footer, null);
+        if (mVideoListAdapter2 == null) {
+            mVideoListAdapter2 = new PastBroadcastsListAdapter2(this);
         }
 
         mVideoClicked = new AdapterView.OnItemClickListener() {
@@ -159,17 +169,25 @@ public class ChannelDetailFragment extends Fragment {
                 int group = mVideoListAdapter2.getGroup(position);
                 int childPos = mVideoListAdapter2.getChildPosition(position, group);
                 switch (group) {
-                    case IS_HEADER: Toast.makeText(getActivity(), "Please choose a video", Toast.LENGTH_SHORT).show(); break;
+                    case IS_HEADER:
+                        Toast.makeText(getActivity(), "Please choose a video", Toast.LENGTH_SHORT).show();
+                        break;
                     case IS_HIGHLIGHT_HEADER:
                         if (!isFullListView) setFullVideoLayout(IS_HIGHLIGHT_HEADER);
                         if (isFullListView) reloadOldLayout();
-                        isFullListView = !isFullListView; break;
-                    case IS_HIGHLIGHT: playSelectedVideo(mVideoListAdapter2.getHighlight(childPos)); break;
+                        isFullListView = !isFullListView;
+                        break;
+                    case IS_HIGHLIGHT:
+                        playSelectedVideo(mVideoListAdapter2.getHighlight(childPos));
+                        break;
                     case IS_BROADCAST_HEADER:
                         if (!isFullListView) setFullVideoLayout(IS_BROADCAST_HEADER);
                         if (isFullListView) reloadOldLayout();
-                        isFullListView = !isFullListView; break;
-                    case IS_BROADCAST: playSelectedVideo(mVideoListAdapter2.getBroadcast(childPos)); break;
+                        isFullListView = !isFullListView;
+                        break;
+                    case IS_BROADCAST:
+                        playSelectedVideo(mVideoListAdapter2.getBroadcast(childPos));
+                        break;
                 }
                 Toast.makeText(getActivity(), "" + childPos + " Gruppe " + mVideoListAdapter2.getGroup(position) + " Position " + position, Toast.LENGTH_SHORT).show();
                 //setFullVideoLayout();
@@ -395,7 +413,6 @@ public class ChannelDetailFragment extends Fragment {
         request += "limit=" + limit + "&offset=" + offset;
         TwitchJSONDataThread t = new TwitchJSONDataThread(this, 2);
         t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
-        isLoading = true;
     }
 
     public void highlightDataReceived(String s) {
@@ -415,7 +432,6 @@ public class ChannelDetailFragment extends Fragment {
         request += "limit=" + limit + "&offset=" + offset;
         TwitchJSONDataThread t = new TwitchJSONDataThread(this, 3);
         t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
-        isLoading = true;
     }
 
     public void broadcastDataReceived(String s) {
@@ -429,59 +445,103 @@ public class ChannelDetailFragment extends Fragment {
     //--------------------------------------------------------------------------------------------------------------
 
     private void setFullVideoLayout(final int type) {
-        //mVideoList.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mVideoList.getMeasuredHeight() + mStreamView.getMeasuredHeight()));
-        mSavedHighlights = (ArrayList<TwitchVideo>) mVideoListAdapter2.getHighlights().clone();
-        mSavedBroadcasts = (ArrayList<TwitchVideo>) mVideoListAdapter2.getBroadcasts().clone();
+        if (mSavedHighlights == null) mSavedHighlights = (ArrayList<TwitchVideo>) mVideoListAdapter2.getHighlights().clone();
+        if (mSavedBroadcasts == null) mSavedBroadcasts = (ArrayList<TwitchVideo>) mVideoListAdapter2.getBroadcasts().clone();
 
-        if (type == IS_HIGHLIGHT_HEADER) {
-            mVideoListAdapter2.setHighlightHeader("Back");
-            mVideoListAdapter2.clearBroadcastData();
-            mLoadedItems = mSavedHighlights.size();
-        }
-        if (type == IS_BROADCAST_HEADER) {
-            mVideoListAdapter2.setBroadcastHeader("Back");
-            mVideoListAdapter2.clearHighlightData();
-            mLoadedItems = mSavedBroadcasts.size();
-        }
+        ViewGroup.LayoutParams p1 = rootView.getLayoutParams();
+        p1.height = rootView.getMeasuredHeight() + mStreamView.getMeasuredHeight();
+        rootView.setLayoutParams(p1);
 
-        mVideoList.setOnScrollListener(new AbsListView.OnScrollListener() {
+        ObjectAnimator m1 = ObjectAnimator.ofFloat(rootView, "translationY", 0, -mStreamView.getMeasuredHeight());
+        m1.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            public void onAnimationStart(Animator animation) {
             }
+
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int lastVisibleItem = firstVisibleItem + visibleItemCount;
-                if (lastVisibleItem >= mLoadedItems - INT_LIST_UPDATE_THRESHOLD) {
-                    if (type == IS_HIGHLIGHT_HEADER) downloadHighlightData(INT_LIST_UPDATE_VALUE, mLoadedItems);
-                    if (type == IS_BROADCAST_HEADER) downloadBroadcastData(INT_LIST_UPDATE_VALUE, mLoadedItems);
-                    mLoadedItems += INT_LIST_UPDATE_VALUE;
+            public void onAnimationEnd(Animator animation) {
+                if (type == IS_HIGHLIGHT_HEADER) {
+                    mVideoListAdapter2.setHighlightHeader("Back");
+                    //mVideoListAdapter2.setPaused(true);
+                    mVideoListAdapter2.clearBroadcastData();
+                    mLoadedItems = mSavedHighlights.size();
                 }
+                if (type == IS_BROADCAST_HEADER) {
+                    mVideoListAdapter2.setBroadcastHeader("Back");
+                    mVideoListAdapter2.clearHighlightData();
+                    if (mSavedHighlights.size() > 0)
+                        mVideoList.setSelection(1);
+                    mLoadedItems = mSavedBroadcasts.size();
+                }
+
+                mVideoList.setOnScrollListener(new AbsListView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+                    }
+                    @Override
+                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                        int lastVisibleItem = firstVisibleItem + visibleItemCount;
+                        if (lastVisibleItem >= mLoadedItems - INT_LIST_UPDATE_THRESHOLD) {
+                            if (type == IS_HIGHLIGHT_HEADER) downloadHighlightData(INT_LIST_UPDATE_VALUE, mLoadedItems);
+                            if (type == IS_BROADCAST_HEADER) downloadBroadcastData(INT_LIST_UPDATE_VALUE, mLoadedItems);
+                            mLoadedItems += INT_LIST_UPDATE_VALUE;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
             }
         });
-
-        ObjectAnimator m1 = ObjectAnimator.ofFloat(mStreamView, "translationY", 0, -mStreamView.getMeasuredHeight());
-        ObjectAnimator m2 = ObjectAnimator.ofFloat(mVideoList, "translationY", 0, -mStreamView.getMeasuredHeight());
+        m1.setDuration(750);
         m1.start();
-        m2.start();
     }
 
     //--------------------------------------------------------------------------------------------------------------
 
     private void reloadOldLayout() {
-        //mVideoList.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mVideoList.getMeasuredHeight() + mStreamView.getMeasuredHeight()));
         mLoadedItems = 8;
         mVideoList.setOnScrollListener(null);
 
-        ObjectAnimator m1 = ObjectAnimator.ofFloat(mStreamView, "translationY", -mStreamView.getMeasuredHeight(), 0);
-        ObjectAnimator m2 = ObjectAnimator.ofFloat(mVideoList, "translationY", -mStreamView.getMeasuredHeight(), 0);
-        m1.start();
-        m2.start();
+        ObjectAnimator m1 = ObjectAnimator.ofFloat(rootView, "translationY", -mStreamView.getMeasuredHeight(), 0);
+        m1.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
 
-        mVideoListAdapter2.clearAllData();
-        mVideoListAdapter2.setHighlightHeader("Highlights");
-        mVideoListAdapter2.setBroadcastHeader("Broadcasts");
-        mVideoListAdapter2.updateHighlights(mSavedHighlights);
-        mVideoListAdapter2.updateBroadcasts(mSavedBroadcasts);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                ViewGroup.LayoutParams p1 = rootView.getLayoutParams();
+                p1.height = rootView.getMeasuredHeight() - mStreamView.getMeasuredHeight();
+                rootView.setLayoutParams(p1);
+
+                mVideoListAdapter2.clearAllData();
+                mVideoListAdapter2.setHighlightHeader("Highlights");
+                mVideoListAdapter2.setBroadcastHeader("Broadcasts");
+                mVideoListAdapter2.updateHighlights(mSavedHighlights);
+                mVideoListAdapter2.updateBroadcasts(mSavedBroadcasts);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        m1.setDuration(750);
+        m1.start();
     }
 
     //------------------------------- Stuff ---------------------------//////////////////////////////
@@ -500,24 +560,28 @@ public class ChannelDetailFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((ActionBarActivity) getActivity()).getSupportActionBar().hide();
-        if(isInLandscape()) fullscreen();
+
+        if(isInLandscape()) {
+            mStreamView.getLayoutParams().height = getWindowHeight()/2;
+        }
+        if(!isInLandscape()) {
+            float scale = 1.0f * mPlayOverlay.getDrawable().getIntrinsicHeight() / mPlayOverlay.getDrawable().getIntrinsicWidth();
+            mStreamView.getLayoutParams().height = (int) (getWindowWidth()*scale);
+        }
+
         if (mStream != null && mUser != null) {
             updateLiveStreamLayout();
-            if (mVideoListAdapter2 != null) {
-                mVideoListAdapter2.clearAllData();
-                mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
-                mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
-            }
             if (mAvailableQualities != null) {
                 liveLinksReceived(mAvailableQualities);
             }
-        } else if (mChannel != null && mUser != null) {
-            if (mVideoListAdapter2 != null) {
-                mVideoListAdapter2.clearAllData();
-                mVideoListAdapter2.updateHighlights(mChannel.mHighlights);
-                mVideoListAdapter2.updateBroadcasts(mChannel.mBroadcasts);
+            if (isFullListView) {
+                setFullVideoLayout(IS_HIGHLIGHT_HEADER);
             }
+        } else if (mChannel != null && mUser != null) {
             updateChannelLayout();
+            if (isFullListView) {
+                setFullVideoLayout(IS_HIGHLIGHT_HEADER);
+            }
         } else {
             if (mVideoListAdapter2 != null) mVideoListAdapter2.clearAllData();
             downloadStreamData(getArguments().getString("channel_name"));
@@ -540,12 +604,6 @@ public class ChannelDetailFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mCallback = (onStreamSelectedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
     }
 
     @Override
@@ -557,14 +615,13 @@ public class ChannelDetailFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mCallback = null;
     }
 
     @Override
     public void onStop() {
         super.onStop();
         ((ActionBarActivity) getActivity()).getSupportActionBar().show();
-        if(isInLandscape()) showUi();
+//        if(isInLandscape()) showUi();
     }
 
     @Override
@@ -630,7 +687,7 @@ public class ChannelDetailFragment extends Fragment {
         int i = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                | View.SYSTEM_UI_FLAG_FULLSCREEN// hide status bar
                 ;
 
         getActivity().getWindow().getDecorView().setSystemUiVisibility(i);
@@ -641,10 +698,12 @@ public class ChannelDetailFragment extends Fragment {
         int i = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                | View.SYSTEM_UI_FLAG_FULLSCREEN// hide status bar
                 ;
 
-        if(decorView.getSystemUiVisibility() != i) {return;
+        if(decorView.getSystemUiVisibility() != i) {
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            return;
         }
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
@@ -716,5 +775,25 @@ public class ChannelDetailFragment extends Fragment {
             q[i] = s[i];
         }
         return q;
+    }
+
+    private int getWindowHeight() {
+        int height;
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        height = size.y;
+
+        return height;
+    }
+
+    private int getWindowWidth() {
+        int width;
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
+
+        return width;
     }
 }

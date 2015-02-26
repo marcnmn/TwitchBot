@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,7 +82,8 @@ public class GamesAdapter extends BaseAdapter {
             holder.thumbImage.setImageBitmap(tempGame.mBitmapThumb);
         } else {
             holder.thumbImage.setImageResource(R.drawable.game_offline);
-            loadImage2(position, holder.thumbImage);
+//            loadImage2(position, holder.thumbImage);
+            new DownloadImageTask(holder.thumbImage, position).execute(tempGame.mThumbnail);
         }
 
         if (mRelativeLayout != null ) {
@@ -145,9 +147,29 @@ public class GamesAdapter extends BaseAdapter {
                     @Override
                     public void run() {
                         imageView.setImageBitmap(bitmap);
+                        mGames.get(fPos).mBitmapThumb = bitmap;
                     }
                 });
             }
         }).start();
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        private ImageView imageView;
+        private int pos;
+
+        public DownloadImageTask(ImageView imageView, int pos) {
+            this.imageView = imageView;
+            this.pos = pos;
+        }
+
+         protected Bitmap doInBackground(String... urls) {
+            return TwitchNetworkTasks.downloadBitmap(urls[0]);
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            imageView.setImageBitmap(result);
+            mGames.get(pos).mBitmapThumb = result;
+        }
     }
 }

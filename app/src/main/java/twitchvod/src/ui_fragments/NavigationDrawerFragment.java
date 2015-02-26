@@ -2,7 +2,6 @@ package twitchvod.src.ui_fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,12 +16,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
 import twitchvod.src.R;
+import twitchvod.src.adapter.DrawerAdapter;
+
 public class NavigationDrawerFragment extends Fragment {
 
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
@@ -80,17 +80,26 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        mDrawerListView.setAdapter(new ArrayAdapter<>(
-                getActivity(),
-                R.layout.drawer_item,
-                R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                        getString(R.string.title_section4),
-                        getString(R.string.title_section5)
-                }));
+        String sections[] = new String[]{
+                getString(R.string.title_section1),
+                getString(R.string.title_section2),
+                getString(R.string.title_section3),
+                getString(R.string.title_section4)
+        };
+
+        int drawables[] = new int[] {
+                R.drawable.drawer_games,
+                R.drawable.drawer_channel,
+                R.drawable.drawer_search,
+                R.drawable.drawer_favorites
+        };
+
+        String footer[] = new String[]{
+                "Go Pro", "Refresh Token", "Settings"
+        };
+
+        mDrawerListView.setAdapter(new DrawerAdapter(getActivity(),sections , drawables, footer));
+
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -159,6 +168,7 @@ public class NavigationDrawerFragment extends Fragment {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUserHasCompletedSetup = sp.getBoolean(PREF_USER_COMPLETED_SETUP, false);
 
+        if (position == 4) return;
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);

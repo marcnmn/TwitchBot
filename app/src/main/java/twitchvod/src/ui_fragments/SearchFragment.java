@@ -2,6 +2,7 @@ package twitchvod.src.ui_fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -142,13 +143,15 @@ public class SearchFragment extends Fragment {
 
     private void updateGamesGrid() {
         if (mGames == null || mGames.size() == 0) return;
+        View game_item  = getActivity().getLayoutInflater().inflate(R.layout.game_item_layout, null);
+        ImageView img  = (ImageView)game_item.findViewById(R.id.game_thumbnail);
+        int width = mGridLayout.getMeasuredWidth() / mGridLayout.getColumnCount();
+        float scale = 1.0f * img.getBackground().getIntrinsicHeight() / img.getBackground().getIntrinsicWidth();
 
-        int width = mGridLayout.getMeasuredWidth();
-
-        ImageView img;
         TextView title;
-        View game_item;
+
         for (int i = 0; i < 6; i++) {
+            final int finalI = i;
             game_item = getActivity().getLayoutInflater().inflate(R.layout.game_item_layout, null);
 
             ((TextView)game_item.findViewById(R.id.game_desc)).setText(mGames.get(i).mTitle);
@@ -157,7 +160,24 @@ public class SearchFragment extends Fragment {
 
             img = (ImageView)game_item.findViewById(R.id.game_thumbnail);
             loadImage(mGames.get(i).mThumbnail, img);
-            game_item.setLayoutParams(new RelativeLayout.LayoutParams(width/3, width/2));
+
+            game_item.setLayoutParams(new RelativeLayout.LayoutParams(width, (int) (width*scale)));
+
+            game_item.setClickable(true);
+            game_item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = getString(R.string.game_streams_url);
+                    url += mGames.get(finalI).toURL() + "&";
+                    StreamListFragment mStreamListFragment = new StreamListFragment();
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    transaction.replace(R.id.container, mStreamListFragment.newInstance(url, mGames.get(finalI).mTitle));
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }
+            });
+
             mGridLayout.addView(game_item);
         }
     }
@@ -176,22 +196,27 @@ public class SearchFragment extends Fragment {
         for (int i = 0; i < mChannels.size(); i++) {
             final int finalI = i;
             channel_item = getActivity().getLayoutInflater().inflate(R.layout.channel_item_layout, null);
-            channel_item.setClickable(true);
-            channel_item.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mChannels.get(finalI);
-                    Log.v("asdf", mChannels.get(finalI).getDisplayName());
-                }
-            });
-
             ((TextView)channel_item.findViewById(R.id.firstLine)).setText(mChannels.get(i).getDisplayName());
             ((TextView)channel_item.findViewById(R.id.secondLineViewers)).setText(mChannels.get(i).getFollowers());
             ((TextView)channel_item.findViewById(R.id.secondLine)).setText(mChannels.get(i).getStatus());
 
             ImageView img = (ImageView) channel_item.findViewById(R.id.icon);
-            loadImage(mChannels.get(i).getLogoLink(), img);
             img.setLayoutParams(new RelativeLayout.LayoutParams(width/3, width/3));
+            loadImage(mChannels.get(i).getLogoLink(), img);
+            channel_item.setClickable(true);
+            channel_item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mChannels.get(finalI);
+                    ChannelDetailFragment mChannelDetailFragment = new ChannelDetailFragment();
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    transaction.replace(R.id.container, mChannelDetailFragment.newInstance(mChannels.get(finalI).getName()));
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                    Log.v("asdf", mChannels.get(finalI).getDisplayName());
+                }
+            });
             mResultLinearLayout.addView(channel_item);
         }
     }

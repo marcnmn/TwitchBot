@@ -79,8 +79,8 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
             holder.secondLineViewers = (TextView) convertView.findViewById(R.id.secondLineViewers);
             holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
 
-            if (mWidth == 0 && ((GridView)parent).getNumColumns() > 0) {
-                mWidth = getWindowWidth() / ((GridView)parent).getNumColumns();
+            if (mWidth == 0) {
+                mWidth = getWindowWidth();
                 mParams = holder.imageView.getLayoutParams();
                 mParams.width = (int) (mWidth*0.35);
             }

@@ -3,6 +3,7 @@ package twitchvod.src.ui_fragments;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.net.http.SslError;
@@ -16,6 +17,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -48,6 +51,7 @@ public class SetupFragment extends Fragment
     private RelativeLayout setupComplete;
     private RadioGroup loginType;
     private ImageView mIndicator;
+    private EditText mEditUsername;
 
 
     private int page = 0;
@@ -116,14 +120,16 @@ public class SetupFragment extends Fragment
             }
         });
 
-        final EditText edittext = (EditText) nameLogin.findViewById(R.id.editText);
-        edittext.setOnKeyListener(new View.OnKeyListener() {
+        mEditUsername = (EditText) nameLogin.findViewById(R.id.editText);
+        mEditUsername.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    String user_url = getActivity().getResources().getString(R.string.twitch_user_url) + edittext.getText();
+                    String user_url = getActivity().getResources().getString(R.string.twitch_user_url) + mEditUsername.getText();
                     new DownloadJSONTask(1).execute(user_url);
-                    edittext.clearFocus();
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mEditUsername.getWindowToken(), 0);
                     return true;
                 }
                 return false;
@@ -268,19 +274,43 @@ public class SetupFragment extends Fragment
             String user_url = getActivity().getResources().getString(R.string.twitch_user_url) + username;
             new DownloadJSONTask(1).execute(user_url);
         } catch (JSONException e) {
+            Toast.makeText(getActivity(), "Usertoken not valid", Toast.LENGTH_LONG).show();
             Log.d("SetupFragment:username", "no valid username" + username);
+        } catch (NullPointerException e) {
+            Toast.makeText(getActivity(), "Usertoken not valid", Toast.LENGTH_LONG).show();
+            Log.d("SetupFragment:username", "no valid username" + username + " Nullpointer");
         }
     }
 
     private void userSearchDataReceived(JSONObject userData) {
         String username = "", userDisplayName = "";
         try {
+
             username = userData.getString("name");
             userDisplayName = userData.getString("display_name");
             twitchLogin.findViewById(R.id.twitchProgress).setVisibility(View.GONE);
             usernameConfirmed(username, userDisplayName);
+
         } catch (JSONException e) {
+
+            if (!mEditUsername.getText().toString().isEmpty()) {
+                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(mEditUsername, InputMethodManager.SHOW_IMPLICIT);
+                mEditUsername.setError("Username not found");
+            }
             Log.d("SetupFragment:username", "no valid username" + username);
+
+        } catch (NullPointerException e) {
+
+            if (!mEditUsername.getText().toString().isEmpty()) {
+                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(mEditUsername, InputMethodManager.SHOW_IMPLICIT);
+                mEditUsername.setError("Username not found");
+            }
+            Log.d("SetupFragment:username", "no valid username" + username + " Nullpointer");
+
         }
     }
 

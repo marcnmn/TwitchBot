@@ -2,8 +2,6 @@ package twitchvod.src.ui_fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -16,15 +14,12 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
 import java.util.ArrayList;
 
 import twitchvod.src.R;
 import twitchvod.src.adapter.GamesAdapter;
+import twitchvod.src.data.TwitchJSONParser;
 import twitchvod.src.data.async_tasks.TwitchJSONDataThread;
-import twitchvod.src.data.async_tasks.TwitchJSONParserThread;
 import twitchvod.src.data.primitives.Game;
 
 public class GamesRasterFragment extends Fragment
@@ -33,6 +28,8 @@ public class GamesRasterFragment extends Fragment
     OnGameSelectedListener  mCallback;
     private String mBaseUrl;
     private int mLoadedItems, INT_GRID_UPDATE_VALUE, INT_GRID_UPDATE_THRESHOLD;
+
+    private long start;
 
     private ArrayList<Game> mGames;
     private ProgressBar mProgressBar;
@@ -99,16 +96,23 @@ public class GamesRasterFragment extends Fragment
     public void loadGameData(int limit, int offset) {
         String request = mBaseUrl;
         request += "limit=" + limit + "&offset=" + offset;
+
+        start = System.currentTimeMillis();
         TwitchJSONDataThread t = new TwitchJSONDataThread(this);
-        t.downloadJSONInBackground(request, Thread.NORM_PRIORITY);
+        t.downloadJSONInBackground(request, Thread.MAX_PRIORITY);
     }
 
     public void dataReceived(String s) {
-        TwitchJSONParserThread t = new TwitchJSONParserThread(this);
-        t.parseJSONInBackground(s, Thread.MAX_PRIORITY);
+        Log.d("Downloaded content time", "" + (System.currentTimeMillis() - start) + " ms");
+
+        start = System.currentTimeMillis();
+        //TwitchJSONParserThread t = new TwitchJSONParserThread(this);
+        //t.parseJSONInBackground(s, Thread.MAX_PRIORITY);
+        dataParsed(TwitchJSONParser.topGamesJSONtoArrayList(s));
     }
 
     public void dataParsed(ArrayList<Game> l) {
+        Log.d("Parsing Time", "" + (System.currentTimeMillis() - start) + " ms");
         if (mGames == null) {
             mGames = l;
             mProgressBar.setVisibility(View.INVISIBLE);

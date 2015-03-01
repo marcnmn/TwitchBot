@@ -29,12 +29,15 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -278,7 +281,16 @@ public class ChannelDetailFragment extends Fragment {
         mProgressBar.setVisibility(View.GONE);
         mStreamView.setVisibility(View.VISIBLE);
 
-        loadLogo(mStream.mPreviewLink, mThumbnail);
+        //loadLogo(mStream.mPreviewLink, mThumbnail);
+
+        Picasso.with(getActivity())
+                .load(mStream.mPreviewLink)
+                .placeholder(R.drawable.broadcast_preview)
+                .error(R.drawable.broadcast_preview)
+                .config(Bitmap.Config.RGB_565)
+                .noFade()
+                .into(mThumbnail);
+
         TextView sTitle = (TextView) mStreamView.findViewById(R.id.channelTitel);
         sTitle.setText(mStream.mChannel.getDisplayName());
         TextView sGame = (TextView) mStreamView.findViewById(R.id.channelGame);
@@ -473,33 +485,33 @@ public class ChannelDetailFragment extends Fragment {
                         mVideoList.setSelection(1);
                     mLoadedItems = mSavedBroadcasts.size();
                 }
-
-                mVideoList.setOnScrollListener(new AbsListView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(AbsListView view, int scrollState) {
-                    }
-                    @Override
-                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                        int lastVisibleItem = firstVisibleItem + visibleItemCount;
-                        if (lastVisibleItem >= mLoadedItems - INT_LIST_UPDATE_THRESHOLD) {
-                            if (type == IS_HIGHLIGHT_HEADER) downloadHighlightData(INT_LIST_UPDATE_VALUE, mLoadedItems);
-                            if (type == IS_BROADCAST_HEADER) downloadBroadcastData(INT_LIST_UPDATE_VALUE, mLoadedItems);
-                            mLoadedItems += INT_LIST_UPDATE_VALUE;
-                        }
-                    }
-                });
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
             }
 
             @Override
             public void onAnimationRepeat(Animator animation) {
-
             }
         });
+
+        mVideoList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                int lastVisibleItem = firstVisibleItem + visibleItemCount;
+                if (lastVisibleItem >= mLoadedItems - INT_LIST_UPDATE_THRESHOLD) {
+                    if (type == IS_HIGHLIGHT_HEADER) downloadHighlightData(INT_LIST_UPDATE_VALUE, mLoadedItems);
+                    if (type == IS_BROADCAST_HEADER) downloadBroadcastData(INT_LIST_UPDATE_VALUE, mLoadedItems);
+                    mLoadedItems += INT_LIST_UPDATE_VALUE;
+                    Log.d("scroll" , "" + mLoadedItems);
+                }
+            }
+        });
+
         m1.setDuration(750);
         m1.start();
     }
@@ -549,6 +561,7 @@ public class ChannelDetailFragment extends Fragment {
     public void playStream(String s) {
         Intent stream = new Intent(Intent.ACTION_VIEW);
         stream.setDataAndType(Uri.parse(s), "video/*");
+        Log.d("m3u8 Url: ", s);
         startActivity(stream);
     }
 

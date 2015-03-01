@@ -12,7 +12,8 @@
         android:id="@+id/stream_layout_top"
         android:background="#cb000000"
         android:elevation="8dp"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="match_parent"

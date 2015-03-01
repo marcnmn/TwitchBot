@@ -1,5 +1,6 @@
 package twitchvod.src.adapter;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -13,9 +14,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
-import twitchvod.src.MainActivity;
 import twitchvod.src.R;
 import twitchvod.src.data.TwitchNetworkTasks;
 import twitchvod.src.data.primitives.Stream;
@@ -24,14 +26,16 @@ import twitchvod.src.ui_fragments.StreamListFragment;
 public class StreamListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private ArrayList<Stream> mStreams;
-    private MainActivity mActivity;
     Animation mAlpha;
     private int mWidth = 0;
     private RelativeLayout.LayoutParams mRelativeLayout;
+    private Context mContext;
 
     public StreamListAdapter(StreamListFragment c) {
-        if (mStreams == null) mStreams = new ArrayList<>();
-        mActivity = (MainActivity) c.getActivity();
+        if (mStreams == null) {
+            mStreams = new ArrayList<>();
+        }
+        mContext = c.getActivity();
         mInflater = LayoutInflater.from(c.getActivity());
         mAlpha = new AlphaAnimation(0,1);
         mAlpha.setDuration(500);
@@ -57,23 +61,29 @@ public class StreamListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (((GridView) parent).getColumnWidth() != mWidth && holder.imageView.getDrawable() != null) {
-            mWidth = ((GridView) parent).getColumnWidth();
-            float scale = 1.0f * holder.imageView.getDrawable().getIntrinsicHeight()/holder.imageView.getDrawable().getIntrinsicWidth();
-            int imageWidth = Math.round(mWidth);
-            int imageHeight = Math.round(imageWidth * scale);
-            mRelativeLayout = new RelativeLayout.LayoutParams(imageWidth, imageHeight);
-        }
+        //if (((GridView) parent).getColumnWidth() != mWidth && holder.imageView.getDrawable() != null) {
+        //    mWidth = ((GridView) parent).getColumnWidth();
+        //    float scale = 1.0f * holder.imageView.getDrawable().getIntrinsicHeight()/holder.imageView.getDrawable().getIntrinsicWidth();
+        //    int imageWidth = Math.round(mWidth);
+        //    int imageHeight = Math.round(imageWidth * scale);
+        //    mRelativeLayout = new RelativeLayout.LayoutParams(imageWidth, imageHeight);
+        //}
 
-        if (mStreams.get(position).mPreview == null) {
-//            loadImage(position, holder.imageView);
-            new DownloadImageTask(holder.imageView, position).execute(mStreams.get(position).mPreviewLink);
-        } else {
-            holder.imageView.setImageBitmap(mStreams.get(position).mPreview);
-        }
+        //holder.imageView.setTag(mStreams.get(position).mPreviewLink);
+        Picasso.with(mContext)
+                .load(mStreams.get(position).mPreviewLink)
+                .placeholder(R.drawable.stream_offline_preview)
+                .error(R.drawable.no_livestream)
+                .config(Bitmap.Config.RGB_565)
+                .into(holder.imageView);
+//        if (mStreams.get(position).mPreview == null) {
+//            new DownloadImageTask(holder.imageView, position).execute(mStreams.get(position).mPreviewLink);
+//        } else {
+//            holder.imageView.setImageBitmap(mStreams.get(position).mPreview);
+//        }
 
-        if (mRelativeLayout != null)
-            holder.imageView.setLayoutParams(mRelativeLayout);
+        //if (mRelativeLayout != null)
+            //holder.imageView.setLayoutParams(mRelativeLayout);
 
         holder.firstLine.setText(mStreams.get(position).mTitle);
         holder.secondLine.setText(mStreams.get(position).printGame());
@@ -107,25 +117,9 @@ public class StreamListAdapter extends BaseAdapter {
         public TextView streamStatus;
     }
 
-    private void loadImage(final int pos, final ImageView imageView) {
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                    final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(mStreams.get(pos).mPreviewLink);
-                    mActivity.runOnUiThread(new Runnable() {
-                        public void run() {
-                            imageView.setImageBitmap(bitmap);
-                            mStreams.get(pos).mPreview = bitmap;
-                        }
-                    });
-                }
-        });
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.start();
-    }
-
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         private ImageView imageView;
-        private int pos;
+        private final int pos;
 
         public DownloadImageTask(ImageView imageView, int pos) {
             this.imageView = imageView;
@@ -133,11 +127,12 @@ public class StreamListAdapter extends BaseAdapter {
         }
 
         protected Bitmap doInBackground(String... urls) {
-            return TwitchNetworkTasks.downloadBitmap(urls[0]);
+                return TwitchNetworkTasks.downloadBitmap(urls[0]);
         }
 
         protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
+            if (imageView.getTag().equals(mStreams.get(pos).mPreviewLink))
+                imageView.setImageBitmap(result);
             mStreams.get(pos).mPreview = result;
         }
     }

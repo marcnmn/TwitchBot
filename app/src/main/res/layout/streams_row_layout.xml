@@ -6,9 +6,7 @@
         android:id="@+id/icon"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:adjustViewBounds="true"
-        android:layout_marginRight="6dip"
-        android:src="@drawable/stream_offline_preview"/>
+        android:adjustViewBounds="true"/>
 
 
     <TextView

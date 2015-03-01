@@ -3,15 +3,21 @@ package twitchvod.src.adapter;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -67,25 +73,28 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
         if(convertView == null || convertView.getTag() == null) {
             convertView = mInflater.inflate(R.layout.broadcast_row_layout, parent, false);
             holder = new ViewHolder();
+
             holder.firstLine = (TextView) convertView.findViewById(R.id.firstLine);
             holder.secondLine = (TextView) convertView.findViewById(R.id.secondLine);
             holder.secondLineViewers = (TextView) convertView.findViewById(R.id.secondLineViewers);
             holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+
+            if (mWidth == 0 && ((GridView)parent).getNumColumns() > 0) {
+                mWidth = getWindowWidth() / ((GridView)parent).getNumColumns();
+                mParams = holder.imageView.getLayoutParams();
+                mParams.width = (int) (mWidth*0.35);
+            }
+
+            if (mParams.width > 0) {
+                holder.imageView.setLayoutParams(mParams);
+            }
+            convertView.setTag(holder);
         }
         else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (mWidth == 0 && holder.imageView.getDrawable() != null) {
-            mWidth = getWindowWidth();
-            float scale = 1.0f * holder.imageView.getDrawable().getIntrinsicHeight()/holder.imageView.getDrawable().getIntrinsicWidth();
-            mParams = holder.imageView.getLayoutParams();
-            mParams.height = (int) (scale*mWidth*0.35);
-            mParams.width = (int) (mWidth*0.35);
-        }
-
         int j = getGroup(position+1);
-        int i = mHighlights.isEmpty() ? 0 : 1;
         if (j == IS_HIGHLIGHT_HEADER) {
             View highlights = mInflater.inflate(R.layout.channel_video_footer, null);
             ((TextView)highlights.findViewById(R.id.textView)).setText(mHighlightHeader);
@@ -97,10 +106,18 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
             holder.secondLine.setText(mHighlights.get(index).timeAgo());
             holder.secondLineViewers.setText(mHighlights.get(index).mViews);
 
-            if (mHighlights.get(index).mPreview == null)
-                loadImage(j, index, mHighlights.get(index).mPreviewLink, holder.imageView);
-            else
-                holder.imageView.setImageBitmap(mHighlights.get(index).mPreview);
+            Picasso.with(mActivity)
+                    .load(mHighlights.get(index).mPreviewLink)
+                    .placeholder(R.drawable.broadcast_preview)
+                    .error(R.drawable.broadcast_preview)
+                    .config(Bitmap.Config.RGB_565)
+                    .into(holder.imageView);
+            //holder.imageView.setTag(mHighlights.get(index).mPreviewLink);
+            //if (mHighlights.get(index).mPreview == null)
+            //    new DownloadImageTask(j, index, holder.imageView).execute(mHighlights.get(index).mPreviewLink);
+                //loadImage(j, index, mHighlights.get(index).mPreviewLink, holder.imageView);
+            //else
+            //    holder.imageView.setImageBitmap(mHighlights.get(index).mPreview);
 
         } else if (j == IS_BROADCAST_HEADER) {
             View broadcasts = mInflater.inflate(R.layout.channel_video_footer, null);
@@ -109,18 +126,27 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
             return broadcasts;
 
         } else if (j == IS_BROADCAST) {
-            int broadPos = getChildPosition(position+1, j);
-            holder.firstLine.setText(mBroadcasts.get(broadPos).mTitle);
-            holder.secondLine.setText(mBroadcasts.get(broadPos).timeAgo());
-            holder.secondLineViewers.setText(mBroadcasts.get(broadPos).mViews);
-            if (mBroadcasts.get(broadPos).mPreview == null)
-                loadImage(j, broadPos, mBroadcasts.get(broadPos).mPreviewLink, holder.imageView);
-            else
-                holder.imageView.setImageBitmap(mBroadcasts.get(broadPos).mPreview);
-        }
-        preloadImages(position + 1);
+            int index = getChildPosition(position+1, j);
+            holder.firstLine.setText(mBroadcasts.get(index).mTitle);
+            holder.secondLine.setText(mBroadcasts.get(index).timeAgo());
+            holder.secondLineViewers.setText(mBroadcasts.get(index).mViews);
 
-        if (mParams != null) holder.imageView.setLayoutParams(mParams);
+            Picasso.with(mActivity)
+                    .load(mBroadcasts.get(index).mPreviewLink)
+                    .placeholder(R.drawable.broadcast_preview)
+                    .error(R.drawable.broadcast_preview)
+                    .config(Bitmap.Config.RGB_565)
+                    .into(holder.imageView);
+            //holder.imageView.setTag(mBroadcasts.get(index).mPreviewLink);
+            //if (mBroadcasts.get(index).mPreview == null)
+            //    new DownloadImageTask(j, index, holder.imageView).execute(mBroadcasts.get(index).mPreviewLink);
+                //loadImage(j, index, mBroadcasts.get(index).mPreviewLink, holder.imageView);
+            //else
+            //    holder.imageView.setImageBitmap(mBroadcasts.get(index).mPreview);
+        }
+        //preloadImages(position + 1);
+
+        //if (mParams != null) holder.imageView.setLayoutParams(mParams);
         return convertView;
     }
 
@@ -259,5 +285,34 @@ public class PastBroadcastsListAdapter2 extends BaseAdapter {
         public TextView secondLine;
         public TextView firstLine;
         public TextView secondLineViewers;
+        public LinearLayout rightPart;
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        private ImageView imageView;
+        private final int group, child;
+
+        public DownloadImageTask(final int group, final int child, final ImageView imageView) {
+            this.imageView = imageView;
+            this.group = group;
+            this.child = child;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            return TwitchNetworkTasks.downloadBitmap(urls[0]);
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            if (group == IS_HIGHLIGHT) {
+                if (imageView.getTag().equals(mHighlights.get(child).mPreviewLink))
+                    imageView.setImageBitmap(result);
+                mHighlights.get(child).mPreview = result;
+            }
+            if (group == IS_BROADCAST) {
+                if (imageView.getTag().equals(mBroadcasts.get(child).mPreviewLink))
+                    imageView.setImageBitmap(result);
+                mBroadcasts.get(child).mPreview = result;
+            }
+        }
     }
 }

@@ -2,6 +2,8 @@ package twitchvod.src.adapter;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -58,14 +62,15 @@ public class ChannelListAdapter extends BaseAdapter {
             mRelativeLayout = new RelativeLayout.LayoutParams(mWidth, mWidth);
         }
 
-        if (mChannels.get(position).mLogoBitmap == null) {
-            loadImage(position, holder.imageView);
-        } else {
-            holder.imageView.setImageBitmap(mChannels.get(position).mLogoBitmap);
-        }
-
         if (mRelativeLayout != null)
             holder.imageView.setLayoutParams(mRelativeLayout);
+
+        Picasso.with(mActivity)
+                .load(mChannels.get(position).getLogoLink())
+                .placeholder(R.drawable.channel_offline_360x360)
+                .error(R.drawable.channel_offline_360x360)
+                .fit()
+                .into(holder.imageView);
 
         holder.firstLine.setText(mChannels.get(position).getDisplayName());
         holder.secondLine.setText(mChannels.get(position).getGame());

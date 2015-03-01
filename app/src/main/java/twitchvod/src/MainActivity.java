@@ -16,6 +16,7 @@ import android.widget.EditText;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.squareup.picasso.Picasso;
 
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.data.primitives.Stream;
@@ -24,6 +25,7 @@ import twitchvod.src.ui_fragments.AuthFragment;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
 import twitchvod.src.ui_fragments.SearchFragment;
+import twitchvod.src.ui_fragments.SettingsFragment;
 import twitchvod.src.ui_fragments.SetupFragment;
 import twitchvod.src.ui_fragments.StreamListFragment;
 import twitchvod.src.ui_fragments.GamesRasterFragment;
@@ -39,12 +41,15 @@ public class MainActivity extends ActionBarActivity
     private static final String ARG_ACTIONBAR_TITLE = "action_bar";
     private String mUrls[];
     private AdView mAdView;
+    private boolean mIsInSetup = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUrls = getResources().getStringArray(R.array.drawer_urls);
         setContentView(R.layout.activity_main);
+
+        //Picasso.with(this).setIndicatorsEnabled(true);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
@@ -72,7 +77,7 @@ public class MainActivity extends ActionBarActivity
                 transaction = getFragmentManager().beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.replace(R.id.container, mGamesRasterFragment.newInstance(mUrls[position]));
-                transaction.addToBackStack(null);
+                transaction.addToBackStack("GamesRaster");
                 transaction.commit();
                 break;
             case 1:
@@ -80,7 +85,7 @@ public class MainActivity extends ActionBarActivity
                 transaction = getFragmentManager().beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.replace(R.id.container, mStreamListFragment.newInstance(mUrls[position], null));
-                transaction.addToBackStack(null);
+                transaction.addToBackStack("StreamTop");
                 transaction.commit();
                 break;
             case 2:
@@ -89,7 +94,7 @@ public class MainActivity extends ActionBarActivity
                 transaction = getFragmentManager().beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.replace(R.id.container, searchFragment);
-                transaction.addToBackStack(null);
+                transaction.addToBackStack("Search");
                 transaction.commit();
                 break;
             case 3:
@@ -97,21 +102,24 @@ public class MainActivity extends ActionBarActivity
                 transaction = getFragmentManager().beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.replace(R.id.container, favoritesFragment.newInstance(mUrls[position]));
-                transaction.addToBackStack(null);
+                transaction.addToBackStack("Favorites");
                 transaction.commit();
                 break;
             case 4:
-                AuthFragment a = new AuthFragment();
+                //divider
+                break;
+            case 5:
+                //gopro
+                break;
+            case 6:
                 transaction = getFragmentManager().beginTransaction();
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.replace(R.id.container, a.newInstance());
-//                TestFragment t = new TestFragment();
-//                transaction = getFragmentManager().beginTransaction();
-//                transaction.replace(R.id.container, t.newInstance());
-                transaction.addToBackStack(null);
+                transaction.replace(R.id.container, new SettingsFragment());
+                transaction.addToBackStack("Settings");
                 transaction.commit();
                 break;
             case 100:
+                mIsInSetup = true;
                 SetupFragment s = new SetupFragment();
                 transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, s);
@@ -144,6 +152,9 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fm = getFragmentManager();
         if (fm.getBackStackEntryCount() > 1) {
             fm.popBackStack();
+        } else if (mIsInSetup) {
+            mIsInSetup = false;
+            startApp();
         } else {
             super.onBackPressed();
         }
@@ -178,7 +189,7 @@ public class MainActivity extends ActionBarActivity
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.replace(R.id.container, mStreamListFragment.newInstance(url, g.mTitle));
-        transaction.addToBackStack(null);
+        transaction.addToBackStack(g.mId);
         transaction.commit();
     }
 
@@ -188,7 +199,7 @@ public class MainActivity extends ActionBarActivity
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.replace(R.id.container, mChannelDetailFragment.newInstance(g.mName));
-        transaction.addToBackStack(null);
+        transaction.addToBackStack(String.valueOf(g.mId));
         transaction.commit();
     }
 
@@ -198,7 +209,7 @@ public class MainActivity extends ActionBarActivity
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.replace(R.id.container, mChannelDetailFragment.newInstance(c.getName()));
-        transaction.addToBackStack(null);
+        transaction.addToBackStack(c.getId());
         transaction.commit();
     }
 
@@ -208,11 +219,12 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void startApp() {
+        mIsInSetup = false;
         GamesRasterFragment mGamesRasterFragment = new GamesRasterFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.replace(R.id.container, mGamesRasterFragment.newInstance(mUrls[0]));
-        transaction.addToBackStack(null);
+        transaction.addToBackStack("GamesRaster");
         transaction.commit();
     }
 }

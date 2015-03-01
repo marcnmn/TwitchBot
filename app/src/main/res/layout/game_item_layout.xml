@@ -1,29 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/background_material_dark">
+    android:layout_width="match_parent" android:layout_height="wrap_content">
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/game_thumbnail"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/game_offline" />
+        android:adjustViewBounds="true"/>
 
     <TextView
         android:id="@+id/game_desc"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignBottom="@+id/game_thumbnail"
         android:layout_margin="0dp"
         android:layout_marginBottom="0dp"
         android:singleLine="true"
         android:shadowColor="#000"
         android:shadowRadius="7.0"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="This is some random text"
-        android:textSize="16sp"
         android:gravity="center"
         android:textColor="#ffededed"
         android:background="#79000000" />

@@ -25,6 +25,6 @@
     <fragment android:id="@+id/navigation_drawer"
         android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
         android:layout_gravity="start" android:name="twitchvod.src.ui_fragments.NavigationDrawerFragment"
-        tools:layout="@layout/fragment_navigation_drawer" />
+    tools:layout="@layout/fragment_navigation_drawer" />
 
-</android.support.v4.widget.DrawerLayout>
+    </android.support.v4.widget.DrawerLayout>

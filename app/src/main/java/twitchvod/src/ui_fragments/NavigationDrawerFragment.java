@@ -95,7 +95,7 @@ public class NavigationDrawerFragment extends Fragment {
         };
 
         String footer[] = new String[]{
-                "Go Pro", "Refresh Token", "Settings"
+                "Go Pro", "Settings"
         };
 
         mDrawerListView.setAdapter(new DrawerAdapter(getActivity(),sections , drawables, footer));

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TwitchBot</string>
+    <string name="app_name">TWirific</string>
     <string name="banner_ad_unit_test_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="banner_ad_unit_id">ca-app-pub-1959826266269343/9921410110</string>
 
@@ -33,6 +33,8 @@
     <string name="twitch_search_streams">https://api.twitch.tv/kraken/search/streams?</string>
     <string name="twitch_search_games">https://api.twitch.tv/kraken/search/games?</string>
 
+    <string name="twitch_oauth_base_url">https://api.twitch.tv/kraken?oauth_token=</string>
+    <string name="twitch_oauth_get_token_url">https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&amp;client_id=cgkxsqu4n4wwrq4enos0dyhz60bzea4&amp;redirect_uri=https://twitchbot&amp;scope=user_subscriptions</string>
     <string name="stream_token_url">http://api.twitch.tv/api/channels/</string>
     <string name="twitch_video_token_url">https://api.twitch.tv/api/vods/</string>
 
@@ -50,6 +52,12 @@
         <item>low</item>
         <item>mobile</item>
         <item>audio only</item>
+    </string-array>
+
+    <string-array name="settings_stream_quality_type">
+        <item>always ask</item>
+        <item>auto select best</item>
+        <item>set maximum</item>
     </string-array>
 
     <string-array

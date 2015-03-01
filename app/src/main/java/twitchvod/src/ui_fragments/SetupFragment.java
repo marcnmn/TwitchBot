@@ -6,11 +6,13 @@ import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.net.http.SslError;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -26,8 +29,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import twitchvod.src.MainActivity;
 import twitchvod.src.R;
+import twitchvod.src.data.TwitchNetworkTasks;
 
 public class SetupFragment extends Fragment
 {
@@ -48,6 +55,9 @@ public class SetupFragment extends Fragment
     private static String USER_AUTH_TOKEN = "user_auth_token";
     private static String USER_IS_AUTHENTICATED = "user_is_authenticated";
     private static String SCOPES_OF_USER = "scopes_of_user";
+    private static String USER_HAS_TWITCH_USERNAME = "user_has_twitch_username";
+    private static String TWITCH_USERNAME = "twitch_username";
+    private static String TWITCH_DISPLAY_USERNAME = "twitch_display_username";
     private int mNumberOfAttempts = 0;
 
     @Override
@@ -106,6 +116,20 @@ public class SetupFragment extends Fragment
             }
         });
 
+        final EditText edittext = (EditText) nameLogin.findViewById(R.id.editText);
+        edittext.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    String user_url = getActivity().getResources().getString(R.string.twitch_user_url) + edittext.getText();
+                    new DownloadJSONTask(1).execute(user_url);
+                    edittext.clearFocus();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         return rootView;
     }
 
@@ -140,7 +164,7 @@ public class SetupFragment extends Fragment
         if(page >= mScreenContainer.getChildCount()) return;
 
         if (page+steps == 3){
-            ((TextView)mButtonContainer.findViewById(R.id.nextButton)).setVisibility(View.VISIBLE);
+            mButtonContainer.findViewById(R.id.nextButton).setVisibility(View.VISIBLE);
             ((TextView)mButtonContainer.findViewById(R.id.nextButton)).setText("Finish");
             (mButtonContainer.findViewById(R.id.skipButton)).setVisibility(View.GONE);
         }
@@ -176,7 +200,10 @@ public class SetupFragment extends Fragment
     private void loadTwitchAuthenication() {
         final WebView w = (WebView) twitchLogin.findViewById(R.id.webView);
         final ProgressBar p = (ProgressBar) twitchLogin.findViewById(R.id.twitchProgress);
-        final String url = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=cgkxsqu4n4wwrq4enos0dyhz60bzea4&redirect_uri=https://twitchbot&scope=user_subscriptions";
+        //final String get_oauth_token = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=cgkxsqu4n4wwrq4enos0dyhz60bzea4&redirect_uri=https://twitchbot&scope=user_subscriptions";
+        final String get_oauth_token = getActivity().getResources().getString(R.string.twitch_oauth_get_token_url);
+        final String oauth_base = getActivity().getResources().getString(R.string.twitch_oauth_base_url);
+
         w.getSettings().setJavaScriptEnabled(true);
 
         w.setWebChromeClient(new WebChromeClient() {
@@ -200,6 +227,7 @@ public class SetupFragment extends Fragment
                 p.setVisibility(View.GONE);
                 if (mNumberOfAttempts > 4) return;
                 if (url.contains("access_token=")) {
+                    w.setVisibility(View.GONE);
 
                     int index_token = url.indexOf("=")+1;
                     int index_middle = url.lastIndexOf("&");
@@ -212,14 +240,48 @@ public class SetupFragment extends Fragment
                     sp.edit().putString(USER_AUTH_TOKEN, token).apply();
                     sp.edit().putString(SCOPES_OF_USER, scopes).apply();
 
-                    Log.v("usertoken", token);
-                    Log.v("usertoken", scopes);
+                    Log.d("SetupFragment:usertoken", token);
+                    Log.d("SetupFragment:scopes", scopes);
 
-                    makeSteps(1);
+                    p.setVisibility(View.VISIBLE);
+                    new DownloadJSONTask(0).execute(oauth_base + token);
                 }
             }
         });
-        w.loadUrl(url);
+        w.loadUrl(get_oauth_token);
+    }
+
+    private void usernameConfirmed(String username, String userDisplayName) {
+        SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(getActivity());
+        sp.edit().putBoolean(USER_HAS_TWITCH_USERNAME, true).apply();
+        sp.edit().putString(TWITCH_USERNAME, username).apply();
+        sp.edit().putString(TWITCH_DISPLAY_USERNAME, userDisplayName).apply();
+        makeSteps(1);
+    }
+
+    private void oauthDataReceived(JSONObject loggedIn) {
+        String username = "";
+        try {
+            username = loggedIn.getJSONObject("token").getString("user_name");
+            twitchLogin.findViewById(R.id.twitchProgress).setVisibility(View.GONE);
+            String user_url = getActivity().getResources().getString(R.string.twitch_user_url) + username;
+            new DownloadJSONTask(1).execute(user_url);
+        } catch (JSONException e) {
+            Log.d("SetupFragment:username", "no valid username" + username);
+        }
+    }
+
+    private void userSearchDataReceived(JSONObject userData) {
+        String username = "", userDisplayName = "";
+        try {
+            username = userData.getString("name");
+            userDisplayName = userData.getString("display_name");
+            twitchLogin.findViewById(R.id.twitchProgress).setVisibility(View.GONE);
+            usernameConfirmed(username, userDisplayName);
+        } catch (JSONException e) {
+            Log.d("SetupFragment:username", "no valid username" + username);
+        }
     }
 
     @Override
@@ -240,8 +302,8 @@ public class SetupFragment extends Fragment
 
     @Override
     public void onPause() {
-        super.onPause();
         ((ActionBarActivity) getActivity()).getSupportActionBar().show();
+        super.onPause();
     }
 
 
@@ -252,6 +314,25 @@ public class SetupFragment extends Fragment
 
     @Override
     public void onDetach() {
+        ((ActionBarActivity) getActivity()).getSupportActionBar().show();
         super.onDetach();
+    }
+
+    private class DownloadJSONTask extends AsyncTask<String, Void, JSONObject> {
+
+        private final int type;
+
+        public DownloadJSONTask(int type) {
+            this.type = type;
+        }
+
+        protected JSONObject doInBackground(String... urls) {
+            return TwitchNetworkTasks.downloadJSONData(urls[0]);
+        }
+
+        protected void onPostExecute(JSONObject result) {
+            if (type == 0) oauthDataReceived(result);
+            if (type == 1) userSearchDataReceived(result);
+        }
     }
 }

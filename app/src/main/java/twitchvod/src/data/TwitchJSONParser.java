@@ -29,9 +29,21 @@ public final class TwitchJSONParser {
     private TwitchJSONParser() {
     }
 
+    public static void setHighQuality() {
+        BITMAP_QUALITY = "large";
+    }
+
+    public static void setMediumQuality() {
+        BITMAP_QUALITY = "medium";
+    }
+
+    public static void setLowQuality() {
+        BITMAP_QUALITY = "small";
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static ArrayList<Game> topGamesJSONtoArrayList(String r) {
-        String title, thumb, id;
+        String title = "", thumb = "", id = "";
         int viewers, channelc;
         JSONObject game;
 
@@ -48,7 +60,13 @@ public final class TwitchJSONParser {
                 game = jArray.getJSONObject(i).getJSONObject("game");
                 title = game.getString("name");
                 id = game.getString("_id");
-                thumb = game.getJSONObject("box").getString(BITMAP_QUALITY);
+
+                try {
+                    thumb = game.getJSONObject("box").getString(BITMAP_QUALITY);
+                } catch (JSONException e) {
+                    Log.d("TwitchParser", "game.getJSONObject(\"box\") == null");
+                }
+
                 Game temp = new Game(title,thumb,viewers,channelc,id,null);
                 games.add(temp);
             }
@@ -83,10 +101,8 @@ public final class TwitchJSONParser {
                 games.add(temp);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.v("channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
-            e.printStackTrace();
             Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
         }
         return games;
@@ -135,10 +151,8 @@ public final class TwitchJSONParser {
             htemp.clear();
         }
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.v("channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
-            e.printStackTrace();
             Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
         }
 
@@ -174,10 +188,8 @@ public final class TwitchJSONParser {
             return  channel;
 
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.v("channelsJSONtoArrayList", "no JSON Data");
         } catch (NullPointerException e) {
-            e.printStackTrace();
             Log.v("channelsJSONtoArrayList", "Nothing to parse. String is empty");
         }
         return channel;
@@ -192,7 +204,7 @@ public final class TwitchJSONParser {
 
         JSONObject jStream;
         JSONObject jChannel;
-        Log.v("streamString", s);
+        //Log.v("streamString", s);
         try {
             jStream = new JSONObject(s).getJSONObject("stream");
             id = jStream.getInt("_id");
@@ -202,7 +214,11 @@ public final class TwitchJSONParser {
             preview = jStream.getJSONObject("preview").getString(BITMAP_QUALITY);
 
             jChannel = jStream.getJSONObject("channel");
-            hTemp.put("status", jChannel.getString("status"));
+            try {
+                hTemp.put("status", jChannel.getString("status"));
+            } catch (JSONException e) {
+                hTemp.put("status", "");
+            }
             hTemp.put("display_name", jChannel.getString("display_name"));
             hTemp.put("game", jChannel.getString("game"));
             hTemp.put("_id", jChannel.getString("_id"));
@@ -223,7 +239,8 @@ public final class TwitchJSONParser {
             return stream;
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.v("streamJSONtoStream", "no Stream");
+            return null;
         } catch (NullPointerException e) {
             e.printStackTrace();
             Log.v("topGamesJSONtoArrayList", "Nothing to parse. String is empty");
@@ -343,7 +360,7 @@ public final class TwitchJSONParser {
     public static ArrayList<TwitchVideo> dataToVideoList(String s) {
         ArrayList<TwitchVideo> videos = new ArrayList<>();
         String title, description, recorded_at, preview, status, game, id, length, views;
-        Log.d("highlightString", s);
+        //Log.d("highlightString", s);
 
         JSONObject jObject;
         try {

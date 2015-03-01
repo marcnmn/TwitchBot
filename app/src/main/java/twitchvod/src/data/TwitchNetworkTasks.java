@@ -23,6 +23,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.data.primitives.Game;
 import twitchvod.src.data.primitives.PastBroadcast;
@@ -61,7 +63,7 @@ public final class TwitchNetworkTasks {
         JSONObject jObject = null;
         try {
             URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
             conn.connect();

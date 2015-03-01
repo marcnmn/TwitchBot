@@ -1,20 +1,17 @@
 package twitchvod.src.adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -28,19 +25,14 @@ public class GamesAdapter extends BaseAdapter {
     private ArrayList<Game> mGames;
     private double aspectRatio;
     private RelativeLayout.LayoutParams mRelativeLayout;
-    private Activity mActivity;
-    private AlphaAnimation mAlpha;
-    private boolean heightSet = false;
-
-    private ArrayList<Thread> mThreads = new ArrayList<>();
+    private Context mContext;
 
 
     public GamesAdapter(GamesRasterFragment c) {
+        mContext = c.getActivity();
         if (mGames == null) mGames = new ArrayList<>();
-        mActivity = c.getActivity();
         mInflater = LayoutInflater.from(c.getActivity());
         mGames = new ArrayList<>();
-        mAlpha = new AlphaAnimation(0,1);
     }
 
     public void update(ArrayList<Game> g) {
@@ -66,33 +58,15 @@ public class GamesAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (convertView.getMeasuredWidth() > 0 && aspectRatio == 0 && holder.thumbImage.getDrawable() != null) {
-            double height =  holder.thumbImage.getDrawable().getIntrinsicHeight();
-            double width = holder.thumbImage.getDrawable().getIntrinsicWidth();
-            aspectRatio = height / width;
-            int conWidth = convertView.getMeasuredWidth();
-            int conHeight = (int) Math.round(conWidth * aspectRatio);
-            mRelativeLayout = new RelativeLayout.LayoutParams(conWidth,conHeight);
-        }
+        Picasso.with(mContext)
+                .load(mGames.get(position).mThumbnail)
+                .placeholder(R.drawable.game_offline)
+                .error(R.drawable.game_offline)
+                .config(Bitmap.Config.RGB_565)
+                .into(holder.thumbImage);
 
-
-        Game tempGame = mGames.get(position);
-
-        if (tempGame.mBitmapThumb != null) {
-            holder.thumbImage.setImageBitmap(tempGame.mBitmapThumb);
-        } else {
-            holder.thumbImage.setImageResource(R.drawable.game_offline);
-//            loadImage2(position, holder.thumbImage);
-            new DownloadImageTask(holder.thumbImage, position).execute(tempGame.mThumbnail);
-        }
-
-        if (mRelativeLayout != null ) {
-            holder.thumbImage.setLayoutParams(mRelativeLayout);
-            heightSet = true;
-        }
-
-        holder.title.setText(tempGame.mTitle);
-        holder.viewers.setText(Integer.toString(tempGame.mViewers));
+        holder.title.setText(mGames.get(position).mTitle);
+        holder.viewers.setText(Integer.toString(mGames.get(position).mViewers));
 
         return convertView;
     }
@@ -115,48 +89,9 @@ public class GamesAdapter extends BaseAdapter {
         TextView viewers;
     }
 
-    private void loadImage(int pos, ImageView imageView) {
-        final int fPos = pos;
-        final ImageView fImg = imageView;
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                final Bitmap bitmap;
-                bitmap = TwitchNetworkTasks.downloadBitmap(mGames.get(fPos).mThumbnail);
-//                storeImage(bitmap, mGames.get(fPos).mId);
-                mActivity.runOnUiThread(new Runnable() {
-                    public void run() {
-                        fImg.setAlpha(0f);
-                        fImg.setImageBitmap(bitmap);
-                        fImg.animate().alpha(1f).setDuration(1000);
-                        mGames.get(fPos).mBitmapThumb = bitmap;
-                    }
-                });
-            }
-        });
-        thread.setPriority(Thread.NORM_PRIORITY);
-        thread.start();
-    }
-
-    private void loadImage2(int pos, final ImageView imageView) {
-        final int fPos = pos;
-        new Thread(new Runnable() {
-            public void run() {
-                final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(mGames.get(fPos).mThumbnail);
-                mGames.get(fPos).mBitmapThumb = bitmap;
-                imageView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        imageView.setImageBitmap(bitmap);
-                        mGames.get(fPos).mBitmapThumb = bitmap;
-                    }
-                });
-            }
-        }).start();
-    }
-
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         private ImageView imageView;
-        private int pos;
+        private final int pos;
 
         public DownloadImageTask(ImageView imageView, int pos) {
             this.imageView = imageView;
@@ -168,8 +103,25 @@ public class GamesAdapter extends BaseAdapter {
         }
 
         protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
+            if (imageView.getTag().equals(mGames.get(pos).mThumbnail)) imageView.setImageBitmap(result);
             mGames.get(pos).mBitmapThumb = result;
         }
+    }
+
+    private void loadImage2(int pos, final ImageView imageView) {
+        final int fPos = pos;
+        new Thread(new Runnable() {
+            public void run() {
+                final Bitmap bitmap = TwitchNetworkTasks.downloadBitmap(mGames.get(fPos).mThumbnail);
+                mGames.get(fPos).mBitmapThumb = bitmap;
+                imageView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (imageView.getTag().equals(mGames.get(fPos).mThumbnail)) imageView.setImageBitmap(bitmap);
+                        mGames.get(fPos).mBitmapThumb = bitmap;
+                    }
+                });
+            }
+        }).start();
     }
 }

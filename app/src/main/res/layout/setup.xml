@@ -125,7 +125,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
-            android:src="@drawable/twitch_logo"/>
+            android:src="@drawable/tw_setup_logo"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -219,7 +219,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:src="@drawable/twitch_logo"/>
+                android:src="@drawable/tw_setup_logo"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -281,7 +281,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:src="@drawable/twitch_logo"/>
+                android:src="@drawable/tw_setup_logo"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -292,7 +292,7 @@
                 android:layout_below="@id/imageTwitchLogoFinished"
                 android:textSize="@dimen/abc_text_size_large_material"
                 android:gravity="center_horizontal"
-                android:text="Congratulations! \n Twitchbot is now ready"/>
+                android:text="Congratulations! \n Twirific is now ready"/>
 
             <TextView
                 android:layout_width="match_parent"

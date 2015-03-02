@@ -206,7 +206,7 @@ public class ChannelDetailFragment extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
                 if (bestPossibleQuality2(mAvailableQualities) >= 0) {
                     switch (mPreferences.getString("settings_stream_quality_type", "")) {
-                        case "alway ask": showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities)); break;
+                        case "always ask": showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities)); break;
                         case "auto select best": playStream(mAvailableQualities.get(bestPossibleQuality(mAvailableQualities))); break;
                         case "set maximum": showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities)); break;
                     }

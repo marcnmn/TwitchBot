@@ -107,7 +107,9 @@ public class SettingsFragment extends Fragment {
                 showPreferredQualityDialog();
             }
         });
-        if (mQualityTypeSelected == 1) mPreferredQualityLayout.setClickable(false);
+
+        if (mQualityTypeSelected == 1) disablePrefView();
+        else enablePrefView();
 
         mUsernameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,8 +153,6 @@ public class SettingsFragment extends Fragment {
     private void showQualityDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final String types[] = getActivity().getResources().getStringArray(R.array.settings_stream_quality_type);
-        final int disabled = getActivity().getResources().getColor(R.color.primary_text_disabled_material_light);
-        final int enabled = getActivity().getResources().getColor(R.color.secondary_text_default_material_light);
 
 
         builder.setTitle("Select Play Behaviour")
@@ -167,12 +167,10 @@ public class SettingsFragment extends Fragment {
                         mQualityText.setText(types[mQualityTypeSelected]);
                         mPreferences.edit().putString(TWITCH_STREAM_QUALITY_TYPE, types[mQualityTypeSelected]).apply();
                         if (types[mQualityTypeSelected].equals("auto select best")) {
-                            mPreferredQualityLayout.setClickable(false);
-                            mPreferredQualityText.setTextColor(disabled);
+                            disablePrefView();
                         }
                         else {
-                            mPreferredQualityLayout.setClickable(true);
-                            mPreferredQualityText.setTextColor(enabled);
+                            enablePrefView();
                         }
                     }
                 })
@@ -362,5 +360,17 @@ public class SettingsFragment extends Fragment {
         protected void onPostExecute(JSONObject result) {
             usernameDataReceived(result);
         }
+    }
+
+    private void disablePrefView () {
+        final int disabled = getActivity().getResources().getColor(R.color.primary_text_disabled_material_light);
+        mPreferredQualityText.setTextColor(disabled);
+        mPreferredQualityLayout.setClickable(false);
+    }
+
+    private void enablePrefView () {
+        final int enabled = getActivity().getResources().getColor(R.color.secondary_text_default_material_light);
+        mPreferredQualityText.setTextColor(enabled);
+        mPreferredQualityLayout.setClickable(true);
     }
 }

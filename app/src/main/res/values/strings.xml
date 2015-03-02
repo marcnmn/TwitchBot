@@ -29,6 +29,8 @@
     <string name="channel_videos_url">https://api.twitch.tv/kraken/channels/</string>
     <string name="channel_broadcasts_url_appendix">broadcasts=true&amp;</string>
 
+    <string name="twitch_user_following_suffix">/follows/channels?</string>
+
     <string name="twitch_search_channels">https://api.twitch.tv/kraken/search/channels?</string>
     <string name="twitch_search_streams">https://api.twitch.tv/kraken/search/streams?</string>
     <string name="twitch_search_games">https://api.twitch.tv/kraken/search/games?</string>
@@ -37,6 +39,8 @@
     <string name="twitch_oauth_get_token_url">https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&amp;client_id=cgkxsqu4n4wwrq4enos0dyhz60bzea4&amp;redirect_uri=https://twitchbot&amp;scope=user_subscriptions</string>
     <string name="stream_token_url">http://api.twitch.tv/api/channels/</string>
     <string name="twitch_video_token_url">https://api.twitch.tv/api/vods/</string>
+    <string name="default_stream_quality_type">always ask</string>
+    <string name="default_preferred_video_quality">source</string>
 
     <string-array name="drawer_urls">
         <item>https://api.twitch.tv/kraken/games/top?</item>

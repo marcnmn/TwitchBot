@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -210,7 +211,7 @@ public class SetupFragment extends Fragment
         final String get_oauth_token = getActivity().getResources().getString(R.string.twitch_oauth_get_token_url);
         final String oauth_base = getActivity().getResources().getString(R.string.twitch_oauth_base_url);
 
-        w.getSettings().setJavaScriptEnabled(true);
+        //w.getSettings().setJavaScriptEnabled(true);
 
         w.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
@@ -220,7 +221,7 @@ public class SetupFragment extends Fragment
 
         w.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(getActivity(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
             }
 
             @Override

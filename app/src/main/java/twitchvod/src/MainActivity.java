@@ -3,7 +3,9 @@ package twitchvod.src;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -37,6 +39,16 @@ public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         GamesRasterFragment.OnGameSelectedListener, StreamListFragment.onStreamSelectedListener,
         ChannelListFragment.onChannelSelectedListener {
+
+    private static final String PREF_USER_COMPLETED_SETUP = "user_completed_setup";
+    private static String USER_AUTH_TOKEN = "user_auth_token";
+    private static String USER_IS_AUTHENTICATED = "user_is_authenticated";
+    private static String SCOPES_OF_USER = "scopes_of_user";
+    private static String USER_HAS_TWITCH_USERNAME = "user_has_twitch_username";
+    private static String TWITCH_USERNAME = "twitch_username";
+    private static String TWITCH_DISPLAY_USERNAME = "twitch_display_username";
+    private static String TWITCH_STREAM_QUALITY_TYPE = "settings_stream_quality_type";
+    private static String TWITCH_PREFERRED_VIDEO_QUALITY = "settings_preferred_video_quality";
 
     private static final String ARG_ACTIONBAR_TITLE = "action_bar";
     private String mUrls[];
@@ -98,12 +110,17 @@ public class MainActivity extends ActionBarActivity
                 transaction.commit();
                 break;
             case 3:
-                ChannelListFragment favoritesFragment = new ChannelListFragment();
-                transaction = getFragmentManager().beginTransaction();
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.replace(R.id.container, favoritesFragment.newInstance(mUrls[position]));
-                transaction.addToBackStack("Favorites");
-                transaction.commit();
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+                String req = sp.getString(TWITCH_USERNAME, "");
+                if (sp.getBoolean(USER_HAS_TWITCH_USERNAME, false) && !req.isEmpty()) {
+                    req = getString(R.string.twitch_user_url) + req + getString(R.string.twitch_user_following_suffix);
+                    ChannelListFragment favoritesFragment = new ChannelListFragment();
+                    transaction = getFragmentManager().beginTransaction();
+                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    transaction.replace(R.id.container, favoritesFragment.newInstance(req));
+                    transaction.addToBackStack("Favorites");
+                    transaction.commit();
+                }
                 break;
             case 4:
                 //divider
@@ -119,6 +136,7 @@ public class MainActivity extends ActionBarActivity
                 transaction.commit();
                 break;
             case 100:
+                setDefaultSettings();
                 mIsInSetup = true;
                 SetupFragment s = new SetupFragment();
                 transaction = getFragmentManager().beginTransaction();
@@ -126,6 +144,13 @@ public class MainActivity extends ActionBarActivity
                 transaction.commit();
                 break;
         }
+    }
+
+    private void setDefaultSettings() {
+        SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        sp.edit().putString(TWITCH_STREAM_QUALITY_TYPE, getString(R.string.default_stream_quality_type)).apply();
+        sp.edit().putString(TWITCH_PREFERRED_VIDEO_QUALITY, getString(R.string.default_preferred_video_quality)).apply();
     }
 
     @Override

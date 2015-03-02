@@ -105,6 +105,7 @@ public class ChannelDetailFragment extends Fragment {
     private View mChannelHeader;
     private TwitchVideo mPlayingVideo;
     private View rootView;
+    private SharedPreferences mPreferences;
 
     public ChannelDetailFragment newInstance(HashMap<String,String> h) {
         ChannelDetailFragment fragment = new ChannelDetailFragment();
@@ -137,6 +138,7 @@ public class ChannelDetailFragment extends Fragment {
 
         SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(getActivity());
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         mIsAuthenticated = sp.getBoolean(USER_IS_AUTHENTICATED, false);
 
@@ -203,7 +205,11 @@ public class ChannelDetailFragment extends Fragment {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (bestPossibleQuality2(mAvailableQualities) >= 0) {
-                    showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities));
+                    switch (mPreferences.getString("settings_stream_quality_type", "")) {
+                        case "alway ask": showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities)); break;
+                        case "auto select best": playStream(mAvailableQualities.get(bestPossibleQuality(mAvailableQualities))); break;
+                        case "set maximum": showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities)); break;
+                    }
                 }
                 return false;
             }

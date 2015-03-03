@@ -37,7 +37,7 @@ public final class TwitchJSONParser {
         BITMAP_QUALITY = "medium";
     }
 
-    public static void setLowQuality() {
+    public static void setSmallQuality() {
         BITMAP_QUALITY = "small";
     }
 

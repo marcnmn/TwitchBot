@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,6 +27,8 @@ public class GamesAdapter extends BaseAdapter {
     private double aspectRatio;
     private RelativeLayout.LayoutParams mRelativeLayout;
     private Context mContext;
+    private int mWidth;
+    private ViewGroup.LayoutParams mParams;
 
 
     public GamesAdapter(GamesRasterFragment c) {
@@ -52,6 +55,20 @@ public class GamesAdapter extends BaseAdapter {
             holder.title = (TextView) convertView.findViewById(R.id.game_desc);
             holder.viewers = (TextView) convertView.findViewById(R.id.game_viewers);
             holder.thumbImage = (ImageView) convertView.findViewById(R.id.game_thumbnail);
+
+            if (mWidth == 0 && ((GridView)parent).getColumnWidth() > 0) {
+                float scale = 1.0f * mContext.getResources().getDrawable(R.drawable.game_offline).getIntrinsicHeight()
+                        / mContext.getResources().getDrawable(R.drawable.game_offline).getIntrinsicWidth();
+                mWidth = ((GridView)parent).getColumnWidth();
+                mParams = holder.thumbImage.getLayoutParams();
+                mParams.width = mWidth;
+                mParams.height = (int) (mWidth * scale);
+            }
+
+            if (mParams.height > 0) {
+                holder.thumbImage.setLayoutParams(mParams);
+            }
+
             convertView.setTag(holder);
         }
         else {

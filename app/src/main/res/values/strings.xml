@@ -64,6 +64,12 @@
         <item>set maximum</item>
     </string-array>
 
+    <string-array name="settings_bitmap_qualities">
+        <item>large</item>
+        <item>medium</item>
+        <item>small</item>
+    </string-array>
+
     <string-array
         name="blacklisted_games">
         <item>FIFA 15</item>

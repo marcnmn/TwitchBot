@@ -28,7 +28,9 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import twitchvod.src.MainActivity;
 import twitchvod.src.R;
+import twitchvod.src.data.TwitchJSONParser;
 import twitchvod.src.data.TwitchNetworkTasks;
 
 
@@ -46,12 +48,13 @@ public class SettingsFragment extends Fragment {
     private static String TWITCH_DISPLAY_USERNAME = "twitch_display_username";
     private static String TWITCH_STREAM_QUALITY_TYPE = "settings_stream_quality_type";
     private static String TWITCH_PREFERRED_VIDEO_QUALITY = "settings_preferred_video_quality";
+    private static String TWITCH_BITMAP_QUALITY = "settings_bitmap_quality";
 
-    private LinearLayout mQualityLayout, mPreferredQualityLayout, mUsernameLayout, mTwitchLoginLayout, mRefreshTokenLayout;
-    private TextView mQualityText, mPreferredQualityText, mUsernameText;
+    private LinearLayout mQualityLayout, mPreferredQualityLayout, mUsernameLayout, mTwitchLoginLayout, mRefreshTokenLayout, mThumbnailQualityLayout;
+    private TextView mQualityText, mPreferredQualityText, mUsernameText, mThumbnailQualityText;
     private EditText mUsernameEditText;
     private SharedPreferences mPreferences;
-    private int mItemSelected, mQualityTypeSelected, mPreferredQualitySelected;
+    private int mItemSelected, mQualityTypeSelected, mPreferredQualitySelected, mBitmapQualitySelected;
     private View mUsernameDialogView;
 
     public SettingsFragment newInstance() {
@@ -77,16 +80,22 @@ public class SettingsFragment extends Fragment {
         mTwitchLoginLayout = (LinearLayout) rootView.findViewById(R.id.twitchLoginSetting);
         mRefreshTokenLayout = (LinearLayout) rootView.findViewById(R.id.refreshTokenSetting);
 
+        // UI Settings
+        mThumbnailQualityLayout = (LinearLayout) rootView.findViewById(R.id.thumbnailSetting);
+        mThumbnailQualityText = (TextView) mThumbnailQualityLayout.findViewById(R.id.textThumbnailQuality);
+
 
         // Set initial values
         mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         mQualityTypeSelected = getTypeIndex(mPreferences.getString(TWITCH_STREAM_QUALITY_TYPE, ""));
         mPreferredQualitySelected = getPrefQualityIndex(mPreferences.getString(TWITCH_PREFERRED_VIDEO_QUALITY, ""));
+        mBitmapQualitySelected = getBitmapQualityIndex(mPreferences.getString(TWITCH_BITMAP_QUALITY, ""));
 
         mQualityText.setText(mPreferences.getString(TWITCH_STREAM_QUALITY_TYPE, ""));
         mPreferredQualityText.setText(mPreferences.getString(TWITCH_PREFERRED_VIDEO_QUALITY, ""));
         mUsernameText.setText(mPreferences.getString(TWITCH_DISPLAY_USERNAME, ""));
+        mThumbnailQualityText.setText(mPreferences.getString(TWITCH_BITMAP_QUALITY, ""));
 
         if (mPreferences.getBoolean(USER_HAS_TWITCH_USERNAME, false))
             ((ImageView)mUsernameLayout.findViewById(R.id.usernameStatusIcon)).setImageResource(R.drawable.username_check);
@@ -145,6 +154,13 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        mThumbnailQualityLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBitmapDialog();
+            }
+        });
+
         return rootView;
     }
 
@@ -180,6 +196,13 @@ public class SettingsFragment extends Fragment {
                 });
         builder.create();
         builder.show();
+
+        mThumbnailQualityLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBitmapDialog();
+            }
+        });
     }
 
     private void showPreferredQualityDialog() {
@@ -236,7 +259,6 @@ public class SettingsFragment extends Fragment {
 
     private void newLoginDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final String qualities[] = getActivity().getResources().getStringArray(R.array.livestream_qualities);
 
         builder.setTitle("New Twitch Account")
                 .setMessage("Do your really want to log in with a new Account?")
@@ -262,7 +284,6 @@ public class SettingsFragment extends Fragment {
 
     private void newUserDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final String qualities[] = getActivity().getResources().getStringArray(R.array.livestream_qualities);
 
         builder.setTitle("Recognized new Twitch Account")
                 .setMessage("Do you want to log into Twitch for restricted streams?")
@@ -323,6 +344,32 @@ public class SettingsFragment extends Fragment {
         mUsernameText.setText(userDisplayName);
     }
 
+    private void showBitmapDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final String sizes[] = getActivity().getResources().getStringArray(R.array.settings_bitmap_qualities);
+
+        builder.setTitle("Select Preferred Quality")
+                .setSingleChoiceItems(sizes, mBitmapQualitySelected, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mBitmapQualitySelected = which;
+                    }
+                })
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mThumbnailQualityText.setText(sizes[mBitmapQualitySelected]);
+                        mPreferences.edit().putString(TWITCH_BITMAP_QUALITY, sizes[mBitmapQualitySelected]).apply();
+                        ((MainActivity)getActivity()).setBitmapQuality();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        builder.create();
+        builder.show();
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -345,6 +392,14 @@ public class SettingsFragment extends Fragment {
         String types[] = getActivity().getResources().getStringArray(R.array.livestream_qualities);
         for (int i = 0; i < types.length; i++) {
             if (s.equals(types[i])) return i;
+        }
+        return 0;
+    }
+
+    private int getBitmapQualityIndex(String s) {
+        String sizes[] = getActivity().getResources().getStringArray(R.array.settings_bitmap_qualities);
+        for (int i = 0; i < sizes.length; i++) {
+            if (s.equals(sizes[i])) return i;
         }
         return 0;
     }

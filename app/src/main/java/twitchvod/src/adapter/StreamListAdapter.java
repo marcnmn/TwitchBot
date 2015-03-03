@@ -28,7 +28,7 @@ public class StreamListAdapter extends BaseAdapter {
     private ArrayList<Stream> mStreams;
     Animation mAlpha;
     private int mWidth = 0;
-    private RelativeLayout.LayoutParams mRelativeLayout;
+    private ViewGroup.LayoutParams mParams;
     private Context mContext;
 
     public StreamListAdapter(StreamListFragment c) {
@@ -56,34 +56,30 @@ public class StreamListAdapter extends BaseAdapter {
             holder.secondLineViewers = (TextView) convertView.findViewById(R.id.secondLineViewers);
             holder.streamStatus = (TextView) convertView.findViewById(R.id.text_stream_status);
             holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+
+            if (mWidth == 0 && ((GridView)parent).getColumnWidth() > 0) {
+                float scale = 1.0f * mContext.getResources().getDrawable(R.drawable.stream_offline_preview).getIntrinsicHeight()
+                        / mContext.getResources().getDrawable(R.drawable.stream_offline_preview).getIntrinsicWidth();
+                mWidth = ((GridView)parent).getColumnWidth();
+                mParams = holder.imageView.getLayoutParams();
+                mParams.width = mWidth;
+                mParams.height = (int) (mWidth * scale);
+            }
+            if (mParams.height > 0) {
+                holder.imageView.setLayoutParams(mParams);
+            }
+            convertView.setTag(holder);
         }
         else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        //if (((GridView) parent).getColumnWidth() != mWidth && holder.imageView.getDrawable() != null) {
-        //    mWidth = ((GridView) parent).getColumnWidth();
-        //    float scale = 1.0f * holder.imageView.getDrawable().getIntrinsicHeight()/holder.imageView.getDrawable().getIntrinsicWidth();
-        //    int imageWidth = Math.round(mWidth);
-        //    int imageHeight = Math.round(imageWidth * scale);
-        //    mRelativeLayout = new RelativeLayout.LayoutParams(imageWidth, imageHeight);
-        //}
-
-        //holder.imageView.setTag(mStreams.get(position).mPreviewLink);
         Picasso.with(mContext)
                 .load(mStreams.get(position).mPreviewLink)
                 .placeholder(R.drawable.stream_offline_preview)
                 .error(R.drawable.no_livestream)
                 .config(Bitmap.Config.RGB_565)
                 .into(holder.imageView);
-//        if (mStreams.get(position).mPreview == null) {
-//            new DownloadImageTask(holder.imageView, position).execute(mStreams.get(position).mPreviewLink);
-//        } else {
-//            holder.imageView.setImageBitmap(mStreams.get(position).mPreview);
-//        }
-
-        //if (mRelativeLayout != null)
-            //holder.imageView.setLayoutParams(mRelativeLayout);
 
         holder.firstLine.setText(mStreams.get(position).mTitle);
         holder.secondLine.setText(mStreams.get(position).printGame());

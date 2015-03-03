@@ -93,6 +93,8 @@ public class ChannelDetailFragment extends Fragment {
     private static String USER_AUTH_TOKEN = "user_auth_token";
     private static String USER_IS_AUTHENTICATED = "user_is_authenticated";
     private static String SCOPES_OF_USER = "scopes_of_user";
+    private static String TWITCH_STREAM_QUALITY_TYPE = "settings_stream_quality_type";
+    private static String TWITCH_PREFERRED_VIDEO_QUALITY = "settings_preferred_video_quality";
     private String mUserToken, mUserScope;
     private boolean mIsAuthenticated;
 
@@ -204,18 +206,32 @@ public class ChannelDetailFragment extends Fragment {
         mTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (bestPossibleQuality2(mAvailableQualities) >= 0) {
-                    switch (mPreferences.getString("settings_stream_quality_type", "")) {
-                        case "always ask": showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities)); break;
-                        case "auto select best": playStream(mAvailableQualities.get(bestPossibleQuality(mAvailableQualities))); break;
-                        case "set maximum": showPlayDialog(mAvailableQualities, bestPossibleQuality2(mAvailableQualities)); break;
-                    }
-                }
+                playVideo(mAvailableQualities);
                 return false;
             }
         };
 
         return rootView;
+    }
+
+    // ------------------------VideoPlayer-----------------/////////////////////////////////
+    private void playVideo(LinkedHashMap<String, String> q) {
+        if (bestPossibleQuality2(q) >= 0) {
+            switch (mPreferences.getString("settings_stream_quality_type", "")) {
+                case "always ask": showPlayDialog(q, preferredQualityOrBest(q)); break;
+                case "auto select best": playStream(q.get(bestPossibleQuality(q))); break;
+                case "set maximum":
+                    if(preferredQualityOrWorse(q) == null) {
+                        showPlayDialog(q, preferredQualityOrBest(q));
+                        Toast.makeText(getActivity(), "Sorry. No video below the maximum quality.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        playStream(q.get(preferredQualityOrWorse(q)));
+                    }
+                    break;
+            }
+        } else {
+            Toast.makeText(getActivity(), "Could not load Video, You may need to subscribe to the channel.", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -398,11 +414,7 @@ public class ChannelDetailFragment extends Fragment {
 
     public void videoPlaylistReceived(LinkedHashMap<String, String> result) {
         mProgressBar.setVisibility(View.INVISIBLE);
-        if (bestPossibleQuality2(result) >= 0) {
-            showPlayDialog(result, bestPossibleQuality2(result));
-        } else {
-            Toast.makeText(getActivity(), "Could not load Video, You need to subscribe to the channel.", Toast.LENGTH_SHORT).show();
-        }
+        playVideo(result);
     }
 
     public void oldVideoPlaylistReceived(TwitchVod t) {
@@ -696,6 +708,37 @@ public class ChannelDetailFragment extends Fragment {
             }
         }
         return bestI;
+    }
+
+    public int preferredQualityOrBest(HashMap<String, String> q) {
+        final String qa[] = q.keySet().toArray(new String[q.size()]);
+        String pref = mPreferences.getString(TWITCH_PREFERRED_VIDEO_QUALITY,"");
+        int iPref = qualityValue(pref);
+
+        for (int i = 0; i < qa.length; i++) {
+            if (qualityValue(qa[i]) == iPref) {
+                return i;
+            }
+        }
+        return bestPossibleQuality2(q);
+    }
+
+    public String preferredQualityOrWorse(HashMap<String, String> q) {
+        final String qa[] = q.keySet().toArray(new String[q.size()]);
+        String pref = mPreferences.getString(TWITCH_PREFERRED_VIDEO_QUALITY,"");
+        int iPref = qualityValue(pref);
+
+        int bestQ = -1;
+        int bestI = -1;
+
+        for (int i = 0; i < qa.length; i++) {
+            if (qualityValue(qa[i]) <= iPref && qualityValue(qa[i]) > bestQ) {
+                bestQ = qualityValue(qa[i]);
+                bestI = i;
+            }
+        }
+        if (bestI < 0) return null;
+        return qa[bestI];
     }
 
     private boolean isInLandscape() {

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ public class ChannelListAdapter extends BaseAdapter {
     private ArrayList<Channel> mChannels;
     private RelativeLayout.LayoutParams mRelativeLayout;
     private int mWidth = 0;
+    private ViewGroup.LayoutParams mParams;
 
     public ChannelListAdapter(ChannelListFragment c) {
         mActivity = c.getActivity();
@@ -52,24 +54,25 @@ public class ChannelListAdapter extends BaseAdapter {
             holder.secondLine = (TextView) convertView.findViewById(R.id.secondLine);
             holder.secondLineViewers = (TextView) convertView.findViewById(R.id.secondLineViewers);
             holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+
+            if (convertView.getMeasuredWidth() != mWidth && convertView.getMeasuredWidth() != 0) {
+                mWidth = Math.round(convertView.getMeasuredWidth() * 0.4f);
+                mRelativeLayout = new RelativeLayout.LayoutParams(mWidth, mWidth);
+            }
+
+            if (mRelativeLayout != null)
+                holder.imageView.setLayoutParams(mRelativeLayout);
+
+            convertView.setTag(holder);
         }
         else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (convertView.getMeasuredWidth() != mWidth && convertView.getMeasuredWidth() != 0) {
-            mWidth = Math.round(convertView.getMeasuredWidth() * 0.4f);
-            mRelativeLayout = new RelativeLayout.LayoutParams(mWidth, mWidth);
-        }
-
-        if (mRelativeLayout != null)
-            holder.imageView.setLayoutParams(mRelativeLayout);
-
         Picasso.with(mActivity)
                 .load(mChannels.get(position).getLogoLink())
                 .placeholder(R.drawable.channel_offline_360x360)
                 .error(R.drawable.channel_offline_360x360)
-                .fit()
                 .into(holder.imageView);
 
         holder.firstLine.setText(mChannels.get(position).getDisplayName());

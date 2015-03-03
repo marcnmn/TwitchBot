@@ -9,21 +9,17 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.squareup.picasso.Picasso;
 
+import twitchvod.src.data.TwitchJSONParser;
 import twitchvod.src.data.primitives.Channel;
 import twitchvod.src.data.primitives.Stream;
 import twitchvod.src.data.primitives.Game;
-import twitchvod.src.ui_fragments.AuthFragment;
 import twitchvod.src.ui_fragments.ChannelDetailFragment;
 import twitchvod.src.ui_fragments.ChannelListFragment;
 import twitchvod.src.ui_fragments.SearchFragment;
@@ -32,7 +28,6 @@ import twitchvod.src.ui_fragments.SetupFragment;
 import twitchvod.src.ui_fragments.StreamListFragment;
 import twitchvod.src.ui_fragments.GamesRasterFragment;
 import twitchvod.src.ui_fragments.NavigationDrawerFragment;
-import twitchvod.src.ui_fragments.TestFragment;
 
 
 public class MainActivity extends ActionBarActivity
@@ -49,6 +44,7 @@ public class MainActivity extends ActionBarActivity
     private static String TWITCH_DISPLAY_USERNAME = "twitch_display_username";
     private static String TWITCH_STREAM_QUALITY_TYPE = "settings_stream_quality_type";
     private static String TWITCH_PREFERRED_VIDEO_QUALITY = "settings_preferred_video_quality";
+    private static String TWITCH_BITMAP_QUALITY = "settings_bitmap_quality";
 
     private static final String ARG_ACTIONBAR_TITLE = "action_bar";
     private String mUrls[];
@@ -59,6 +55,7 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUrls = getResources().getStringArray(R.array.drawer_urls);
+        setBitmapQuality();
         setContentView(R.layout.activity_main);
 
         //Picasso.with(this).setIndicatorsEnabled(true);
@@ -146,11 +143,24 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
+    public void setBitmapQuality() {
+        SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        String qArray[] = getResources().getStringArray(R.array.settings_bitmap_qualities);
+        String q = sp.getString(TWITCH_BITMAP_QUALITY, "");
+
+        if (q.contains(qArray[0])) TwitchJSONParser.setHighQuality();
+        if (q.contains(qArray[1])) TwitchJSONParser.setMediumQuality();
+        if (q.contains(qArray[2])) TwitchJSONParser.setSmallQuality();
+    }
+
     private void setDefaultSettings() {
         SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
         sp.edit().putString(TWITCH_STREAM_QUALITY_TYPE, getString(R.string.default_stream_quality_type)).apply();
         sp.edit().putString(TWITCH_PREFERRED_VIDEO_QUALITY, getString(R.string.default_preferred_video_quality)).apply();
+        String defaultBitmap = getResources().getStringArray(R.array.settings_bitmap_qualities)[0];
+        sp.edit().putString(TWITCH_BITMAP_QUALITY, defaultBitmap).apply();
     }
 
     @Override
